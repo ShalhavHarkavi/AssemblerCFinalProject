@@ -32,3 +32,79 @@ int isLabel(char str[])
 		return false;
 	return true;
 }
+
+char *getLabelName(char str[])
+{
+	int i;
+	char *name = (char*)malloc(sizeof(char) * MAX_NAME_LENGTH);
+	for (i = 0; str[i] != ':'; i++);
+	strncpy(name, str, i);
+	return name;
+}
+
+type getType(char str[])
+{
+	int i, j;
+	char type[7];
+	for (i = 0; str[i] != '.'; i++);
+	i++;
+	for (j = i; str[j] != ' ' || str[j] != '\t'; j++);
+	strncpy(type, (str + i), (j - i));
+	if (isEqual(type, "string" == true))
+		return string;
+	if (isEqual(type, "data" == true))
+		return data;
+	return none;
+}
+
+addType getAddType(char str[])
+{
+	int i, j;
+	char addType[7];
+	for (i = 0; str[i] != '.'; i++);
+	i++;
+	for (j = i; str[j] != ' ' || str[j] != '\t'; j++);
+	strncpy(addType, (str + i), (j - i));
+	if (isEqual(type, "entry") == true)
+		return entry;
+	if (isEqual(type, "extern") == true)
+		return external;
+	return none;
+}
+
+int *getValue(char str[], type id)
+{
+	int i, j, t, z, counter = 0;
+	char *valueChar;
+	int *valueArr = (int*)malloc(sizeof(int));
+	if (id = none || id = string)
+		return (int)NULL;
+	for (t = 0, z = 0; str[t] == '\0'; t = j, z++)
+	{
+		if (z > (sizeof(valueArr) / sizeof(int)))
+			realloc(valuArr, (sizeof(int) * z));
+		for (i = t; !isdigit(str[i]); i++);
+		for (j = i; str[j] != ',' || str[j] != ' ' || str[j] != '\t'; j++);
+		if (str[j] == ',' && str[j + 1] == ',')
+		{
+			fprintf(stderr, "SYNTAX ERROR\n");
+			return 0; /*Placeholder return.*/
+		}
+		valueChar = (char*)malloc(sizeof(char) * (j - i));
+		strncpy(valueChar, (str + i), (j - i));
+		valueArr[z] = atoi(valueChar);
+	}
+	return valueArr;
+}
+
+char *getString(char str[], type id)
+{
+	int i, j;
+	char *string;
+	for (i = 0; str[i] != '"'; i++);
+	i++;
+	for (j = i; str[j] != '"'; j++);
+	string = (char*)malloc(sizeof(char) * (j - i));
+	strncpy(string, (str + i), (j - i));
+	return string;
+}
