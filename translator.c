@@ -1,4 +1,4 @@
-#include <additionalFuncs.c>
+#include <additionalFuncs.h>
 
 typedef struct {unsigned short int twelveBit:12;
                 unsigned short int fourteenBit:14;
