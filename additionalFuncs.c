@@ -1,3 +1,5 @@
+#include "additionalFuncs.h"
+
 int isEqual(char str1[], char str2[])
 {
 	int count1, count2, i;
