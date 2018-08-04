@@ -15,6 +15,14 @@ static word      makeInstruction(addType ARE, addresing dest, addresing source, 
 
 /*static addresing whatAd(char *str); /*identifies which addresing scheme is in str and returns it's numer*/
 
+void data(label* labelData)
+{
+  if (labelData.id == data)
+  {
+    /*NEED TO COMPLETE*/
+  }
+}
+
 void instruction(char *str) {
 
 }
