@@ -85,3 +85,4 @@ typedef struct BinWordList {word Word;
 wordList *instructions; /*pointer to the first instruction*/
 wordList *data;         /*pointer to the first piece of data*/
 
+void data(label* labelData);
