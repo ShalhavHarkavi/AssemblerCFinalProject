@@ -75,7 +75,7 @@ typedef union {AREaddressWord     AREaddress;
                AREdataWord        AREdata;
                } word;
 
-void makeWords(char *str); /*public function for none ARE data words creation*/
+void makeDataWords(int data); /*public function for none ARE data words creation*/
 
 typedef struct BinWordList {word Word;
                             struct BinWordList *next;
@@ -85,4 +85,5 @@ typedef struct BinWordList {word Word;
 wordList *instructions; /*pointer to the first instruction*/
 wordList *data;         /*pointer to the first piece of data*/
 
-void data(label* labelData);
+void error(char code);void data(label* labelData);
+>>>>>>> master
