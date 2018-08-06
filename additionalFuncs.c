@@ -1,4 +1,5 @@
 /***********************************
+*By Matan Liber and Shalhav Harkavi
 ***********************************/
 
 int isEqual(char str1[], char str2[])
