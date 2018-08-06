@@ -98,4 +98,4 @@ void instruction(char str[]);
 
 void error(char code);
 
-void data(label* labelData)
+void data(label* labelData);
