@@ -1,3 +1,7 @@
+/**********************************
+*By Matan Liber and Shalhav Harkavi
+**********************************/
+
 #include <additionalFuncs.h>
 
 typedef struct {unsigned short int twelveBit:12;
@@ -55,13 +59,13 @@ void data(label* labelData)
 	{
 		length = sizeof(labelData -> value) / sizeof(int); /*Size of value array*/
 		for (i = 0; i < length; i++)
-			makeDataWords(labelData -> value[i]);
+			makeDataWords((labelData -> value)[i]);
 	}
 	if (labelData.id == string)
 	{
 		length == strlen(labelData -> string) + 1; /*Length of word, +1 for '\0'*/
 		for (i = 0; i < length; i++)
-			makeDataWords(labelData -> string[i]);
+			makeDataWords((labelData -> string)[i]);
 	}
 	/*IN THIS FUNCTION:
 	* - Make sure that we dont need to add parenthesis somewhere when we call the makeDataWords function (i.e. makeDataWords((labelData -> string)[i]);)

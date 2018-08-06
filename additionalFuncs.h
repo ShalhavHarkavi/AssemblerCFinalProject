@@ -1,10 +1,15 @@
+/***********************************
+* By Matan Liber and Shalhav Harkavi
+***********************************/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #define MAX_NAME_LENGTH 32
-#define true (1 == 1)
-#define false (0 == 1)
+#define MAX_LINE_LENGTH 82
+#define true 1
+#define false 0
 
 typedef enum LabelType{none, data, string}type;
 
@@ -12,6 +17,7 @@ typedef enum AdditionalLabelType{none, entry, external}addType;
 
 typedef struct Label
 {
+<<<<<<< HEAD
   char name[MAX_NAME_LENGTH];
   int adress; /*The relative position of this label's position from the relevant type's head
                 i.e the first data or string label will have the address 0 as well as the
@@ -23,6 +29,15 @@ typedef struct Label
   signed int *value;
   char *string;
   struct Label *next;
+=======
+	char name[MAX_NAME_LENGTH];
+	int adress;
+	type id;
+	addType addId;
+	int *value;
+	char *string;
+	struct Label *next;
+>>>>>>> master
 }label;
 
 int isEqual(char str1[], char str2[]);
@@ -91,8 +106,17 @@ typedef struct BinWordList {word Word;
 void error(char code);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 void *data(label* labelData); /*public function for none ARE data words creation*/
 =======
+=======
+int isDataLabel(char str[]);
+
+int isInstructionLabel(char str[]);
+
+void instruction(char str[]);
+
+>>>>>>> master
 void error(char code);
 
 void data(label* labelData);

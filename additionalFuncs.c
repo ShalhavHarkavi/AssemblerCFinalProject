@@ -1,4 +1,6 @@
 #include "additionalFuncs.h"
+/***********************************
+***********************************/
 
 int isEqual(char str1[], char str2[])
 {
@@ -109,4 +111,20 @@ char *getString(char str[], type id)
 	string = (char*)malloc(sizeof(char) * (j - i));
 	strncpy(string, (str + i), (j - i));
 	return string;
+}
+
+int isDataLabel(char str[])
+{
+	int i;
+	for (i = 0; str[i] != '.' || str[i] != '\0'; i++);
+	if (str[i] == '\0')
+		return false;
+	return true;
+}
+
+int isInstructionLabel(char str[])
+{
+	if (isLabel(str) == true && isDataLabel(str) == false)
+		return true;
+	return false;
 }
