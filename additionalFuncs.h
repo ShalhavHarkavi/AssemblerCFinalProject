@@ -90,4 +90,10 @@ typedef struct BinWordList {word Word;
 
 void error(char code);
 
+<<<<<<< HEAD
 void *data(label* labelData); /*public function for none ARE data words creation*/
+=======
+void error(char code);
+
+void data(label* labelData);
+>>>>>>> 979c16943e62309b2797b169105e3dc073da8a1b

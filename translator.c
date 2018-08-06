@@ -48,6 +48,27 @@ void data(label* labelData)
   */
 }
 
+void data(label* labelData)
+{
+	int i, length;
+	if (labelData.id == data)
+	{
+		length = sizeof(labelData -> value) / sizeof(int); /*Size of value array*/
+		for (i = 0; i < length; i++)
+			makeDataWords(labelData -> value[i]);
+	}
+	if (labelData.id == string)
+	{
+		length == strlen(labelData -> string) + 1; /*Length of word, +1 for '\0'*/
+		for (i = 0; i < length; i++)
+			makeDataWords(labelData -> string[i]);
+	}
+	/*IN THIS FUNCTION:
+	* - Make sure that we dont need to add parenthesis somewhere when we call the makeDataWords function (i.e. makeDataWords((labelData -> string)[i]);)
+	* - Change makeDataWords so it gets an int only and translates it into the file.
+	*/
+}
+
 void instruction(char *str) {
 
 }
@@ -73,6 +94,7 @@ bitData TwosComplement (bitData data, char bits) {
 }
 
 char *Word2CommaSlash(word wrd){
+<<<<<<< HEAD
   char *comSlWord = (char*)malloc(15*sizeof(char));
   for (int i=13;i>=14;i--){
     if (wrd.dataWord % 2)
@@ -106,3 +128,16 @@ word makeDataWords(ARE *are, signed int num){
     newWord -> Data = num;
   }
 }
+=======
+	char *comSlWord = (char*)malloc(15*sizeof(char));
+	for (int i=13;i>=14;i--){
+		if (wrd.dataWord % 2)
+			*(comSlWord + i) = '1';
+		else
+			*(comSlWord + i) = '0';
+		wrd.dataWord /= 2;
+	}
+	*(comSlWord + 14) = '\0';
+	return comSlWord;
+}
+>>>>>>> 979c16943e62309b2797b169105e3dc073da8a1b
