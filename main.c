@@ -1,9 +1,12 @@
+/***********************************
+* By Matan Liber and Shalhav Harkavi
+***********************************/
+
 #include "additionalFuncs.h"
 
 int assembler(char *fileName)
 {
-	int IC = 0, DC = 0; /*Still need to figure out how to use those...*/
-	char line[4096/*Placeholder, will find solution for dynamic sized line later.*/], lineName[MAX_NAME_LENGTH];
+	char line[MAX_LINE_LENGTH/*Placeholder, will find solution for dynamic sized line later.*/], lineName[MAX_NAME_LENGTH];
 	FILE* input, output, entries, externals;
 	label *head = NULL, temp = NULL;
 	input = fopen(strcat(fileName, ".as"), "r");
@@ -14,31 +17,53 @@ int assembler(char *fileName)
 	}
 	output = fopen(strcat(fileName, ".ob"), "w");
 	entries = fopen(strcat(fileName, ".ent"), "w"); /*At the end of the assembler function, if pointer is NULL -> delete file using remove() function.*/
-	externals = fopen(strcat(fileName, ".ent"), "w"); /*At the end of the assembler function, if pointer is NULL -> delete file using remove() function.*/
+	externals = fopen(strcat(fileName, ".ext"), "w"); /*At the end of the assembler function, if pointer is NULL -> delete file using remove() function.*/
 	head = (label*)malloc(sizeof(label));
-	while (fgets(line, 4096, input) != NULL)
+	temp = head;
+	while (fgets(line, MAX_LINE_LENGTH, input) != NULL)
 	{
 		if (isLabel(line) == true)
 		{
-			temp = head;
 			name = getLabelName(line);
-			while (temp != NULL)
-			{
-				if (isEqual(temp -> name, lineName) == true)
-				{
-					fprintf(stderr, "THE LABEL NAMED %s IS DEFINED MORE THAN ONCE.\n", labelName);
-					return 0; /*Using return as placeholder for now.*/
-				}
-			}
-			head -> name = lineName;
-			/*NEED TO GET ADRESS HERE.*/
-			head.id = getType(line);
-			head.addId = getType(line);
-			head -> value = getValue(line, head.id);
-			head -> string = getString(line, head.id);
-			head -> next = (label*)malloc(sizeof(label));
-			head = head -> next;
+			temp -> name = lineName;
+			temp.id = getType(line);
+			temp.addId = getType(line);
+			temp -> value = getValue(line, head.id);
+			temp -> string = getString(line, head.id);
+			temp -> next = (label*)malloc(sizeof(label));
+			data(temp); /*Creates a word/multiple words for the stored datas*/
+			temp = temp -> next;
 		}
+		else if (isInstructionLabel(line) == true)
+		{
+			/*isInstructionLabel: do it by if not data label*/
+			name = getLabelName(line);
+			temp -> name = lineName;
+			instruction(line, temp);
+			temp -> next = (label*)malloc(sizeof(label));
+			temp = temp -> next;
+		}
+		else
+			instruction(line, NULL);
+	}
+	temp = head;
+	while (temp != NULL)
+	{
+		if (temp.addId == external)
+			fprintf(externals, "%s\t%d", temp -> name, temp.adress); /*NEED TO FIND A WAY TO MAKE COLUMNS FOR NAMES AND ADRESSES*/
+		if (temp.addId == entry)
+			fprintf(entries, "%s\t%d", temp -> name, temp.adress); /*NEED TO FIND A WAY TO MAKE COLUMNS FOR NAMES AND ADRESSES*/
+		temp = temp -> next;
+	}
+	if (entries == NULL)
+	{
+		fclose(entries);
+		remove(entries);
+	}
+	if (externals == NULL)
+	{
+		fclose(externals);
+		remove(externals);
 	}
 }
 
