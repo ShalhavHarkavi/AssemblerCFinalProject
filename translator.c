@@ -1,3 +1,7 @@
+/**********************************
+*By Matan Liber and Shalhav Harkavi
+**********************************/
+
 #include <additionalFuncs.h>
 
 typedef struct {unsigned short int twelveBit:12;
