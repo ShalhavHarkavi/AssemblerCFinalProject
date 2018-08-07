@@ -17,6 +17,19 @@ typedef enum AdditionalLabelType{none, entry, external}addType;
 
 typedef struct Label
 {
+<<<<<<< HEAD
+  char name[MAX_NAME_LENGTH];
+  int adress; /*The relative position of this label's position from the relevant type's head
+                i.e the first data or string label will have the address 0 as well as the
+                first instruction label this way there is no need to update data labels
+                when new instruction labels are created (which will have a smaller address
+                since all the instructions are entered into the output file before the data.*/
+  type id;
+  addType addId;
+  signed int *value;
+  char *string;
+  struct Label *next;
+=======
 	char name[MAX_NAME_LENGTH];
 	int adress;
 	type id;
@@ -24,6 +37,7 @@ typedef struct Label
 	int *value;
 	char *string;
 	struct Label *next;
+>>>>>>> master
 }label;
 
 int isEqual(char str1[], char str2[]);
@@ -48,18 +62,20 @@ typedef enum {r1, r2, r3, r4, r5, r6, r7, r8} registers;
 
 typedef enum {immidiate, direct, jmpWparam, directReg} addresing;
 
-typedef struct {unsigned short int ARE:2;
-                unsigned short int data:12;
+typedef enum {absolute, external, relocatable} ARE;
+
+typedef struct {unsigned short int are:2;
+                unsigned short int Data:12;
                 } AREdataWord;
 
 typedef struct {unsigned short int data:14;} dataWord;
 
-typedef struct {unsigned short int ARE:2;
+typedef struct {unsigned short int are:2;
                 unsigned short int destination:6;
                 unsigned short int source:6;
                 } registerAdressWord;
 
-typedef struct {unsigned short int ARE:2;
+typedef struct {unsigned short int are:2;
                 unsigned short int destAddresing:2;
                 unsigned short int sourceAddresing:2;
                 unsigned short int op:4;
@@ -67,7 +83,7 @@ typedef struct {unsigned short int ARE:2;
                 unsigned short int param2:2;
                 } instructionWord;
 
-typedef struct {unsigned short int ARE:2;
+typedef struct {unsigned short int are:2;
                 unsigned short int address:12;
                 } AREaddressWord;
 
@@ -80,22 +96,28 @@ typedef union {AREaddressWord     AREaddress;
                AREdataWord        AREdata;
                } word;
 
-void makeDataWords(int data); /*public function for none ARE data words creation*/
-
 typedef struct BinWordList {word Word;
                             struct BinWordList *next;
                             struct BinWordList *prev;
+                            unsigned int IC;
+                            unsigned int DC;
                             } wordList;
 
-wordList *instructions; /*pointer to the first instruction*/
-wordList *data;         /*pointer to the first piece of data*/
+void error(char code);
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+void *data(label* labelData); /*public function for none ARE data words creation*/
+=======
+=======
 int isDataLabel(char str[]);
 
 int isInstructionLabel(char str[]);
 
 void instruction(char str[]);
 
+>>>>>>> master
 void error(char code);
 
 void data(label* labelData);
+>>>>>>> 979c16943e62309b2797b169105e3dc073da8a1b
