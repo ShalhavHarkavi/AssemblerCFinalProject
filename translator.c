@@ -37,40 +37,19 @@ void data(label* labelData)
   {
     length = sizeof(labelData -> value) / sizeof(int); /*Size of value array*/
     for (i = 0; i < length; i++)
-      makeDataWords(NULL, labelData -> value[i]);
+      makeDataWords(NULL, (labelData -> value)[i]);
   }
   if (labelData.id == string)
   {
     length == strlen(labelData -> string) + 1; /*Length of word, +1 for '\0'*/
     for (i = 0; i < length; i++)
-      makeDataWords(NULL, (int) labelData -> string[i]);
+      makeDataWords(NULL, (int) (labelData -> string)[i]);
   }
-  dataHead -> DC += length
+  dataHead -> DC += length;
   /*IN THIS FUNCTION:
   * - Make sure that we dont need to add parenthesis somewhere when we call the makeDataWords function (i.e. makeDataWords((labelData -> string)[i]);)
   * - Change makeDataWords so it gets an int only and translates it into the file.
   */
-}
-
-void data(label* labelData)
-{
-	int i, length;
-	if (labelData.id == data)
-	{
-		length = sizeof(labelData -> value) / sizeof(int); /*Size of value array*/
-		for (i = 0; i < length; i++)
-			makeDataWords((labelData -> value)[i]);
-	}
-	if (labelData.id == string)
-	{
-		length == strlen(labelData -> string) + 1; /*Length of word, +1 for '\0'*/
-		for (i = 0; i < length; i++)
-			makeDataWords((labelData -> string)[i]);
-	}
-	/*IN THIS FUNCTION:
-	* - Make sure that we dont need to add parenthesis somewhere when we call the makeDataWords function (i.e. makeDataWords((labelData -> string)[i]);)
-	* - Change makeDataWords so it gets an int only and translates it into the file.
-	*/
 }
 
 void instruction(char *str) {
