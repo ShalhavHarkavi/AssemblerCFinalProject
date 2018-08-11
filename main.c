@@ -36,7 +36,6 @@ int assembler(char *fileName)
 		}
 		else if (isInstructionLabel(line) == true)
 		{
-			/*isInstructionLabel: do it by if not data label*/
 			name = getLabelName(line);
 			temp -> name = lineName;
 			instruction(line+strlen(name)+1, temp);
