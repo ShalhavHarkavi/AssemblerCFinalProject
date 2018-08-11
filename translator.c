@@ -11,13 +11,13 @@ typedef enum {r1, r2, r3, r4, r5, r6, r7, r8} registers;
 
 typedef enum {immidiate, direct, jmpWparam, directReg} Addressing;
 
-typedef enum {absolute, external, relocatable} ARE;
+typedef enum {Absolute, External, Relocatable} ARE;
 
 typedef struct {unsigned short int are:2;
-                unsigned short int Data:12;
+                unsigned short int DATA:12;
                 } AREdataWord;
 
-typedef struct {unsigned short int Data:14;} dataWord;
+typedef struct {unsigned short int DATA:14;} dataWord;
 
 typedef struct {unsigned short int are:2;
                 unsigned short int destination:6;
@@ -69,7 +69,7 @@ static opCode whatOpCode(char *str); /*identify op and remove it*/
 static word isImmidiate(char *str); 
 /*create a register word if str is a register or return an illegal word with are=3*/
 static word isRegister(char *str); 
-/*create a label address word if str is a label name (can be external) or an illegal word with are=3 if not */
+/*create a label address word if str is a label name (can be External) or an illegal word with are=3 if not */
 static word isDirect(char *str); 
 /*binary data words with or without ARE prefix*/
 static word makeDataWords(ARE *are, int); 
@@ -94,7 +94,8 @@ void initializeWordList(void){
   currentData      = dataHead;
 }
 
-void clearWordList(wordList *head){
+void clearWordList(){
+  wordList *head = instructionHead;
   while (head -> next != NULL){
     wordList *temp = head -> next;
     free(head);
@@ -103,7 +104,7 @@ void clearWordList(wordList *head){
   free(head);
 }
 
-void data(label *labelData)
+void Data(label *labelData)
 {
   int i, length;
   if (labelData -> id == data) {
@@ -161,7 +162,7 @@ word isRegister(char *str) {
   word wrd;
   if (*str == 'r' && *(str+1) >= '1' && *(str+1) <= '8') {
     registers reg = *(str+1) - '1';
-    wrd = makeAdressWord(absolute, NULL, &reg, NULL);
+    wrd = makeAdressWord(Absolute, NULL, &reg, NULL);
     str += 2;
   }
   else
@@ -178,7 +179,7 @@ word isDirect(char *str) {
   labelName = malloc(i+1);
   strncpy(labelName, str, i);
   if (isLegalName(labelName)){
-    wrd = makeAdressWord(relocatable, NULL, NULL, NULL);
+    wrd = makeAdressWord(Relocatable, NULL, NULL, NULL);
     str += i;
   }
   else
@@ -213,11 +214,11 @@ int isJmpWParams(char *str, word words[], opCode op) {
     if (*(working++) != ',')
       return 0;
     if ((words[3] = isDirect(working)).AREdata.are != 3) {
-      words[0] = makeInstruction(absolute, jmpWparam, immidiate, op, param1, direct);
+      words[0] = makeInstruction(Absolute, jmpWparam, immidiate, op, param1, direct);
       numOfWords++;
     }
     else if ((words[3] = isRegister(working)).AREdata.are != 3) {
-      words[0] = makeInstruction(absolute, jmpWparam, immidiate, op, param1, directReg);
+      words[0] = makeInstruction(Absolute, jmpWparam, immidiate, op, param1, directReg);
       if (param1 == directReg) {
         words[2].registerAddress.destination = words[3].registerAddress.source;
       }
@@ -225,7 +226,7 @@ int isJmpWParams(char *str, word words[], opCode op) {
         numOfWords++;
     }
     else if ((words[3] = isImmidiate(working)).AREdata.are != 3 && op == cmp) {
-      words[0] = makeInstruction(absolute, jmpWparam, immidiate, op, param1, immidiate);
+      words[0] = makeInstruction(Absolute, jmpWparam, immidiate, op, param1, immidiate);
       numOfWords++;
     }
     else
@@ -244,7 +245,7 @@ void instruction(char *str, label* labelInstruction) {
     unsigned char numOfWords = 0;
     Addressing destAddr, sourceAddr, param1, param2;
     if (op>=rts) { /* first group no operands */
-      words[0] = makeInstruction(absolute, immidiate, immidiate, op, immidiate, immidiate);
+      words[0] = makeInstruction(Absolute, immidiate, immidiate, op, immidiate, immidiate);
       numOfWords = 1;
     }
     else if (op == mov || op == add || op == sub || op == cmp) { /* second group source addressing 0,1,3 */
@@ -269,11 +270,11 @@ void instruction(char *str, label* labelInstruction) {
       else
         working = skipBlanks(working + 1);
       if ((words[2] = isDirect(working)).AREdata.are != 3) {
-        words[0] = makeInstruction(absolute, direct, sourceAddr, op, immidiate, immidiate);
+        words[0] = makeInstruction(Absolute, direct, sourceAddr, op, immidiate, immidiate);
         numOfWords++;
       }
       else if ((words[2] = isRegister(working)).AREdata.are != 3) {
-        words[0] = makeInstruction(absolute, directReg, sourceAddr, op, immidiate, immidiate);
+        words[0] = makeInstruction(Absolute, directReg, sourceAddr, op, immidiate, immidiate);
         if (sourceAddr == directReg) {
           words[1].registerAddress.destination = words[2].registerAddress.source;
         }
@@ -281,7 +282,7 @@ void instruction(char *str, label* labelInstruction) {
           numOfWords++;
       }
       else if ((words[2] = isImmidiate(working)).AREdata.are != 3 && op == cmp) {
-        words[0] = makeInstruction(absolute, immidiate, sourceAddr, op, immidiate, immidiate);
+        words[0] = makeInstruction(Absolute, immidiate, sourceAddr, op, immidiate, immidiate);
         numOfWords++;
       }
       else
@@ -299,11 +300,11 @@ void instruction(char *str, label* labelInstruction) {
       else
         working = skipBlanks(working + 1);
       if ((words[2] = isDirect(working)).AREdata.are != 3) {
-        words[0] = makeInstruction(absolute, direct, direct, op, immidiate, immidiate);
+        words[0] = makeInstruction(Absolute, direct, direct, op, immidiate, immidiate);
         numOfWords++;
       }
       else if ((words[2] = isRegister(working)).AREdata.are != 3) {
-        words[0] = makeInstruction(absolute, directReg, direct, op, immidiate, immidiate);
+        words[0] = makeInstruction(Absolute, directReg, direct, op, immidiate, immidiate);
         numOfWords++;
       }
       else
@@ -312,11 +313,11 @@ void instruction(char *str, label* labelInstruction) {
     else if (op == not || op == clr || op == inc || op == dec || op == dec) { /*third group no source addressing, direct or register destination addressing*/
       working = skipBlanks(working+3);
        if ((words[1] = isDirect(working)).AREdata.are != 3) {
-        words[0] = makeInstruction(absolute, direct, immidiate, op, immidiate, immidiate);
+        words[0] = makeInstruction(Absolute, direct, immidiate, op, immidiate, immidiate);
         numOfWords = 2;
       }
       else if ((words[1] = isRegister(working)).AREdata.are != 3) {
-        words[0] = makeInstruction(absolute, directReg, immidiate, op, immidiate, immidiate);
+        words[0] = makeInstruction(Absolute, directReg, immidiate, op, immidiate, immidiate);
         numOfWords = 2;
       }
       else
@@ -325,15 +326,15 @@ void instruction(char *str, label* labelInstruction) {
     else if (op == prn) {
       working = skipBlanks(working+3);
       if ((words[1] = isImmidiate(working)).AREdata.are != 3) {
-        words[0] = makeInstruction(absolute, immidiate, immidiate, op, immidiate, immidiate);
+        words[0] = makeInstruction(Absolute, immidiate, immidiate, op, immidiate, immidiate);
         numOfWords = 2;
       }
       else if ((words[1] = isDirect(working)).AREdata.are != 3) {
-        words[0] = makeInstruction(absolute, direct, immidiate, op, immidiate, immidiate);
+        words[0] = makeInstruction(Absolute, direct, immidiate, op, immidiate, immidiate);
         numOfWords = 2;
       }
       else if ((words[1] = isRegister(working)).AREdata.are != 3) {
-        words[0] = makeInstruction(absolute, directReg, immidiate, op, immidiate, immidiate);
+        words[0] = makeInstruction(Absolute, directReg, immidiate, op, immidiate, immidiate);
         numOfWords = 2;
       }
       else
@@ -343,13 +344,13 @@ void instruction(char *str, label* labelInstruction) {
       working = skipBlanks(working+3);
       sourceAddr = immidiate;
       if ((words[1] = isDirect(working)).AREdata.are != 3) {
-        words[0] = makeInstruction(absolute, direct, immidiate, op, immidiate, immidiate);
+        words[0] = makeInstruction(Absolute, direct, immidiate, op, immidiate, immidiate);
         numOfWords = 2;
       }
       else if ((numOfWords = isJmpWParams(working, words, op))) 
         ;
       else if ((words[1] = isRegister(working)).AREdata.are != 3) {
-        words[0] = makeInstruction(absolute, directReg, immidiate, op, immidiate, immidiate);
+        words[0] = makeInstruction(Absolute, directReg, immidiate, op, immidiate, immidiate);
         numOfWords = 2;
       }
       else
@@ -396,11 +397,11 @@ bitData TwosComplement (unsigned int data, char bits) {
 char *Word2CommaSlash(word wrd){
   char *comSlWord = (char*)malloc(15*sizeof(char));
   for (int i=13;i>=14;i--){
-    if (wrd.dword.Data % 2)
+    if (wrd.dword.DATA % 2)
       *(comSlWord + i) = '1';
     else
       *(comSlWord + i) = '0';
-    wrd.dword.Data /= 2;
+    wrd.dword.DATA /= 2;
   }
   *(comSlWord + 14) = '\0';
   return comSlWord;
@@ -410,16 +411,16 @@ word makeDataWords(ARE *Are, signed int num){
   word newWord;
   if (Are==NULL) {
     if (num < 0)
-      newWord.dword.Data = (unsigned short int)(TwosComplement((unsigned int) -num,14).fourteenBit);  
+      newWord.dword.DATA = (unsigned short int)(TwosComplement((unsigned int) -num,14).fourteenBit);  
     else
-      newWord.dword.Data = num;
+      newWord.dword.DATA = num;
   }  
   else {  
     newWord.AREdata.are = *Are;
     if (num < 0)
-      newWord.AREdata.Data = (unsigned short int)(TwosComplement((unsigned int) -num,12).twelveBit);  
+      newWord.AREdata.DATA = (unsigned short int)(TwosComplement((unsigned int) -num,12).twelveBit);  
     else
-      newWord.AREdata.Data = num;
+      newWord.AREdata.DATA = num;
   }
   return newWord;
 }
@@ -475,11 +476,11 @@ char *skipBlanks(char *str){
 
 word makeInstruction(ARE Are, Addressing dest, Addressing source, opCode opcode, Addressing param1, Addressing param2){
   word wrd;
-  wrd.instruction.are             = Are;
+  wrd.instruction.are              = Are;
   wrd.instruction.destAddressing   = dest;
   wrd.instruction.sourceAddressing = source;
-  wrd.instruction.op              = opcode;
-  wrd.instruction.param1          = param1;
-  wrd.instruction.param2          = param2;
+  wrd.instruction.op               = opcode;
+  wrd.instruction.param1           = param1;
+  wrd.instruction.param2           = param2;
   return wrd;
 }
