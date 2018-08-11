@@ -31,7 +31,7 @@ int assembler(char *fileName)
 			temp -> value = getValue(line, head.id);
 			temp -> string = getString(line, head.id);
 			temp -> next = (label*)malloc(sizeof(label));
-			data(temp); /*Creates a word/multiple words for the stored datas*/
+			Data(temp); /*Creates a word/multiple words for the stored datas*/
 			temp = temp -> next;
 		}
 		else if (isInstructionLabel(line) == true)

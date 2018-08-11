@@ -49,7 +49,7 @@ char *getString(char str[], type id);
 
 void error(char code);
 
-void data(label* labelData); /*public function for non-ARE data words creation*/
+void Data(label* labelData); /*public function for non-ARE data words creation*/
 
 /*public function for instruction words creation*/
 void instruction(char *str, label* labelInstruction);
@@ -63,8 +63,7 @@ void initializeWordList(void); /*initializes a static wordList in the file     *
                                 *translator.c and updates the 2 head pointers  *
                                 *for the instruction and data segments         */
 
-void clearWordList(wordList *head); /*clears the wordList in translator.c,     *
-                                     *should be used with errors before moving *
-                                     *to the next file                         */
+void clearWordList(); /*clears the wordList in translator.c, should be used if *
+                       *errors occur before moving to the next file            */
 
 void makeOutputFile(FILE *output);
