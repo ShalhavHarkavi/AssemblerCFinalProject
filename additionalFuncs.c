@@ -60,7 +60,7 @@ type getType(char str[])
 		return string;
 	if (isEqual(type, "data" == true))
 		return data;
-	return none;
+	return noneData;
 }
 
 addType getAddType(char str[])
@@ -75,7 +75,7 @@ addType getAddType(char str[])
 		return entry;
 	if (isEqual(type, "extern") == true)
 		return external;
-	return none;
+	return noneAdd;
 }
 
 int *getValue(char str[], type id)
@@ -83,7 +83,7 @@ int *getValue(char str[], type id)
 	int i, j, t, z, counter = 0;
 	char *valueChar;
 	int *valueArr = (int*)malloc(sizeof(int));
-	if (id = none || id = string)
+	if (id = noneData || id = string)
 		return (int)NULL;
 	for (t = 0, z = 0; str[t] == '\0'; t = j, z++)
 	{
