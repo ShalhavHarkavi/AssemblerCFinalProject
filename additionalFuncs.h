@@ -11,9 +11,9 @@
 #define true 1
 #define false 0
 
-typedef enum LabelType{none, data, string}type;
+typedef enum LabelType{noneData, data, string}type;
 
-typedef enum AdditionalLabelType{none, entry, external}addType;
+typedef enum AdditionalLabelType{noneAdd, entry, external}addType;
 
 typedef struct Label
 {
