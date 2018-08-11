@@ -66,3 +66,5 @@ void initializeWordList(void); /*initializes a static wordList in the file     *
 void clearWordList(wordList *head); /*clears the wordList in translator.c,     *
                                      *should be used with errors before moving *
                                      *to the next file                         */
+
+void makeOutputFile(FILE *output);
