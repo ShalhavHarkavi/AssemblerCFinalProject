@@ -490,6 +490,11 @@ void makeOutputFile(FILE *output){
   int counter = 0;
   fprintf(output, "   %d      %d\n",IC+1, DC+1);
   while (head -> next != NULL) {
-    printf("%4d    %s\n", 100+counter, Word2CommaSlash(head -> Word));
+    wordList *temp = head;
+    free(head);
+    fprintf(output, "%4d    %s\n", 100+counter, Word2CommaSlash(temp -> Word));
+    head = temp -> next;
   }
+  fprintf(output, "%4d    %s\n", 100+counter, Word2CommaSlash(head -> Word));
+  free(head);
 }
