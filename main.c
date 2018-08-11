@@ -1,11 +1,11 @@
-/***********************************
-* By Matan Liber and Shalhav Harkavi
-***********************************/
+/************************************
+ *By Matan Liber and Shalhav Harkavi*
+ ************************************/
 
 #include "additionalFuncs.h"
 
 int assembler(char *fileName)
-{
+
 	char line[MAX_LINE_LENGTH/*Placeholder, will find solution for dynamic sized line later.*/], lineName[MAX_NAME_LENGTH];
 	FILE* input, output, entries, externals;
 	label *head = NULL, temp = NULL;
@@ -38,7 +38,7 @@ int assembler(char *fileName)
 		{
 			name = getLabelName(line);
 			temp -> name = lineName;
-			instruction(line, temp);
+			instruction(line+strlen(name)+1, temp);
 			temp -> next = (label*)malloc(sizeof(label));
 			temp = temp -> next;
 		}
@@ -64,7 +64,6 @@ int assembler(char *fileName)
 		fclose(externals);
 		remove(externals);
 	}
->>>>>>> master
 }
 
 int main(int argc, char *argv[])
