@@ -1,6 +1,6 @@
-/***********************************
-* By Matan Liber and Shalhav Harkavi
-***********************************/
+/************************************
+ *By Matan Liber and Shalhav Harkavi*
+ ************************************/
 
 #include "additionalFuncs.h"
 
@@ -39,7 +39,7 @@ int assembler(char *fileName)
 			/*isInstructionLabel: do it by if not data label*/
 			name = getLabelName(line);
 			temp -> name = lineName;
-			instruction(line, temp);
+			instruction(line+strlen(name)+1, temp);
 			temp -> next = (label*)malloc(sizeof(label));
 			temp = temp -> next;
 		}
@@ -65,7 +65,6 @@ int assembler(char *fileName)
 		fclose(externals);
 		remove(externals);
 	}
->>>>>>> master
 }
 
 int main(int argc, char *argv[])

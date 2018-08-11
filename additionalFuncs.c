@@ -1,6 +1,6 @@
-/***********************************
-*By Matan Liber and Shalhav Harkavi
-***********************************/
+/************************************
+ *By Matan Liber and Shalhav Harkavi*
+ ************************************/
 
 #include "additionalFuncs.h"
 

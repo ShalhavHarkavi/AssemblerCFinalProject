@@ -1,6 +1,6 @@
-/***********************************
-*By Matan Liber and Shalhav Harkavi*
-************************************/
+/************************************
+ *By Matan Liber and Shalhav Harkavi*
+ ************************************/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -46,53 +46,6 @@ addType getAddType(char str[]);
 int *getValue(char str[], type id);
 
 char *getString(char str[], type id);
-
-typedef enum {mov, cmp, add, sub, not, clr, lea,
-              inc, dec, jmp, bne, red, prn, jsr, rts, stop} opCode;
-
-typedef enum {r1, r2, r3, r4, r5, r6, r7, r8} registers;
-
-typedef enum {immidiate, direct, jmpWparam, directReg} addresing;
-
-typedef enum {absolute, external, relocatable} ARE;
-
-typedef struct {unsigned short int are:2;
-                unsigned short int Data:12;
-                } AREdataWord;
-
-typedef struct {unsigned short int data:14;} dataWord;
-
-typedef struct {unsigned short int are:2;
-                unsigned short int destination:6;
-                unsigned short int source:6;
-                } registerAdressWord;
-
-typedef struct {unsigned short int are:2;
-                unsigned short int destAddresing:2;
-                unsigned short int sourceAddresing:2;
-                unsigned short int op:4;
-                unsigned short int param1:2;
-                unsigned short int param2:2;
-                } instructionWord;
-
-typedef struct {unsigned short int are:2;
-                unsigned short int address:12;
-                } AREaddressWord;
-
-
-typedef union {AREaddressWord     AREaddress;
-               instructionWord    instruction;
-               registerAdressWord registerAddress;
-               dataWord           data;
-               AREdataWord        AREdata;
-               } word;
-
-typedef struct BinWordList {word Word;
-                            struct BinWordList *next;
-                            struct BinWordList *prev;
-                            unsigned int IC;
-                            unsigned int DC;
-                            } wordList;
 
 void error(char code);
 
