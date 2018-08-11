@@ -51,14 +51,14 @@ char *getLabelName(char str[])
 type getType(char str[])
 {
 	int i, j;
-	char type[7];
+	char dataType[7];
 	for (i = 0; str[i] != '.'; i++);
 	i++;
 	for (j = i; str[j] != ' ' || str[j] != '\t'; j++);
-	strncpy(type, (str + i), (j - i));
-	if (isEqual(type, "string" == true))
+	strncpy(dataType, (str + i), (j - i));
+	if (isEqual(dataType, "string") == true)
 		return string;
-	if (isEqual(type, "data" == true))
+	if (isEqual(dataType, "data") == true)
 		return data;
 	return noneData;
 }
@@ -71,9 +71,9 @@ addType getAddType(char str[])
 	i++;
 	for (j = i; str[j] != ' ' || str[j] != '\t'; j++);
 	strncpy(addType, (str + i), (j - i));
-	if (isEqual(type, "entry") == true)
+	if (isEqual(addType, "entry") == true)
 		return entry;
-	if (isEqual(type, "extern") == true)
+	if (isEqual(addType, "extern") == true)
 		return external;
 	return noneAdd;
 }
@@ -83,12 +83,12 @@ int *getValue(char str[], type id)
 	int i, j, t, z, counter = 0;
 	char *valueChar;
 	int *valueArr = (int*)malloc(sizeof(int));
-	if (id = noneData || id = string)
-		return (int)NULL;
+	if (id == noneData || id == string)
+		return NULL;
 	for (t = 0, z = 0; str[t] == '\0'; t = j, z++)
 	{
 		if (z > (sizeof(valueArr) / sizeof(int)))
-			realloc(valuArr, (sizeof(int) * z));
+			realloc(valueArr, (sizeof(int) * z));
 		for (i = t; !isdigit(str[i]); i++);
 		for (j = i; str[j] != ',' || str[j] != ' ' || str[j] != '\t'; j++);
 		if (str[j] == ',' && str[j + 1] == ',')
