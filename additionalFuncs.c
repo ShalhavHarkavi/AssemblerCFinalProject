@@ -19,7 +19,7 @@ int isEqual(char str1[], char str2[])
 	return true;
 }
 
-int isLegalName(str[])
+int isLegalName(char str[])
 {
 	if (isEqual(str, "r0") == true || isEqual(str, "r1") == true || isEqual(str, "r2") == true || isEqual(str, "r3") == true || isEqual(str, "r4") == true || isEqual(str, "r5") == true || isEqual(str, "r6") == true || isEqual(str, "r7") == true || isEqual(str, "mov") == true || isEqual(str, "cmp") == true || isEqual(str, "add") == true || isEqual(str, "sub") == true || isEqual(str, "not") == true || isEqual(str, "clr") == true || isEqual(str, "lea") == true || isEqual(str, "inc") == true || isEqual(str, "dec") == true || isEqual(str, "jmp") == true || isEqual(str, "bne") == true || isEqual(str, "red") == true || isEqual(str, "prn") == true || isEqual(str, "jsr") == true || isEqual(str, "rts") == true || isEqual(str, "stop") == true || isEqual(str, "data") == true || isEqual(str, "string") == true || isEqual(str, "entry") == true || isEqual(str, "extern") == true || isalpha(str[0]) == false)
 		return false;
@@ -51,14 +51,14 @@ char *getLabelName(char str[])
 type getType(char str[])
 {
 	int i, j;
-	char type[7];
+	char dataType[7];
 	for (i = 0; str[i] != '.'; i++);
 	i++;
 	for (j = i; str[j] != ' ' || str[j] != '\t'; j++);
-	strncpy(type, (str + i), (j - i));
-	if (isEqual(type, "string" == true))
+	strncpy(dataType, (str + i), (j - i));
+	if (isEqual(dataType, "string") == true)
 		return string;
-	if (isEqual(type, "data" == true))
+	if (isEqual(dataType, "data") == true)
 		return data;
 	return noneData;
 }
@@ -71,9 +71,9 @@ addType getAddType(char str[])
 	i++;
 	for (j = i; str[j] != ' ' || str[j] != '\t'; j++);
 	strncpy(addType, (str + i), (j - i));
-	if (isEqual(type, "entry") == true)
+	if (isEqual(addType, "entry") == true)
 		return entry;
-	if (isEqual(type, "extern") == true)
+	if (isEqual(addType, "extern") == true)
 		return external;
 	return noneAdd;
 }
@@ -83,12 +83,12 @@ int *getValue(char str[], type id)
 	int i, j, t, z, counter = 0;
 	char *valueChar;
 	int *valueArr = (int*)malloc(sizeof(int));
-	if (id = noneData || id = string)
-		return (int)NULL;
+	if (id == noneData || id == string)
+		return NULL;
 	for (t = 0, z = 0; str[t] == '\0'; t = j, z++)
 	{
 		if (z > (sizeof(valueArr) / sizeof(int)))
-			realloc(valuArr, (sizeof(int) * z));
+			realloc(valueArr, (sizeof(int) * z));
 		for (i = t; !isdigit(str[i]); i++);
 		for (j = i; str[j] != ',' || str[j] != ' ' || str[j] != '\t'; j++);
 		if (str[j] == ',' && str[j + 1] == ',')
@@ -129,4 +129,57 @@ int isInstructionLabel(char str[])
 	if (isLabel(str) == true && isDataLabel(str) == false)
 		return true;
 	return false;
+}
+
+void clearLinesMap(lines *head) {
+	lines *temp = head;
+	if (temp -> next != NULL)
+		head = temp -> next;
+	free(temp);
+}
+
+char *getName(char *line, char Name[]) {
+	if (isLabel(line)) {
+		char *labelName = getLabelName(line);
+		line += strlen(labelName);
+		free(labelName);
+	}
+	line = skipBlanks(skipBlanks(line) + 4); /*skip blanks and name of op*/
+	if (*line == '\n' || *line == '\0')
+		return 0;
+	else if (*line == '#')
+		while (*(line++) != ',')
+			if (*line == '\0')
+				return 0;
+	else if (*line == '(')
+		return getName(line + 1, Name);
+	else {
+		int i;
+		for (i=0; isalnum(*(line + i)); i++)
+			;
+		if (i < MAX_NAME_LENGTH) {
+			strncpy(Name, line, i);
+			if (isLegalName(Name)) {
+				line++;
+				return 1;
+			}
+			else
+				return 0;
+		}
+		else
+			return 0;
+	}
+	return getName(line, Name);
+}
+
+
+/* not very efficient maybe if there's time investigate using a hash table or 
+a sorted structure for the labels */
+label *findLabel(char *str, label *head) {
+	if (!strcmp(head -> name, str))
+		return head;
+	else if (head -> next == NULL)
+		return NULL;
+	else
+		findLabel(str, head -> next);
 }

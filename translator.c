@@ -58,28 +58,28 @@ typedef union {unsigned short int twelveBit:12;
 static unsigned int IC; /* Instruction Counter */
 static unsigned int DC; /* Data Counter */
 static wordList *instructionHead; /*pointer to the first instruction*/
-static wordList *currentInst;     /*pointer to the last inserted instruction*/              
+static wordList *currentInst;     /*pointer to the last inserted instruction*/
 static wordList *dataHead;        /*pointer to the first piece of data*/
-static wordList *currentData;     /*pointer to the last inserted data word*/         
+static wordList *currentData;     /*pointer to the last inserted data word*/
 static void insertDataWord(word wrd); /* insert a data word to the end of the data list*/
 static void insertinstructionWord(word wrd); /* insert a data word to the end of the data list*/
 
 static opCode whatOpCode(char *str); /*identify op and remove it*/
 /*create a data word if immidiate data or return an illegal word with are=3*/
-static word isImmidiate(char *str); 
+static word isImmidiate(char *str);
 /*create a register word if str is a register or return an illegal word with are=3*/
-static word isRegister(char *str); 
+static word isRegister(char *str);
 /*create a label address word if str is a label name (can be External) or an illegal word with are=3 if not */
-static word isDirect(char *str); 
+static word isDirect(char *str);
 /*binary data words with or without ARE prefix*/
-static word makeDataWords(ARE *are, int); 
+static word makeDataWords(ARE *are, int);
 /*binary address word either register or label*/
-static int isJmpWParams(char *str, word words[], opCode op); /*create words for jump with parameters */ 
+static int isJmpWParams(char *str, word words[], opCode op); /*create words for jump with parameters */
 /*instruction (first) word*/
 static word makeInstruction(ARE are, Addressing dest, Addressing source, opCode opcode, Addressing param1, Addressing param2);
-static word makeAdressWord(ARE are, registers *regDest, registers *regSource, unsigned char *address); 
+static word makeAdressWord(ARE are, registers *regDest, registers *regSource, unsigned char *address);
 static bitData TwosComplement(unsigned int data, char bits);
-static char *skipBlanks(char *str); /*return pointer to first non-blank beginnig of str*/
+static void updateLine(lines *currentLine);  /*update the memory position of line*/
 
 void initializeWordList(void){
   wordList *instList = (wordList*)malloc(sizeof(wordList));
@@ -104,19 +104,24 @@ void clearWordList(){
   free(head);
 }
 
-void Data(label *labelData)
+void Data(label *labelData, lines *currentLine)
 {
   int i, length;
+  labelData -> adress = DC;
   if (labelData -> id == data) {
     length = sizeof(labelData -> value) / sizeof(int); /*Size of value array*/
     for (i = 0; i < length; i++) {
       insertDataWord(makeDataWords(NULL, (labelData -> value)[i]));
+      if (i == 0)
+        updateLine(currentLine);
     }
   }
   else if (labelData -> id == string) {
     length == strlen(labelData -> string) + 1; /*Length of word, +1 for '\0'*/
     for (i = 0; i < length; i++) {
       insertDataWord(makeDataWords(NULL, (int) (labelData -> string)[i]));
+      if (i == 0)
+        updateLine(currentLine);
     }
   }
 }
@@ -155,7 +160,7 @@ word isImmidiate(char *str) {
   }
   else
     wrd.AREdata.are = 3;
-  return wrd; 
+  return wrd;
 }
 
 word isRegister(char *str) {
@@ -167,7 +172,7 @@ word isRegister(char *str) {
   }
   else
     wrd.AREdata.are = 3;
-  return wrd; 
+  return wrd;
 }
 
 word isDirect(char *str) {
@@ -185,7 +190,7 @@ word isDirect(char *str) {
   else
     wrd.AREdata.are = 3;
   free(labelName);
-  return wrd; 
+  return wrd;
 }
 
 int isJmpWParams(char *str, word words[], opCode op) {
@@ -193,7 +198,7 @@ int isJmpWParams(char *str, word words[], opCode op) {
   char *working = str;
   if ((words[1] = isDirect(working)).AREdata.are == 3)
     error(1);
-  else 
+  else
     numOfWords = 2;
   Addressing param1, param2;
   if (*working++ == '(') {
@@ -235,7 +240,7 @@ int isJmpWParams(char *str, word words[], opCode op) {
   return numOfWords;
 }
 
-void instruction(char *str, label* labelInstruction) {
+void instruction(char *str, label *labelInstruction, lines *currentLine) {
   char *working = skipBlanks(str);
   opCode op=whatOpCode(working);
   if (op < 0)
@@ -292,7 +297,7 @@ void instruction(char *str, label* labelInstruction) {
       working = skipBlanks(working+3);
       if ((words[1] = isDirect(working)).AREdata.are != 3)
         numOfWords = 2;
-      else 
+      else
         error(1);
       working = skipBlanks(working);
       if (*working != ',')
@@ -347,7 +352,7 @@ void instruction(char *str, label* labelInstruction) {
         words[0] = makeInstruction(Absolute, direct, immidiate, op, immidiate, immidiate);
         numOfWords = 2;
       }
-      else if ((numOfWords = isJmpWParams(working, words, op))) 
+      else if ((numOfWords = isJmpWParams(working, words, op)))
         ;
       else if ((words[1] = isRegister(working)).AREdata.are != 3) {
         words[0] = makeInstruction(Absolute, directReg, immidiate, op, immidiate, immidiate);
@@ -359,9 +364,14 @@ void instruction(char *str, label* labelInstruction) {
 
     if (skipBlanks(working) != '\0')
       error(1);
-    for (int i=0; i < numOfWords; i++)
+    if (labelInstruction != NULL)
+      labelInstruction -> adress = IC;
+    for (int i=0; i < numOfWords; i++) {
       insertinstructionWord(words[i]);
-  } 
+      if (i == 0)
+        updateLine(currentLine);
+    }
+  }
 }
 
 static word makeAdressWord(ARE are, registers *regDest, registers *regSource, unsigned char *address){
@@ -411,14 +421,14 @@ word makeDataWords(ARE *Are, signed int num){
   word newWord;
   if (Are==NULL) {
     if (num < 0)
-      newWord.dword.DATA = (unsigned short int)(TwosComplement((unsigned int) -num,14).fourteenBit);  
+      newWord.dword.DATA = (unsigned short int)(TwosComplement((unsigned int) -num,14).fourteenBit);
     else
       newWord.dword.DATA = num;
-  }  
-  else {  
+  }
+  else {
     newWord.AREdata.are = *Are;
     if (num < 0)
-      newWord.AREdata.DATA = (unsigned short int)(TwosComplement((unsigned int) -num,12).twelveBit);  
+      newWord.AREdata.DATA = (unsigned short int)(TwosComplement((unsigned int) -num,12).twelveBit);
     else
       newWord.AREdata.DATA = num;
   }
@@ -485,16 +495,38 @@ word makeInstruction(ARE Are, Addressing dest, Addressing source, opCode opcode,
   return wrd;
 }
 
-void makeOutputFile(FILE *output){
-  wordList *head = instructionHead;
-  int counter = 0;
-  fprintf(output, "   %d      %d\n",IC+1, DC+1);
-  while (head -> next != NULL) {
-    wordList *temp = head;
-    free(head);
-    fprintf(output, "%4d    %s\n", 100+counter, Word2CommaSlash(temp -> Word));
-    head = temp -> next;
+void updateLine(lines *currentLine) {
+  if (currentLine -> ICDC == ICline) {
+    currentLine -> instWord = currentInst;
+    currentLine -> position = IC;
   }
-  fprintf(output, "%4d    %s\n", 100+counter, Word2CommaSlash(head -> Word));
-  free(head);
+  else if (currentLine -> ICDC == DCline) {
+    currentLine -> instWord = currentData;
+    currentLine -> position = DC;
+  }
+}
+
+void updateLineList(lines *head){
+  if (head -> ICDC == DCline)
+    head -> position += IC;
+  if (head -> next != NULL)
+    updateLineList(head -> next);
+}
+
+unsigned char hasDirect(void *instWrdAdd) {
+  instructionWord WRD = ((wordList*)instWrdAdd) -> Word;
+  unsigned char numOfNames = 0;
+  if (WRD.destAddressing == direct || WRD.destAddressing == jmpWparam)
+    numOfNames++;
+  if (WRD.sourceAddressing == direct)
+    numOfNames++;
+  if (WRD.param1 == direct)
+    numOfNames++;
+  if (WRD.param2 == direct)
+    numOfNames++;
+  return numOfNames;
+}
+
+void updateAddress(label *nameLabel, void *instWrdAdd, unsigned int pos, int nameNumber) {
+
 }
