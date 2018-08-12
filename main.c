@@ -3,12 +3,36 @@
  ************************************/
 
 #include "additionalFuncs.h"
+static void secondPass(FILE *input, label *head, lines *linesMapHead);
+
+void secondPass(FILE *input, label *head, lines *linesMapHead) {
+	unsigned char numOfNames;
+	if (numOfNames = hasDirect(linesMapHead -> instWord)) {
+		char line[MAX_LINE_LENGTH];
+		fseek(input, linesMapHead -> filePos, SEEK_SET);
+		fgets(line, MAX_LINE_LENGTH, input);
+		for (int i=0; i<numOfNames; i++) {
+			char Name[MAX_NAME_LENGTH];
+			label *nameLabel;
+			if (getName(line, Name))
+				if (nameLabel = findLabel(Name, head))
+					updateAddress(nameLabel, linesMapHead -> instWord, linesMapHead -> position, i);
+			else
+				error(10);
+		}
+	}
+	if (linesMapHead -> next != NULL)
+		secondPass(input, head, linesMapHead -> next);
+}
 
 int assembler(char *fileName)
-
+{
 	char line[MAX_LINE_LENGTH/*Placeholder, will find solution for dynamic sized line later.*/], lineName[MAX_NAME_LENGTH];
 	FILE* input, output, entries, externals;
 	label *head = NULL, temp = NULL;
+	unsigned int lineCounter = 0;
+	lines *linesMapHead = (lines)malloc(sizeof(lines));
+	lines *currentLine = linesMapHead;
 	input = fopen(strcat(fileName, ".as"), "r");
 	if (input == NULL)
 	{
@@ -22,8 +46,11 @@ int assembler(char *fileName)
 	temp = head;
 	while (fgets(line, MAX_LINE_LENGTH, input) != NULL)
 	{
+		currentLine -> lineNum = lineCounter;
+		currentLine -> filePos = ftell(input) - strlen(line) -1;
 		if (isLabel(line) == true)
 		{
+			currentLine -> ICDC = DCline;
 			name = getLabelName(line);
 			temp -> name = lineName;
 			temp.id = getType(line);
@@ -31,20 +58,32 @@ int assembler(char *fileName)
 			temp -> value = getValue(line, head.id);
 			temp -> string = getString(line, head.id);
 			temp -> next = (label*)malloc(sizeof(label));
-			Data(temp); /*Creates a word/multiple words for the stored datas*/
+			Data(temp, currentLine); /*Creates a word/multiple words for the stored datas*/
 			temp = temp -> next;
 		}
 		else if (isInstructionLabel(line) == true)
 		{
+			currentLine -> ICDC = ICline;
 			name = getLabelName(line);
 			temp -> name = lineName;
-			instruction(line+strlen(name)+1, temp);
+			instruction(line+strlen(name)+1, temp, currentLine);
 			temp -> next = (label*)malloc(sizeof(label));
 			temp = temp -> next;
 		}
 		else
-			instruction(line, NULL);
+		{
+			currentLine -> ICDC = ICline;
+			instruction(line, NULL, currentLine);
+		}
+		lineCounter++;
+		lines *newLine = (lines)malloc(sizeof(lines));
+		currentLine -> next = newLine;
+		newLine -> next = NULL;
+		currentLine =  newLine;
 	}
+	updateLineList(linesMapHead);
+	secondPass(input, head, linesMapHead);
+	fclose(input);
 	temp = head;
 	while (temp != NULL)
 	{

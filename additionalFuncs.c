@@ -130,3 +130,56 @@ int isInstructionLabel(char str[])
 		return true;
 	return false;
 }
+
+void clearLinesMap(lines *head) {
+	lines *temp = head;
+	if (temp -> next != NULL)
+		head = temp -> next;
+	free(temp);
+}
+
+char *getName(char *line, char Name[]) {
+	if (isLabel(line)) {
+		char *labelName = getLabelName(line);
+		line += strlen(labelName);
+		free(labelName);
+	}
+	line = skipBlanks(skipBlanks(line) + 4); /*skip blanks and name of op*/
+	if (*line == '\n' || *line == '\0')
+		return 0;
+	else if (*line == '#')
+		while (*(line++) != ',')
+			if (*line == '\0')
+				return 0;
+	else if (*line == '(')
+		return getName(line + 1, Name);
+	else {
+		int i;
+		for (i=0; isalnum(*(line + i)); i++)
+			;
+		if (i < MAX_NAME_LENGTH) {
+			strncpy(Name, line, i);
+			if (isLegalName(Name)) {
+				line++;
+				return 1;
+			}
+			else
+				return 0;
+		}
+		else
+			return 0;
+	}
+	return getName(line, Name);
+}
+
+
+/* not very efficient maybe if there's time investigate using a hash table or 
+a sorted structure for the labels */
+label *findLabel(char *str, label *head) {
+	if (!strcmp(head -> name, str))
+		return head;
+	else if (head -> next == NULL)
+		return NULL;
+	else
+		findLabel(str, head -> next);
+}
