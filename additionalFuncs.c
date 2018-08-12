@@ -210,3 +210,7 @@ void error(errorCode errorType)
 	if (errorType == syntaxError)
 		fprintf(stderr, "A SYNTAX ERROR HAS BEEN DETECTED /*Maybe specify line number? Need to think about how to do it.*/.");
 }
+
+int isblank(char c) {
+	return (c == ' ' || c == '\t') ? 1 : 0;
+}
