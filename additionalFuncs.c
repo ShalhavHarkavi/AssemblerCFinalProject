@@ -183,3 +183,11 @@ label *findLabel(char *str, label *head) {
 	else
 		findLabel(str, head -> next);
 }
+
+void error(errorCode errorType)
+{
+	if (errorType == fopenError)
+		fprintf(stderr, "AN ERROR OCCURED WHILE TRYING TO OPEN THE INPUT FILE. /*Maybe specify which input file? Need to think about how to do it.*/");
+	if (errorType == syntaxError)
+		fprintf(stderr, "A SYNTAX ERROR HAS BEEN DETECTED /*Maybe specify line number? Need to think about how to do it.*/.");
+}
