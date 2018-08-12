@@ -60,7 +60,7 @@ int *getValue(char str[], type id);
 
 char *getString(char str[], type id);
 
-void error(char code);
+void error(errorCode errorType);
 
 /*public function for non-ARE data words creation*/
 void Data(label* labelData, lines *currentLine);
