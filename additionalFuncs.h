@@ -11,6 +11,8 @@
 #define true 1
 #define false 0
 
+typedef enum ErrorCode{fopenError, syntaxError/*Add more error types here*/}errorCode;
+
 typedef enum LabelType{noneData, data, string}type;
 
 typedef enum AdditionalLabelType{noneAdd, entry, external}addType;
