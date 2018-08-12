@@ -496,25 +496,25 @@ word makeInstruction(ARE Are, Addressing dest, Addressing source, opCode opcode,
 }
 
 void updateLine(lines *currentLine) {
-  if (currentLine -> ICDC == ICline) {
+  if (currentLine -> memType == ICline) {
     currentLine -> instWord = currentInst;
     currentLine -> position = IC;
   }
-  else if (currentLine -> ICDC == DCline) {
+  else if (currentLine -> memType == DCline) {
     currentLine -> instWord = currentData;
     currentLine -> position = DC;
   }
 }
 
 void updateLineList(lines *head){
-  if (head -> ICDC == DCline)
+  if (head -> memType == DCline)
     head -> position += IC;
   if (head -> next != NULL)
     updateLineList(head -> next);
 }
 
 unsigned char hasDirect(void *instWrdAdd) {
-  instructionWord WRD = ((wordList*)instWrdAdd) -> Word;
+  instructionWord WRD = (((wordList*)instWrdAdd) -> Word).instruction;
   unsigned char numOfNames = 0;
   if (WRD.destAddressing == direct || WRD.destAddressing == jmpWparam)
     numOfNames++;

@@ -31,6 +31,17 @@ typedef struct Label
   struct Label *next;
 }label;
 
+typedef enum{ICline, DCline} ICDC;
+
+typedef struct LineMap {unsigned int lineNum;     /*source file line number    */
+                        unsigned long int filePos;/*source file line position  */
+                        void *instWord;           /*pinter to memory map       */
+                        unsigned int position;    /*address in memory map      */
+                        ICDC memType;             /*part of memory map (IC/DC) */
+                        struct LineMap *next;
+                       }lines;
+
+
 int isEqual(char str1[], char str2[]);
 
 int isLegalName(char str[]);
@@ -68,17 +79,6 @@ void clearWordList(); /*clears the wordList in translator.c, should be used if *
                        *errors occur before moving to the next file            */
 
 void makeOutputFile(FILE *output);
-
-typedef enum{ICline, DCline} ICDC;
-
-typedef struct LineMap {unsigned int lineNum;     /*source file line number    */
-                        unsigned long int filePos;/*source file line position  */
-                        void *instWord;           /*pinter to memory map       */
-                        unsigned int position;    /*address in memory map      */
-                        ICDC memType;             /*part of memory map (IC/DC) */
-                        struct LineMap *next;
-                       } lines;
-
 void updateLineList(lines *head);     /*add IC offset to all DC lines          */
 void clearLinesMap(lines *head);      /*clear lines memory mapping list        */
 unsigned char hasDirect(void *instWrdAdd);/*# names of labels from word at pos */
