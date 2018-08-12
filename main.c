@@ -129,5 +129,8 @@ int assembler(char *fileName)
 
 int main(int argc, char *argv[])
 {
-  /*NEED HERE TO ACTIVATE ASSEMBLER UNTIL FINISHED WITH ARGV BY SENDING THE NAMES ONE BY ONE*/
+	int i;
+	for (i = 1; i < (argc - 1); i++)
+		assembler(argv[i]);
+	return 0;
 }

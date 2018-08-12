@@ -12,6 +12,8 @@
 #define false 0
 #define AddressBase 100
 
+typedef enum ErrorCode{fopenError, syntaxError/*Add more error types here*/}errorCode;
+
 typedef enum LabelType{noneData, data, string}type;
 
 typedef enum AdditionalLabelType{noneAdd, entry, external}addType;
@@ -54,7 +56,7 @@ int *getValue(char str[], type id);
 
 char *getString(char str[], type id);
 
-void error(char code);
+void error(errorCode errorType);
 
 /*public function for non-ARE data words creation*/
 void Data(label* labelData, lines *currentLine);
