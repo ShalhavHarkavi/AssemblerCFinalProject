@@ -13,27 +13,27 @@ typedef enum {immidiate, direct, jmpWparam, directReg} Addressing;
 
 typedef enum {Absolute, External, Relocatable} ARE;
 
-typedef struct {unsigned short int are:2;
-                unsigned short int DATA:12;
+typedef struct {unsigned int are:2;
+                unsigned int DATA:12;
                 } AREdataWord;
 
-typedef struct {unsigned short int DATA:14;} dataWord;
+typedef struct {unsigned int DATA:14;} dataWord;
 
-typedef struct {unsigned short int are:2;
-                unsigned short int destination:6;
-                unsigned short int source:6;
+typedef struct {unsigned int are:2;
+                unsigned int destination:6;
+                unsigned int source:6;
                 } registerAdressWord;
 
-typedef struct {unsigned short int are:2;
-                unsigned short int destAddressing:2;
-                unsigned short int sourceAddressing:2;
-                unsigned short int op:4;
-                unsigned short int param1:2;
-                unsigned short int param2:2;
+typedef struct {unsigned int are:2;
+                unsigned int destAddressing:2;
+                unsigned int sourceAddressing:2;
+                unsigned int op:4;
+                unsigned int param1:2;
+                unsigned int param2:2;
                 } instructionWord;
 
-typedef struct {unsigned short int are:2;
-                unsigned short int address:12;
+typedef struct {unsigned int are:2;
+                unsigned int address:12;
                 } AREaddressWord;
 
 
@@ -48,8 +48,8 @@ typedef struct WordList {word Word;
                          struct WordList *next;
                          } wordList;
 
-typedef union {unsigned short int twelveBit:12;
-               unsigned short int fourteenBit:14;
+typedef union {unsigned int twelveBit:12;
+               unsigned int fourteenBit:14;
               } bitData;
 
 /*These are actually one linked list with the last instruction's next pointing *
@@ -117,7 +117,7 @@ void Data(label *labelData, lines *currentLine)
     }
   }
   else if (labelData -> id == string) {
-    length == strlen(labelData -> string) + 1; /*Length of word, +1 for '\0'*/
+    length = strlen(labelData -> string) + 1; /*Length of word, +1 for '\0'*/
     for (i = 0; i < length; i++) {
       insertDataWord(makeDataWords(NULL, (int) (labelData -> string)[i]));
       if (i == 0)
@@ -196,11 +196,11 @@ word isDirect(char *str) {
 int isJmpWParams(char *str, word words[], opCode op) {
   int numOfWords = 0;
   char *working = str;
+  Addressing param1;
   if ((words[1] = isDirect(working)).AREdata.are == 3)
     error(1);
   else
     numOfWords = 2;
-  Addressing param1, param2;
   if (*working++ == '(') {
     if ((words[2] = isImmidiate(working)).AREdata.are != 3) {
       param1 = immidiate;
@@ -247,8 +247,9 @@ void instruction(char *str, label *labelInstruction, lines *currentLine) {
     error(0);
   else {
     word words[4];
+    int i;
     unsigned char numOfWords = 0;
-    Addressing destAddr, sourceAddr, param1, param2;
+    Addressing sourceAddr;
     if (op>=rts) { /* first group no operands */
       words[0] = makeInstruction(Absolute, immidiate, immidiate, op, immidiate, immidiate);
       numOfWords = 1;
@@ -366,7 +367,7 @@ void instruction(char *str, label *labelInstruction, lines *currentLine) {
       error(1);
     if (labelInstruction != NULL)
       labelInstruction -> adress = IC;
-    for (int i=0; i < numOfWords; i++) {
+    for (i = 0; i < numOfWords; i++) {
       insertinstructionWord(words[i]);
       if (i == 0)
         updateLine(currentLine);
@@ -374,9 +375,9 @@ void instruction(char *str, label *labelInstruction, lines *currentLine) {
   }
 }
 
-static word makeAdressWord(ARE are, registers *regDest, registers *regSource, unsigned int *address){
+static word makeAdressWord(ARE Are, registers *regDest, registers *regSource, unsigned int *address){
   word wrd;
-  wrd.AREaddress.are;
+  wrd.AREaddress.are = Are;
   if (address == NULL){
       wrd.registerAddress.destination = *regDest;
     if (regSource != NULL)
@@ -400,13 +401,14 @@ bitData TwosComplement (unsigned int data, char bits) {
       myNum.fourteenBit = data;
       myNum.fourteenBit = ~myNum.fourteenBit + 1;
       break;
-  return myNum;
   }
+  return myNum;
 }
 
 char *Word2CommaSlash(word wrd){
   char *comSlWord = (char*)malloc(15*sizeof(char));
-  for (int i=13;i>=14;i--){
+  int i;
+  for (i = 13; i >= 14; i--){
     if (wrd.dword.DATA % 2)
       *(comSlWord + i) = '1';
     else
@@ -421,14 +423,14 @@ word makeDataWords(ARE *Are, signed int num){
   word newWord;
   if (Are==NULL) {
     if (num < 0)
-      newWord.dword.DATA = (unsigned short int)(TwosComplement((unsigned int) -num,14).fourteenBit);
+      newWord.dword.DATA = (unsigned int)(TwosComplement((unsigned int) -num,14).fourteenBit);
     else
       newWord.dword.DATA = num;
   }
   else {
     newWord.AREdata.are = *Are;
     if (num < 0)
-      newWord.AREdata.DATA = (unsigned short int)(TwosComplement((unsigned int) -num,12).twelveBit);
+      newWord.AREdata.DATA = (unsigned int)(TwosComplement((unsigned int) -num,12).twelveBit);
     else
       newWord.AREdata.DATA = num;
   }
@@ -437,7 +439,8 @@ word makeDataWords(ARE *Are, signed int num){
 
 opCode whatOpCode(char *str){
   char op[4];
-  for (int i=0;i<3;i++)
+  int i;
+  for (i = 0; i < 3; i++)
     *(op+i) = *(str+i);
   op[3]='\0';
   if (!strcmp(op, "mov"))
@@ -470,9 +473,12 @@ opCode whatOpCode(char *str){
     return jsr;
   else if (!strcmp(op, "rts"))
     return rts;
-  else if (!strcmp(op, "sto"))
+  else if (!strcmp(op, "sto")) {
     if (*(str+3) == 'p')
       return stop;
+    else
+      return notAnOp;
+  }
   else
     return notAnOp;
 }
@@ -540,7 +546,7 @@ void updateAddress(label *nameLabel, void *instWrdAdd, unsigned int pos) {
     }
     else {
       label *nextNameLabel;
-      if (nextNameLabel = findLabel(nameLabel -> name, nameLabel))
+      if ((nextNameLabel = findLabel(nameLabel -> name, nameLabel)))
         updateAddress(nextNameLabel, lblWRD, pos);
       else {
         label *newLabel = (label*)malloc(sizeof(label));
