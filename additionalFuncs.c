@@ -183,3 +183,21 @@ label *findLabel(char *str, label *head) {
 	else
 		findLabel(str, head -> next);
 }
+
+void updateEntries(label *head, label *current) {
+	if (current -> addId == entry && current -> adress == -1) {
+		label *nameLabel;
+		while (nameLabel = findLabel(current -> name, head)) {
+			if (nameLabel -> addId != noneAdd)
+				continue;
+			else {
+				current -> adress = nameLabel -> adress;
+				break;
+			}
+		}
+		if (nameLabel == NULL)
+			error(12);
+	}
+	if (current -> next != NULL)
+		updateEntries(head, current -> next);
+}

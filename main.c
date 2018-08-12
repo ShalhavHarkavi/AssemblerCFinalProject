@@ -14,15 +14,26 @@ void secondPass(FILE *input, label *head, lines *linesMapHead) {
 		for (int i=0; i<numOfNames; i++) {
 			char Name[MAX_NAME_LENGTH];
 			label *nameLabel;
-			if (getName(line, Name))
-				if (nameLabel = findLabel(Name, head))
-					updateAddress(nameLabel, linesMapHead -> instWord, linesMapHead -> position, i);
+			if (getName(line, Name)) {
+				nameLabel = head;
+				while (nameLabel = findLabel(Name, nameLabel)) {
+					if (nameLabel -> addId == entry)
+						continue;
+					else {
+						updateAddress(nameLabel, linesMapHead -> instWord, linesMapHead -> position);
+						break;
+					}
+				}
+				if (nameLabel == NULL)
+					error(12);
+			}
 			else
 				error(10);
 		}
 	}
 	if (linesMapHead -> next != NULL)
 		secondPass(input, head, linesMapHead -> next);
+	updateEntries(head, head);
 }
 
 int assembler(char *fileName)
@@ -31,7 +42,7 @@ int assembler(char *fileName)
 	FILE* input, output, entries, externals;
 	label *head = NULL, temp = NULL;
 	unsigned int lineCounter = 0;
-	lines *linesMapHead = (lines)malloc(sizeof(lines));
+	lines *linesMapHead = (lines*)malloc(sizeof(lines));
 	lines *currentLine = linesMapHead;
 	input = fopen(strcat(fileName, ".as"), "r");
 	if (input == NULL)
@@ -50,7 +61,6 @@ int assembler(char *fileName)
 		currentLine -> filePos = ftell(input) - strlen(line) -1;
 		if (isLabel(line) == true)
 		{
-			currentLine -> ICDC = DCline;
 			name = getLabelName(line);
 			temp -> name = lineName;
 			temp.id = getType(line);
@@ -58,30 +68,42 @@ int assembler(char *fileName)
 			temp -> value = getValue(line, head.id);
 			temp -> string = getString(line, head.id);
 			temp -> next = (label*)malloc(sizeof(label));
-			Data(temp, currentLine); /*Creates a word/multiple words for the stored datas*/
+			if (temp.addId == noneAdd) {
+				currentLine -> memType = DCline;
+				Data(temp, currentLine); /*Creates a word/multiple words for the stored datas*/
+				lines *newLine = (lines)malloc(sizeof(lines));
+				currentLine -> next = newLine;
+				newLine -> next = NULL;
+				currentLine =  newLine;
+			}
 			temp = temp -> next;
 		}
 		else if (isInstructionLabel(line) == true)
 		{
-			currentLine -> ICDC = ICline;
+			currentLine -> memType = ICline;
 			name = getLabelName(line);
 			temp -> name = lineName;
 			instruction(line+strlen(name)+1, temp, currentLine);
 			temp -> next = (label*)malloc(sizeof(label));
 			temp = temp -> next;
+			lines *newLine = (lines)malloc(sizeof(lines));
+			currentLine -> next = newLine;
+			newLine -> next = NULL;
+			currentLine =  newLine;
 		}
 		else
 		{
-			currentLine -> ICDC = ICline;
+			currentLine -> memType = ICline;
 			instruction(line, NULL, currentLine);
+			lines *newLine = (lines)malloc(sizeof(lines));
+			currentLine -> next = newLine;
+			newLine -> next = NULL;
+			currentLine =  newLine;
 		}
 		lineCounter++;
-		lines *newLine = (lines)malloc(sizeof(lines));
-		currentLine -> next = newLine;
-		newLine -> next = NULL;
-		currentLine =  newLine;
 	}
 	updateLineList(linesMapHead);
+	updateLabelAddress(head);
 	secondPass(input, head, linesMapHead);
 	fclose(input);
 	temp = head;

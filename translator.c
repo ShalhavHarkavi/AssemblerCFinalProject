@@ -77,7 +77,7 @@ static word makeDataWords(ARE *are, int);
 static int isJmpWParams(char *str, word words[], opCode op); /*create words for jump with parameters */
 /*instruction (first) word*/
 static word makeInstruction(ARE are, Addressing dest, Addressing source, opCode opcode, Addressing param1, Addressing param2);
-static word makeAdressWord(ARE are, registers *regDest, registers *regSource, unsigned char *address);
+static word makeAdressWord(ARE are, registers *regDest, registers *regSource, unsigned int *address);
 static bitData TwosComplement(unsigned int data, char bits);
 static void updateLine(lines *currentLine);  /*update the memory position of line*/
 
@@ -374,7 +374,7 @@ void instruction(char *str, label *labelInstruction, lines *currentLine) {
   }
 }
 
-static word makeAdressWord(ARE are, registers *regDest, registers *regSource, unsigned char *address){
+static word makeAdressWord(ARE are, registers *regDest, registers *regSource, unsigned int *address){
   word wrd;
   wrd.AREaddress.are;
   if (address == NULL){
@@ -508,7 +508,9 @@ void updateLine(lines *currentLine) {
 
 void updateLineList(lines *head){
   if (head -> memType == DCline)
-    head -> position += IC;
+    head -> position += IC + AddressBase;
+  else
+    head -> position += AddressBase;
   if (head -> next != NULL)
     updateLineList(head -> next);
 }
@@ -527,6 +529,44 @@ unsigned char hasDirect(void *instWrdAdd) {
   return numOfNames;
 }
 
-void updateAddress(label *nameLabel, void *instWrdAdd, unsigned int pos, int nameNumber) {
-  
+void updateAddress(label *nameLabel, void *instWrdAdd, unsigned int pos) {
+  wordList *lblWRD = (wordList*)instWrdAdd;
+  while ((lblWRD -> Word).AREaddress.are != 3)
+    lblWRD = lblWRD -> next;
+  if (nameLabel -> addId == external) {
+    if (nameLabel -> adress == -1) {
+      nameLabel -> adress = pos;
+      lblWRD -> Word = makeAdressWord(External, NULL, NULL, NULL);
+    }
+    else {
+      label *nextNameLabel;
+      if (nextNameLabel = findLabel(nameLabel -> name, nameLabel))
+        updateAddress(nextNameLabel, lblWRD, pos);
+      else {
+        label *newLabel = (label*)malloc(sizeof(label));
+        strncpy(newLabel -> name, nameLabel -> name, MAX_NAME_LENGTH);
+        newLabel  -> adress = pos;
+        newLabel  -> id     = nameLabel -> id;
+        newLabel  -> addId  = nameLabel -> addId;
+        newLabel  -> next   = nameLabel -> next;
+        nameLabel -> next   = newLabel;
+        lblWRD -> Word = makeAdressWord(External, NULL, NULL, NULL);
+      }
+    }
+  }
+  else if (nameLabel -> addId == noneAdd) 
+    lblWRD -> Word = makeAdressWord(Relocatable, NULL, NULL, &pos);
+}
+
+void updateLabelAddress(label *head) {
+  if (head -> addId == noneAdd){
+    if (head -> id == noneData)
+      head -> adress += AddressBase;
+    else
+      head -> adress += IC + AddressBase;
+  }
+  else
+    head -> adress = -1;
+  if (head -> next != NULL)
+    updateLabelAddress(head -> next);
 }
