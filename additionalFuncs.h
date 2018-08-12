@@ -10,6 +10,7 @@
 #define MAX_LINE_LENGTH 82
 #define true 1
 #define false 0
+#define AddressBase 100
 
 typedef enum ErrorCode{fopenError, syntaxError/*Add more error types here*/}errorCode;
 
@@ -20,12 +21,7 @@ typedef enum AdditionalLabelType{noneAdd, entry, external}addType;
 typedef struct Label
 {
   char name[MAX_NAME_LENGTH];
-  int adress; /*Relative position of this label's position from the relevant   *
-               *type's head i.e the first data or string label will have the   *
-               *address 0 as well as the first instruction label this way there*
-               *is no need to update data labels when new instruction labels   *
-               *are created (which will have a smaller address since all the   *
-               *instructions are entered into the output file before the data. */
+  int adress;
   type id;
   addType addId;
   signed int *value;
@@ -91,4 +87,8 @@ label *findLabel(char *str, label *head);
 char *skipBlanks(char *str);/*return pointer to first non-blank beginnig of str*/
 
 /*update relevant addresses in the second pass of the assembler*/
-void updateAddress(label *nameLabel, void *instWrdAdd, unsigned int pos, int nameNumber);
+void updateAddress(label *nameLabel, void *instWrdAdd, unsigned int pos);
+void updateLabelAddress(label *head); /*update addresses for labels linked list*/
+
+/*update all entry labels with the address of the corresponding instruction label*/
+void updateEntries(label *head, label *current); 
