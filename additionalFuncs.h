@@ -73,7 +73,7 @@ void initializeWordList(void); /*initializes a static wordList in the file     *
                                 *translator.c and updates the 2 head pointers  *
                                 *for the instruction and data segments         */
 
-void clearWordList(); /*clears the wordList in translator.c, should be used if *
+void clearWordList(void); /*clears the wordList in translator.c, should be used if *
                        *errors occur before moving to the next file            */
 
 void makeOutputFile(FILE *output);
