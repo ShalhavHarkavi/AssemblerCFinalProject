@@ -7,7 +7,8 @@ static void secondPass(FILE *input, label *head, lines *linesMapHead);
 
 void secondPass(FILE *input, label *head, lines *linesMapHead) {
 	unsigned char numOfNames;
-	if (numOfNames = hasDirect(linesMapHead -> instWord)) {
+	numOfNames = hasDirect(linesMapHead -> instWord);
+	if (numOfNames) {
 		char line[MAX_LINE_LENGTH];
 		fseek(input, linesMapHead -> filePos, SEEK_SET);
 		fgets(line, MAX_LINE_LENGTH, input);
@@ -16,7 +17,8 @@ void secondPass(FILE *input, label *head, lines *linesMapHead) {
 			label *nameLabel;
 			if (getName(line, Name)) {
 				nameLabel = head;
-				while (nameLabel = findLabel(Name, nameLabel)) {
+				while (nameLabel) {
+					nameLabel = findLabel(Name, nameLabel);
 					if (nameLabel -> addId == entry)
 						continue;
 					else {
