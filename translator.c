@@ -94,7 +94,7 @@ void initializeWordList(void){
   currentData      = dataHead;
 }
 
-void clearWordList(){
+void clearWordList(void){
   wordList *head = instructionHead;
   while (head -> next != NULL){
     wordList *temp = head -> next;
@@ -375,7 +375,7 @@ void instruction(char *str, label *labelInstruction, lines *currentLine) {
   }
 }
 
-static word makeAdressWord(ARE Are, registers *regDest, registers *regSource, unsigned int *address){
+word makeAdressWord(ARE Are, registers *regDest, registers *regSource, unsigned int *address){
   word wrd;
   wrd.AREaddress.are = Are;
   if (address == NULL){
