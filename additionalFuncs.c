@@ -80,7 +80,7 @@ addType getAddType(char str[])
 
 int *getValue(char str[], type id)
 {
-	int i, j, t, z, counter = 0;
+	int i, j, t, z;
 	char *valueChar;
 	int *valueArr = (int*)malloc(sizeof(int));
 	if (id == noneData || id == string)
@@ -137,8 +137,7 @@ void clearLinesMap(lines *head) {
 		head = temp -> next;
 	free(temp);
 }
-
-char *getName(char *line, char Name[]) {
+int getName(char *line, char Name[]) {
 	if (isLabel(line)) {
 		char *labelName = getLabelName(line);
 		line += strlen(labelName);
@@ -146,11 +145,11 @@ char *getName(char *line, char Name[]) {
 	}
 	line = skipBlanks(skipBlanks(line) + 4); /*skip blanks and name of op*/
 	if (*line == '\n' || *line == '\0')
-		return 0;
+		return false;
 	else if (*line == '#')
 		while (*(line++) != ',')
 			if (*line == '\0')
-				return 0;
+				return false;
 	else if (*line == '(')
 		return getName(line + 1, Name);
 	else {
@@ -161,17 +160,16 @@ char *getName(char *line, char Name[]) {
 			strncpy(Name, line, i);
 			if (isLegalName(Name)) {
 				line++;
-				return 1;
+				return true;
 			}
 			else
-				return 0;
+				return false;
 		}
 		else
-			return 0;
+			return false;
 	}
 	return getName(line, Name);
 }
-
 
 /* not very efficient maybe if there's time investigate using a hash table or 
 a sorted structure for the labels */
