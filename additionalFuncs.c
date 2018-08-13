@@ -21,7 +21,7 @@ int isEqual(char str1[], char str2[])
 
 int isLegalName(char str[])
 {
-	if (isEqual(str, "r0") == true || isEqual(str, "r1") == true || isEqual(str, "r2") == true || isEqual(str, "r3") == true || isEqual(str, "r4") == true || isEqual(str, "r5") == true || isEqual(str, "r6") == true || isEqual(str, "r7") == true || isEqual(str, "mov") == true || isEqual(str, "cmp") == true || isEqual(str, "add") == true || isEqual(str, "sub") == true || isEqual(str, "not") == true || isEqual(str, "clr") == true || isEqual(str, "lea") == true || isEqual(str, "inc") == true || isEqual(str, "dec") == true || isEqual(str, "jmp") == true || isEqual(str, "bne") == true || isEqual(str, "red") == true || isEqual(str, "prn") == true || isEqual(str, "jsr") == true || isEqual(str, "rts") == true || isEqual(str, "stop") == true || isEqual(str, "data") == true || isEqual(str, "string") == true || isEqual(str, "entry") == true || isEqual(str, "extern") == true || isalpha(str[0]) == false)
+	if (isEqual(str, "r0") == true || isEqual(str, "r1") == true || isEqual(str, "r2") == true || isEqual(str, "r3") == true || isEqual(str, "r4") == true || isEqual(str, "r5") == true || isEqual(str, "r6") == true || isEqual(str, "r7") == true || isEqual(str, "mov") == true || isEqual(str, "cmp") == true || isEqual(str, "add") == true || isEqual(str, "sub") == true || isEqual(str, "not") == true || isEqual(str, "clr") == true || isEqual(str, "lea") == true || isEqual(str, "inc") == true || isEqual(str, "dec") == true || isEqual(str, "jmp") == true || isEqual(str, "bne") == true || isEqual(str, "red") == true || isEqual(str, "prn") == true || isEqual(str, "jsr") == true || isEqual(str, "rts") == true || isEqual(str, "stop") == true || isEqual(str, "data") == true || isEqual(str, "string") == true || isEqual(str, "entry") == true || isEqual(str, "extern") == true || isalpha((int)str[0]) == false)
 		return false;
 	return true;
 }
@@ -89,7 +89,7 @@ int *getValue(char str[], type id)
 	{
 		if (z > (sizeof(valueArr) / sizeof(int)))
 			realloc(valueArr, (sizeof(int) * z));
-		for (i = t; !isdigit(str[i]); i++);
+		for (i = t; !isdigit((int)str[i]); i++);
 		for (j = i; str[j] != ',' || str[j] != ' ' || str[j] != '\t'; j++);
 		if (str[j] == ',' && str[j + 1] == ',')
 		{
@@ -154,7 +154,7 @@ int getName(char *line, char Name[]) {
 		return getName(line + 1, Name);
 	else {
 		int i;
-		for (i=0; isalnum(*(line + i)); i++)
+		for (i=0; isalnum((int)*(line + i)); i++)
 			;
 		if (i < MAX_NAME_LENGTH) {
 			strncpy(Name, line, i);
@@ -179,15 +179,17 @@ label *findLabel(char *str, label *head) {
 	else if (head -> next == NULL)
 		return NULL;
 	else
-		findLabel(str, head -> next);
+		return findLabel(str, head -> next);
 }
 
 void updateEntries(label *head, label *current) {
 	if (current -> addId == entry && current -> adress == -1) {
-		label *nameLabel;
-		while (nameLabel = findLabel(current -> name, head)) {
-			if (nameLabel -> addId != noneAdd)
+		label *nameLabel = findLabel(current -> name, head);
+		while (nameLabel) {
+			if (nameLabel -> addId != noneAdd) {
+				nameLabel = findLabel(current -> name, nameLabel -> next);
 				continue;
+			}
 			else {
 				current -> adress = nameLabel -> adress;
 				break;
