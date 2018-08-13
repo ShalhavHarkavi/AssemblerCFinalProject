@@ -5,27 +5,20 @@
 - לתעד הכל
 - לוודא שהקוד לא מתייחס להערות
 
-# Command line output (errors and warnings as of August 13th, 18:54)
-main.c: In function ‘secondPass’:
-main.c:15:3: error: ‘for’ loop initial declarations are only allowed in C99 or C11 mode
-   for (int i = 0; i < numOfNames; i++) {
+# Command line output (errors and warnings as of August 13th, 20:30)
+gcc -c -ansi -Wall -pedantic translator.c
+gcc -c -ansi -Wall -pedantic main.c 
+gcc -c -ansi -Wall -pedantic additionalFuncs.c 
+additionalFuncs.c: In function ‘updateEntries’:
+additionalFuncs.c:188:3: warning: suggest parentheses around assignment used as truth value [-Wparentheses]
+   while (nameLabel = findLabel(current -> name, head)) {
    ^
-main.c:15:3: note: use option -std=c99, -std=gnu99, -std=c11 or -std=gnu11 to compile your code
-main.c: In function ‘assembler’:
-main.c:78:5: error: conversion to non-scalar type requested
-     lines *newLine = (lines)malloc(sizeof(lines));
-     ^
-main.c:78:5: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
-main.c:93:4: error: conversion to non-scalar type requested
-    lines *newLine = (lines)malloc(sizeof(lines));
+additionalFuncs.c: In function ‘getValue’:
+additionalFuncs.c:91:4: warning: ignoring return value of ‘realloc’, declared with attribute warn_unused_result [-Wunused-result]
+    realloc(valueArr, (sizeof(int) * z));
     ^
-main.c:93:4: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
-main.c:102:4: error: conversion to non-scalar type requested
-    lines *newLine = (lines)malloc(sizeof(lines));
-    ^
-main.c:102:4: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
-main.c:44:16: warning: variable ‘output’ set but not used [-Wunused-but-set-variable]
-  FILE *input, *output, *entries, *externals;
-                ^
-makefile:5: recipe for target 'main.o' failed
-make: *** [main.o] Error 1
+additionalFuncs.c: In function ‘findLabel’:
+additionalFuncs.c:183:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+gcc -o assembler main.o additionalFuncs.o translator.o
