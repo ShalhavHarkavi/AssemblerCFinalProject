@@ -10,9 +10,10 @@ void secondPass(FILE *input, label *head, lines *linesMapHead) {
 	numOfNames = hasDirect(linesMapHead -> instWord);
 	if (numOfNames) {
 		char line[MAX_LINE_LENGTH];
+		int i;
 		fseek(input, linesMapHead -> filePos, SEEK_SET);
 		fgets(line, MAX_LINE_LENGTH, input);
-		for (int i = 0; i < numOfNames; i++) {
+		for (i = 0; i < numOfNames; i++) {
 			char Name[MAX_NAME_LENGTH];
 			label *nameLabel;
 			if (getName(line, Name)) {
@@ -75,7 +76,7 @@ int assembler(char *fileName)
 			if (temp -> addId == noneAdd) {
 				currentLine -> memType = DCline;
 				Data(temp, currentLine); /*Creates a word/multiple words for the stored datas*/
-				lines *newLine = (lines)malloc(sizeof(lines));
+				lines *newLine = (lines*)malloc(sizeof(lines));
 				currentLine -> next = newLine;
 				newLine -> next = NULL;
 				currentLine = newLine;
@@ -90,7 +91,7 @@ int assembler(char *fileName)
 			instruction(line+strlen(lineName)+1, temp, currentLine);
 			temp -> next = (label*)malloc(sizeof(label));
 			temp = temp -> next;
-			lines *newLine = (lines)malloc(sizeof(lines));
+			lines *newLine = (lines*)malloc(sizeof(lines));
 			currentLine -> next = newLine;
 			newLine -> next = NULL;
 			currentLine =  newLine;
@@ -99,7 +100,7 @@ int assembler(char *fileName)
 		{
 			currentLine -> memType = ICline;
 			instruction(line, NULL, currentLine);
-			lines *newLine = (lines)malloc(sizeof(lines));
+			lines *newLine = (lines*)malloc(sizeof(lines));
 			currentLine -> next = newLine;
 			newLine -> next = NULL;
 			currentLine = newLine;
@@ -129,6 +130,7 @@ int assembler(char *fileName)
 		fclose(externals);
 		remove(strcat(fileName, ".ext"));
 	}
+	makeOutputFile(output);
 	return 0;
 }
 
