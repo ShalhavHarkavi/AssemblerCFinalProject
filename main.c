@@ -7,11 +7,11 @@ static void secondPass(FILE *input, label *head, lines *linesMapHead);
 
 void secondPass(FILE *input, label *head, lines *linesMapHead) {
 	unsigned char numOfNames;
-	if (numOfNames = hasDirect(linesMapHead -> instWord)) {
+	if (numOfNames == hasDirect(linesMapHead -> instWord)) {
 		char line[MAX_LINE_LENGTH];
 		fseek(input, linesMapHead -> filePos, SEEK_SET);
 		fgets(line, MAX_LINE_LENGTH, input);
-		for (int i=0; i<numOfNames; i++) {
+		for (int i = 0; i < numOfNames; i++) {
 			char Name[MAX_NAME_LENGTH];
 			label *nameLabel;
 			if (getName(line, Name)) {
@@ -40,7 +40,7 @@ int assembler(char *fileName)
 {
 	char line[MAX_LINE_LENGTH], lineName[MAX_NAME_LENGTH];
 	FILE* input, output, entries, externals;
-	label *head = NULL, temp = NULL;
+	label *head = NULL, *temp = NULL;
 	unsigned int lineCounter = 0;
 	lines *linesMapHead = (lines*)malloc(sizeof(lines));
 	lines *currentLine = linesMapHead;
@@ -63,7 +63,7 @@ int assembler(char *fileName)
 			continue; /*So it skips comments. Need to check if the syntax is right (meaning if 'continue' is the right command).*/
 		else if (isLabel(line) == true)
 		{
-			name = getLabelName(line);
+			lineName = getLabelName(line);
 			temp -> name = lineName;
 			temp.id = getType(line);
 			temp.addId = getType(line);
