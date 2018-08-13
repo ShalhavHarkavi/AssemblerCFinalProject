@@ -5,7 +5,7 @@
 - לתעד הכל
 - לוודא שהקוד לא מתייחס להערות
 
-# Command line output (errors and warnings aws of August 13th, 18:54)
+# Command line output (errors and warnings as of August 13th, 18:54)
 main.c: In function ‘secondPass’:
 main.c:15:3: error: ‘for’ loop initial declarations are only allowed in C99 or C11 mode
    for (int i = 0; i < numOfNames; i++) {
