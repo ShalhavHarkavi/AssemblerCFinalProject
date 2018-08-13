@@ -80,7 +80,7 @@ void makeOutputFile(FILE *output);
 void updateLineList(lines *head);     /*add IC offset to all DC lines          */
 void clearLinesMap(lines *head);      /*clear lines memory mapping list        */
 unsigned char hasDirect(void *instWrdAdd);/*# names of labels from word at pos */
-unsigned char getName(char *line, char Name[]);/*get the next eligible name in line and advance ptr */
+int getName(char *line, char Name[]);/*get the next eligible name in line and advance ptr */
 label *findLabel(char *str, label *head);
 /*return the label with name = str or NULL if can't in the label list head*/
 
