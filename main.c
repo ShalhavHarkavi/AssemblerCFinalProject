@@ -65,18 +65,18 @@ int assembler(char *fileName)
 		{
 			strcpy(lineName, getLabelName(line));
 			strcpy(temp -> name, lineName); /*Maybe get rid of the line befire that, and replace this line with strncpy with n being MAX_NAME_LENGTH?*/
-			temp.id = getType(line);
-			temp.addId = getType(line);
-			temp -> value = getValue(line, head.id);
-			temp -> string = getString(line, head.id);
+			temp -> id = getType(line);
+			temp -> addId = getAddType(line);
+			temp -> value = getValue(line, temp -> id);
+			temp -> string = getString(line, temp -> id);
 			temp -> next = (label*)malloc(sizeof(label));
-			if (temp.addId == noneAdd) {
+			if (temp -> addId == noneAdd) {
 				currentLine -> memType = DCline;
 				Data(temp, currentLine); /*Creates a word/multiple words for the stored datas*/
 				lines *newLine = (lines)malloc(sizeof(lines));
 				currentLine -> next = newLine;
 				newLine -> next = NULL;
-				currentLine =  newLine;
+				currentLine = newLine;
 			}
 			temp = temp -> next;
 		}
@@ -112,9 +112,9 @@ int assembler(char *fileName)
 	while (temp != NULL)
 	{
 		if (temp.addId == external)
-			fprintf(externals, "%s\t%d", temp -> name, temp.adress); /*NEED TO FIND A WAY TO MAKE COLUMNS FOR NAMES AND ADRESSES*/
+			fprintf(externals, "%s\t%d", temp -> name, temp -> adress); /*NEED TO FIND A WAY TO MAKE COLUMNS FOR NAMES AND ADRESSES*/
 		if (temp.addId == entry)
-			fprintf(entries, "%s\t%d", temp -> name, temp.adress); /*NEED TO FIND A WAY TO MAKE COLUMNS FOR NAMES AND ADRESSES*/
+			fprintf(entries, "%s\t%d", temp -> name, temp -> adress); /*NEED TO FIND A WAY TO MAKE COLUMNS FOR NAMES AND ADRESSES*/
 		temp = temp -> next;
 	}
 	if (entries == NULL)
