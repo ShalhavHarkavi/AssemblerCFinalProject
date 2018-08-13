@@ -122,12 +122,12 @@ int assembler(char *fileName)
 	if (entries == NULL)
 	{
 		fclose(entries);
-		remove(strcat(filename, ".ent"));
+		remove(strcat(fileName, ".ent"));
 	}
 	if (externals == NULL)
 	{
 		fclose(externals);
-		remove(strcat(filename, ".ext"));
+		remove(strcat(fileName, ".ext"));
 	}
 }
 
