@@ -179,7 +179,7 @@ label *findLabel(char *str, label *head) {
 	else if (head -> next == NULL)
 		return NULL;
 	else
-		findLabel(str, head -> next);
+		return findLabel(str, head -> next);
 }
 
 void updateEntries(label *head, label *current) {
