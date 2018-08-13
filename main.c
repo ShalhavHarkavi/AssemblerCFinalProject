@@ -74,9 +74,9 @@ int assembler(char *fileName)
 			temp -> string = getString(line, temp -> id);
 			temp -> next = (label*)malloc(sizeof(label));
 			if (temp -> addId == noneAdd) {
+				lines *newLine = (lines*)malloc(sizeof(lines));
 				currentLine -> memType = DCline;
 				Data(temp, currentLine); /*Creates a word/multiple words for the stored datas*/
-				lines *newLine = (lines*)malloc(sizeof(lines));
 				currentLine -> next = newLine;
 				newLine -> next = NULL;
 				currentLine = newLine;
@@ -85,22 +85,22 @@ int assembler(char *fileName)
 		}
 		else if (isInstructionLabel(line) == true)
 		{
+			lines *newLine = (lines*)malloc(sizeof(lines));
 			currentLine -> memType = ICline;
 			strcpy(lineName, getLabelName(line));
 			strcpy(temp -> name, lineName); /*Maybe get rid of the line befire that, and replace this line with strncpy with n being MAX_NAME_LENGTH?*/
 			instruction(line+strlen(lineName)+1, temp, currentLine);
 			temp -> next = (label*)malloc(sizeof(label));
 			temp = temp -> next;
-			lines *newLine = (lines*)malloc(sizeof(lines));
 			currentLine -> next = newLine;
 			newLine -> next = NULL;
 			currentLine =  newLine;
 		}
 		else
 		{
+			lines *newLine = (lines*)malloc(sizeof(lines));
 			currentLine -> memType = ICline;
 			instruction(line, NULL, currentLine);
-			lines *newLine = (lines*)malloc(sizeof(lines));
 			currentLine -> next = newLine;
 			newLine -> next = NULL;
 			currentLine = newLine;
