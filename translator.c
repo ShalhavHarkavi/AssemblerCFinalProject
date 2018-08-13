@@ -576,3 +576,22 @@ void updateLabelAddress(label *head) {
   if (head -> next != NULL)
     updateLabelAddress(head -> next);
 }
+
+void makeOutputFile(FILE *output){
+  wordList *head = instructionHead;
+  unsigned int counter = 0;
+  char *wrdCS;
+  fprintf(output, "   %d      %d\n",IC+1, DC+1);
+  while (head -> next != NULL) {
+    wordList *temp = head;
+    wrdCS = Word2CommaSlash(temp -> Word);
+    free(head);
+    fprintf(output, "%4d    %s\n", AddressBase+counter, wrdCS);
+    head = temp -> next;
+    free(wrdCS);
+  }
+  wrdCS = Word2CommaSlash(head -> Word);
+  fprintf(output, "%4d    %s\n", AddressBase+counter, wrdCS);
+  free(head);
+  free(wrdCS);
+}
