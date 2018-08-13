@@ -39,7 +39,7 @@ void secondPass(FILE *input, label *head, lines *linesMapHead) {
 int assembler(char *fileName)
 {
 	char line[MAX_LINE_LENGTH], lineName[MAX_NAME_LENGTH];
-	FILE* input, output, entries, externals;
+	FILE *input, *output, *entries, *externals;
 	label *head = NULL, *temp = NULL;
 	unsigned int lineCounter = 0;
 	lines *linesMapHead = (lines*)malloc(sizeof(lines));
@@ -63,8 +63,8 @@ int assembler(char *fileName)
 			continue; /*So it skips comments. Need to check if the syntax is right (meaning if 'continue' is the right command).*/
 		else if (isLabel(line) == true)
 		{
-			lineName = getLabelName(line);
-			temp -> name = lineName;
+			strcpy(lineName, getLabelName(line));
+			strcpy(temp -> name, lineName); /*Maybe get rid of the line befire that, and replace this line with strncpy with n being MAX_NAME_LENGTH?*/
 			temp.id = getType(line);
 			temp.addId = getType(line);
 			temp -> value = getValue(line, head.id);
@@ -83,8 +83,8 @@ int assembler(char *fileName)
 		else if (isInstructionLabel(line) == true)
 		{
 			currentLine -> memType = ICline;
-			name = getLabelName(line);
-			temp -> name = lineName;
+			strcpy(lineName, getLabelName(line));
+			strcpy(temp -> name, lineName); /*Maybe get rid of the line befire that, and replace this line with strncpy with n being MAX_NAME_LENGTH?*/
 			instruction(line+strlen(name)+1, temp, currentLine);
 			temp -> next = (label*)malloc(sizeof(label));
 			temp = temp -> next;
@@ -100,7 +100,7 @@ int assembler(char *fileName)
 			lines *newLine = (lines)malloc(sizeof(lines));
 			currentLine -> next = newLine;
 			newLine -> next = NULL;
-			currentLine =  newLine;
+			currentLine = newLine;
 		}
 		lineCounter++;
 	}
