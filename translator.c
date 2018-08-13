@@ -150,7 +150,7 @@ word isImmidiate(char *str) {
     int i;
     char *num;
     ARE Are = immidiate;
-    for (i=1;isdigit(*(str+i)) || *(str+i)=='-'; i++)
+    for (i=1;isdigit((int)*(str+i)) || *(str+i)=='-'; i++)
       ;
     num = malloc(i);
     strncpy(num, (const char*)str+1, i);
@@ -179,7 +179,7 @@ word isDirect(char *str) {
   word wrd;
   int i;
   char *labelName;
-  for (i=0; isalpha(*(str+i)); i++)
+  for (i=0; isalpha((int)*(str+i)); i++)
     ;
   labelName = malloc(i+1);
   strncpy(labelName, str, i);
