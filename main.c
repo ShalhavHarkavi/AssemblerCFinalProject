@@ -12,7 +12,7 @@ void secondPass(FILE *input, label *head, lines *linesMapHead) {
 		char line[MAX_LINE_LENGTH];
 		fseek(input, linesMapHead -> filePos, SEEK_SET);
 		fgets(line, MAX_LINE_LENGTH, input);
-		for (int i=0; i<numOfNames; i++) {
+		for (int i = 0; i < numOfNames; i++) {
 			char Name[MAX_NAME_LENGTH];
 			label *nameLabel;
 			if (getName(line, Name)) {
@@ -40,17 +40,17 @@ void secondPass(FILE *input, label *head, lines *linesMapHead) {
 
 int assembler(char *fileName)
 {
-	char line[MAX_LINE_LENGTH/*Placeholder, will find solution for dynamic sized line later.*/], lineName[MAX_NAME_LENGTH];
-	FILE* input, output, entries, externals;
-	label *head = NULL, temp = NULL;
+	char line[MAX_LINE_LENGTH], lineName[MAX_NAME_LENGTH];
+	FILE *input, *output, *entries, *externals;
+	label *head = NULL, *temp = NULL;
 	unsigned int lineCounter = 0;
 	lines *linesMapHead = (lines*)malloc(sizeof(lines));
 	lines *currentLine = linesMapHead;
 	input = fopen(strcat(fileName, ".as"), "r");
 	if (input == NULL)
 	{
-		fprintf(stderr, "FAILED TO OPEN THE FILE NAMED %s.as\n", fileName);
-		return 0; /*Return instead of exit() because maybe we should just skip files that don't work and try to assemble the ones that do, as return will just skip the current not-working file and move on, and exit() will stop the program entirely if I'm not wrong.*/
+		error(fopenError);
+		return 0; /*Need to think about if to use return so it skips to the next file or use exit so it just stops everything*/
 	}
 	output = fopen(strcat(fileName, ".ob"), "w");
 	entries = fopen(strcat(fileName, ".ent"), "w"); /*At the end of the assembler function, if pointer is NULL -> delete file using remove() function.*/
@@ -61,31 +61,33 @@ int assembler(char *fileName)
 	{
 		currentLine -> lineNum = lineCounter;
 		currentLine -> filePos = ftell(input) - strlen(line) -1;
-		if (isLabel(line) == true)
+		if (line[0] == ';')
+			continue; /*So it skips comments. Need to check if the syntax is right (meaning if 'continue' is the right command).*/
+		else if (isLabel(line) == true)
 		{
-			name = getLabelName(line);
-			temp -> name = lineName;
-			temp.id = getType(line);
-			temp.addId = getType(line);
-			temp -> value = getValue(line, head.id);
-			temp -> string = getString(line, head.id);
+			strcpy(lineName, getLabelName(line));
+			strcpy(temp -> name, lineName); /*Maybe get rid of the line befire that, and replace this line with strncpy with n being MAX_NAME_LENGTH?*/
+			temp -> id = getType(line);
+			temp -> addId = getAddType(line);
+			temp -> value = getValue(line, temp -> id);
+			temp -> string = getString(line, temp -> id);
 			temp -> next = (label*)malloc(sizeof(label));
-			if (temp.addId == noneAdd) {
+			if (temp -> addId == noneAdd) {
 				currentLine -> memType = DCline;
 				Data(temp, currentLine); /*Creates a word/multiple words for the stored datas*/
 				lines *newLine = (lines)malloc(sizeof(lines));
 				currentLine -> next = newLine;
 				newLine -> next = NULL;
-				currentLine =  newLine;
+				currentLine = newLine;
 			}
 			temp = temp -> next;
 		}
 		else if (isInstructionLabel(line) == true)
 		{
 			currentLine -> memType = ICline;
-			name = getLabelName(line);
-			temp -> name = lineName;
-			instruction(line+strlen(name)+1, temp, currentLine);
+			strcpy(lineName, getLabelName(line));
+			strcpy(temp -> name, lineName); /*Maybe get rid of the line befire that, and replace this line with strncpy with n being MAX_NAME_LENGTH?*/
+			instruction(line+strlen(lineName)+1, temp, currentLine);
 			temp -> next = (label*)malloc(sizeof(label));
 			temp = temp -> next;
 			lines *newLine = (lines)malloc(sizeof(lines));
@@ -100,7 +102,7 @@ int assembler(char *fileName)
 			lines *newLine = (lines)malloc(sizeof(lines));
 			currentLine -> next = newLine;
 			newLine -> next = NULL;
-			currentLine =  newLine;
+			currentLine = newLine;
 		}
 		lineCounter++;
 	}
@@ -112,9 +114,9 @@ int assembler(char *fileName)
 	while (temp != NULL)
 	{
 		if (temp.addId == external)
-			fprintf(externals, "%s\t%d", temp -> name, temp.adress); /*NEED TO FIND A WAY TO MAKE COLUMNS FOR NAMES AND ADRESSES*/
+			fprintf(externals, "%s\t%d", temp -> name, temp -> adress); /*NEED TO FIND A WAY TO MAKE COLUMNS FOR NAMES AND ADRESSES*/
 		if (temp.addId == entry)
-			fprintf(entries, "%s\t%d", temp -> name, temp.adress); /*NEED TO FIND A WAY TO MAKE COLUMNS FOR NAMES AND ADRESSES*/
+			fprintf(entries, "%s\t%d", temp -> name, temp -> adress); /*NEED TO FIND A WAY TO MAKE COLUMNS FOR NAMES AND ADRESSES*/
 		temp = temp -> next;
 	}
 	if (entries == NULL)
