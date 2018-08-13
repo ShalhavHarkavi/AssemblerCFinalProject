@@ -30,7 +30,7 @@ int isLabel(char str[])
 {
 	int i;
 	char name[MAX_NAME_LENGTH];
-	for (i = 0; str[i] != ':' || str[i] != '\0'; i++);
+	for (i = 0; str[i] != ':' && str[i] != '\0'; i++);
 	if (str[i] == '\0')
 		return false;
 	strncpy(name, str, i);
