@@ -129,6 +129,7 @@ int assembler(char *fileName)
 		fclose(externals);
 		remove(strcat(fileName, ".ext"));
 	}
+	return 0;
 }
 
 int main(int argc, char *argv[])
