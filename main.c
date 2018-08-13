@@ -113,22 +113,23 @@ int assembler(char *fileName)
 	temp = head;
 	while (temp != NULL)
 	{
-		if (temp.addId == external)
+		if (temp -> addId == external)
 			fprintf(externals, "%s\t%d", temp -> name, temp -> adress); /*NEED TO FIND A WAY TO MAKE COLUMNS FOR NAMES AND ADRESSES*/
-		if (temp.addId == entry)
+		if (temp -> addId == entry)
 			fprintf(entries, "%s\t%d", temp -> name, temp -> adress); /*NEED TO FIND A WAY TO MAKE COLUMNS FOR NAMES AND ADRESSES*/
 		temp = temp -> next;
 	}
 	if (entries == NULL)
 	{
 		fclose(entries);
-		remove(entries);
+		remove(strcat(fileName, ".ent"));
 	}
 	if (externals == NULL)
 	{
 		fclose(externals);
-		remove(externals);
+		remove(strcat(fileName, ".ext"));
 	}
+	return 0;
 }
 
 int main(int argc, char *argv[])
