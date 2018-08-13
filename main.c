@@ -38,7 +38,7 @@ void secondPass(FILE *input, label *head, lines *linesMapHead) {
 
 int assembler(char *fileName)
 {
-	char line[MAX_LINE_LENGTH/*Placeholder, will find solution for dynamic sized line later.*/], lineName[MAX_NAME_LENGTH];
+	char line[MAX_LINE_LENGTH], lineName[MAX_NAME_LENGTH];
 	FILE* input, output, entries, externals;
 	label *head = NULL, temp = NULL;
 	unsigned int lineCounter = 0;
@@ -47,8 +47,8 @@ int assembler(char *fileName)
 	input = fopen(strcat(fileName, ".as"), "r");
 	if (input == NULL)
 	{
-		fprintf(stderr, "FAILED TO OPEN THE FILE NAMED %s.as\n", fileName);
-		return 0; /*Return instead of exit() because maybe we should just skip files that don't work and try to assemble the ones that do, as return will just skip the current not-working file and move on, and exit() will stop the program entirely if I'm not wrong.*/
+		error(fopenError);
+		return 0; /*Need to think about if to use return so it skips to the next file or use exit so it just stops everything*/
 	}
 	output = fopen(strcat(fileName, ".ob"), "w");
 	entries = fopen(strcat(fileName, ".ent"), "w"); /*At the end of the assembler function, if pointer is NULL -> delete file using remove() function.*/
@@ -59,7 +59,9 @@ int assembler(char *fileName)
 	{
 		currentLine -> lineNum = lineCounter;
 		currentLine -> filePos = ftell(input) - strlen(line) -1;
-		if (isLabel(line) == true)
+		if (line[0] == ';')
+			continue; /*So it skips comments. Need to check if the syntax is right (meaning if 'continue' is the right command).*/
+		else if (isLabel(line) == true)
 		{
 			name = getLabelName(line);
 			temp -> name = lineName;
