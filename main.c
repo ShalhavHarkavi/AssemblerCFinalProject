@@ -7,7 +7,7 @@ static void secondPass(FILE *input, label *head, lines *linesMapHead);
 
 void secondPass(FILE *input, label *head, lines *linesMapHead) {
 	unsigned char numOfNames;
-	if (numOfNames == hasDirect(linesMapHead -> instWord)) {
+	if (numOfNames = hasDirect(linesMapHead -> instWord)) {
 		char line[MAX_LINE_LENGTH];
 		fseek(input, linesMapHead -> filePos, SEEK_SET);
 		fgets(line, MAX_LINE_LENGTH, input);
@@ -85,7 +85,7 @@ int assembler(char *fileName)
 			currentLine -> memType = ICline;
 			strcpy(lineName, getLabelName(line));
 			strcpy(temp -> name, lineName); /*Maybe get rid of the line befire that, and replace this line with strncpy with n being MAX_NAME_LENGTH?*/
-			instruction(line+strlen(name)+1, temp, currentLine);
+			instruction(line+strlen(lineName)+1, temp, currentLine);
 			temp -> next = (label*)malloc(sizeof(label));
 			temp = temp -> next;
 			lines *newLine = (lines)malloc(sizeof(lines));
