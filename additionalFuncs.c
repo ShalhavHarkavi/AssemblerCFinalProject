@@ -93,7 +93,7 @@ int *getValue(char str[], type id)
 		for (j = i; str[j] != ',' || str[j] != ' ' || str[j] != '\t'; j++);
 		if (str[j] == ',' && str[j + 1] == ',')
 		{
-			fprintf(stderr, "SYNTAX ERROR\n");
+			error(syntaxError);
 			return 0; /*Placeholder return.*/
 		}
 		valueChar = (char*)malloc(sizeof(char) * (j - i));
