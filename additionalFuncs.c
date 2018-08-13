@@ -80,7 +80,7 @@ addType getAddType(char str[])
 
 int *getValue(char str[], type id)
 {
-	int i, j, t, z, counter = 0;
+	int i, j, t, z;
 	char *valueChar;
 	int *valueArr = (int*)malloc(sizeof(int));
 	if (id == noneData || id == string)
