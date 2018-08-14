@@ -111,6 +111,7 @@ int assembler(char *fileName)
 		}
 		else if (isDataLabel(line) == true)
 		{
+			lines *newLine = (lines*)malloc(sizeof(lines));
 			strcpy(lineName, getLabelName(line));
 			strcpy(temp -> name, lineName); /*Maybe get rid of the line befire that, and replace this line with strncpy with n being MAX_NAME_LENGTH?*/
 			temp -> id = getType(line);
@@ -118,7 +119,6 @@ int assembler(char *fileName)
 			temp -> value = getValue(line, temp -> id);
 			temp -> string = getString(line, temp -> id);
 			temp -> next = (label*)malloc(sizeof(label));
-			lines *newLine = (lines*)malloc(sizeof(lines));
 			currentLine -> memType = DCline;
 			Data(temp, currentLine); /*Creates a word/multiple words for the stored datas*/
 			currentLine -> next = newLine;

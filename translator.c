@@ -58,7 +58,7 @@ static wordList *currentData;     /*pointer to the last inserted data word*/
 static void insertDataWord(word wrd); /* insert a data word to the end of the data list*/
 static void insertinstructionWord(word wrd); /* insert a data word to the end of the data list*/
 
-static opCode whatOpCode(char *str); /*identify op and remove it*/
+static opCode whatOpCode(char **str); /*identify op and remove it*/
 /*create a data word if immidiate data or return an illegal word with are=3*/
 static word isImmidiate(char **str);
 /*create a register word if str is a register or return an illegal word with are=3*/
@@ -121,20 +121,24 @@ void Data(label *labelData, lines *currentLine)
 }
 
 void insertDataWord(word wrd){
-  wordList *nextWordInList = (wordList*)malloc(sizeof(wordList));
-  nextWordInList -> next = NULL;
+  if (DC != 0) {
+    wordList *nextWordInList = (wordList*)malloc(sizeof(wordList));
+    nextWordInList -> next = NULL;
+    currentData    -> next = nextWordInList;
+    currentData    =  nextWordInList;
+  }
   currentData    -> Word = wrd;
-  currentData    -> next = nextWordInList;
-  currentData    =  nextWordInList;
   DC++;
 }
 
 void insertinstructionWord(word wrd){
-  wordList *nextWordInList = (wordList*)malloc(sizeof(wordList));
-  nextWordInList -> next = dataHead;
+  if (IC != 0) {
+    wordList *nextWordInList = (wordList*)malloc(sizeof(wordList));
+    nextWordInList -> next = dataHead;
+    currentInst    -> next = nextWordInList;
+    currentInst    =  nextWordInList;
+  }
   currentInst    -> Word = wrd;
-  currentInst    -> next = nextWordInList;
-  currentInst    =  nextWordInList;
   IC++;
 }
 
@@ -180,7 +184,7 @@ word isDirect(char **str) {
   word wrd;
   int i;
   char *labelName;
-  for (i=0; isalpha((int)*(*str+i)); i++)
+  for (i=0; isalnum((int)*(*str+i)); i++)
     ;
   labelName = malloc(i+1);
   strncpy(labelName, *str, i);
@@ -239,13 +243,15 @@ int isJmpWParams(char **str, word words[], opCode op) {
       return 0;
     }
   }
+  else
+    return 0;
   str = &working;
   return numOfWords;
 }
 
 void instruction(char *str, label *labelInstruction, lines *currentLine) {
   char *working = skipBlanks(str);
-  opCode op=whatOpCode(working);
+  opCode op=whatOpCode(&working);
   if (op < 0)
     error(0);
   else {
@@ -258,7 +264,7 @@ void instruction(char *str, label *labelInstruction, lines *currentLine) {
       numOfWords = 1;
     }
     else if (op == mov || op == add || op == sub || op == cmp) { /* second group source addressing 0,1,3 */
-      working = skipBlanks(working+3);
+      working = skipBlanks(working);
       if ((words[1] = isImmidiate(&working)).AREdata.are != 3) {
         sourceAddr = immidiate;
         numOfWords = 2;
@@ -298,7 +304,7 @@ void instruction(char *str, label *labelInstruction, lines *currentLine) {
         error(0);
     }
     else if (op == lea) {
-      working = skipBlanks(working+3);
+      working = skipBlanks(working);
       if ((words[1] = isDirect(&working)).AREdata.are != 3)
         numOfWords = 2;
       else
@@ -320,7 +326,7 @@ void instruction(char *str, label *labelInstruction, lines *currentLine) {
         error(0);
     }
     else if (op == not || op == clr || op == inc || op == dec || op == dec) { /*third group no source addressing, direct or register destination addressing*/
-      working = skipBlanks(working+3);
+      working = skipBlanks(working);
       if ((words[1] = isRegister(&working, dstReg)).AREdata.are != 3) {
         words[0] = makeInstruction(Absolute, directReg, immidiate, op, immidiate, immidiate);
         numOfWords = 2;
@@ -333,7 +339,7 @@ void instruction(char *str, label *labelInstruction, lines *currentLine) {
         error(1);
     }
     else if (op == prn) {
-      working = skipBlanks(working+3);
+      working = skipBlanks(working);
       if ((words[1] = isImmidiate(&working)).AREdata.are != 3) {
         words[0] = makeInstruction(Absolute, immidiate, immidiate, op, immidiate, immidiate);
         numOfWords = 2;
@@ -350,7 +356,7 @@ void instruction(char *str, label *labelInstruction, lines *currentLine) {
         error(1);
     }
     else if (op == jmp || op == bne || op == jsr) {
-      working = skipBlanks(working+3);
+      working = skipBlanks(working);
       sourceAddr = immidiate;
       if ((numOfWords = isJmpWParams(&working, words, op))) {
         if (*working++ != ')') 
@@ -368,7 +374,7 @@ void instruction(char *str, label *labelInstruction, lines *currentLine) {
         error(20);
     }
 
-    if (skipBlanks(working) != '\0')
+    if (*skipBlanks(working) != '\0' && *skipBlanks(working) != '\n')
       error(21);
     if (labelInstruction != NULL)
       labelInstruction -> adress = IC;
@@ -445,48 +451,52 @@ word makeDataWords(ARE *Are, signed int num){
   return newWord;
 }
 
-opCode whatOpCode(char *str){
+opCode whatOpCode(char **str){
   char op[4];
-  int i;
-  for (i = 0; i < 3; i++)
-    *(op+i) = *(str+i);
-  op[3]='\0';
+  opCode retOp = notAnOp;
+  strncpy(op, *str, 3);
   if (!strcmp(op, "mov"))
-    return mov;
+    retOp = mov;
   else if (!strcmp(op, "cmp"))
-    return cmp;
+    retOp = cmp;
   else if (!strcmp(op, "add"))
-    return add;
+    retOp = add;
   else if (!strcmp(op, "sub"))
-    return sub;
+    retOp = sub;
   else if (!strcmp(op, "not"))
-    return not;
+    retOp = not;
   else if (!strcmp(op, "clr"))
-    return clr;
+    retOp = clr;
   else if (!strcmp(op, "lea"))
-    return lea;
+    retOp = lea;
   else if (!strcmp(op, "inc"))
-    return inc;
+    retOp = inc;
   else if (!strcmp(op, "dec"))
-    return dec;
+    retOp = dec;
   else if (!strcmp(op, "jmp"))
-    return jmp;
+    retOp = jmp;
   else if (!strcmp(op, "bne"))
-    return bne;
+    retOp = bne;
   else if (!strcmp(op, "red"))
-    return red;
+    retOp = red;
   else if (!strcmp(op, "prn"))
-    return prn;
+    retOp = prn;
   else if (!strcmp(op, "jsr"))
-    return jsr;
+    retOp = jsr;
   else if (!strcmp(op, "rts"))
-    return rts;
-  else if (!strcmp(op, "sto")) {
-    if (*(str+3) == 'p')
-      return stop;
+    retOp = rts;
+  else if (!strcmp(op, "sto"))
+    if (*(*str+3) == 'p') {
+      retOp = stop;
+    }
+  if (retOp >= 0) {
+    if (retOp == stop)
+      *str += 4;
     else
-      return notAnOp;
+      *str += 3;
   }
+  if (isblank((int)**str) || **str == '\n' || **str == '\r' || **str == '\0')
+    return retOp;
   else
     return notAnOp;
 }
