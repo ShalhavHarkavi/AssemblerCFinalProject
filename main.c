@@ -114,18 +114,16 @@ int assembler(char *fileName)
 			strcpy(lineName, getLabelName(line));
 			strcpy(temp -> name, lineName); /*Maybe get rid of the line befire that, and replace this line with strncpy with n being MAX_NAME_LENGTH?*/
 			temp -> id = getType(line);
-			temp -> addId = noneAdd;
+			temp -> addId = getAddType(line);
 			temp -> value = getValue(line, temp -> id);
 			temp -> string = getString(line, temp -> id);
 			temp -> next = (label*)malloc(sizeof(label));
-			if (temp -> addId == noneAdd) {
-				lines *newLine = (lines*)malloc(sizeof(lines));
-				currentLine -> memType = DCline;
-				Data(temp, currentLine); /*Creates a word/multiple words for the stored datas*/
-				currentLine -> next = newLine;
-				newLine -> next = NULL;
-				currentLine = newLine;
-			}
+			lines *newLine = (lines*)malloc(sizeof(lines));
+			currentLine -> memType = DCline;
+			Data(temp, currentLine); /*Creates a word/multiple words for the stored datas*/
+			currentLine -> next = newLine;
+			newLine -> next = NULL;
+			currentLine = newLine;
 			temp = temp -> next;
 		}
 		else if (isInstructionLabel(line) == true)
