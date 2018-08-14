@@ -69,6 +69,7 @@ int assembler(char *fileName)
 		else if (skipBlanks(line)[0] == '.')
 		{
 			char* skipBlanksLine = skipBlanks(line);
+			char* lastLetter;
 			for (; *skipBlanksLine != ' ' && *skipBlanksLine != '\t' && *skipBlanksLine != '\0'; skipBlanksLine++);
 			if (*skipBlanksLine == '\0')
 			{
@@ -76,7 +77,7 @@ int assembler(char *fileName)
 				return 0;
 			}
 			skipBlanksLine = skipBlanks(skipBlanksLine);
-			char* lastLetter = skipBlanksLine;
+			lastLetter = skipBlanksLine;
 			int charNum;
 			for (charNum = 0; *skipBlanksLine != ' ' && *skipBlanksLine != '\t' && *skipBlanksLine != '\0'; lastLetter++, charNum++);
 			strncpy(lineName, skipBlanksLine, charNum);
