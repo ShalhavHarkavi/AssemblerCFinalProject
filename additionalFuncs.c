@@ -118,7 +118,7 @@ char *getString(char str[], type id)
 int isDataLabel(char str[])
 {
 	int i;
-	for (i = 0; str[i] != '.' || str[i] != '\0'; i++);
+	for (i = 0; str[i] != '.' && str[i] != '\0' && str[i] != '\t' && str[i] != ' '; i++);
 	if (str[i] == '\0')
 		return false;
 	return true;
