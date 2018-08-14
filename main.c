@@ -43,19 +43,27 @@ int assembler(char *fileName)
 {
 	FILE *input, *output, *entries, *externals;
 	label *head = NULL, *temp = NULL, *search = NULL;
-	char line[MAX_LINE_LENGTH];
+	char line[MAX_LINE_LENGTH], inputName[strlen(fileName) + 4], outputName[strlen(fileName) + 4], entriesName[strlen(fileName) + 5], externalsName[strlen(fileName) + 5];
+	strcpy(inputName, fileName);
+	strcat(inputName, ".as");
+	strcpy(outputName, fileName);
+	strcat(outputName, ".ob");
+	strcpy(entriesName, fileName);
+	strcat(entriestName, ".ent");
+	strcpy(externalsName, fileName);
+	strcat(externalsName, ".ext");
 	unsigned int lineCounter = 0;
 	lines *linesMapHead = (lines*)malloc(sizeof(lines));
 	lines *currentLine = linesMapHead;
-	input = fopen(strcat(fileName, ".as"), "r");
+	input = fopen(inputName, "r");
 	if (input == NULL)
 	{
 		error(fopenError);
 		return 0; /*Need to think about if to use return so it skips to the next file or use exit so it just stops everything*/
 	}
-	output = fopen(strcat(fileName, ".ob"), "w");
-	entries = fopen(strcat(fileName, ".ent"), "w"); /*At the end of the assembler function, if pointer is NULL -> delete file using remove() function.*/
-	externals = fopen(strcat(fileName, ".ext"), "w"); /*At the end of the assembler function, if pointer is NULL -> delete file using remove() function.*/
+	output = fopen(outputName, "w");
+	entries = fopen(entriesName, "w"); /*At the end of the assembler function, if pointer is NULL -> delete file using remove() function.*/
+	externals = fopen(externalsName, "w"); /*At the end of the assembler function, if pointer is NULL -> delete file using remove() function.*/
 	head = (label*)malloc(sizeof(label));
 	temp = head;
 	initializeWordList();
