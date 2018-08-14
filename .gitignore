@@ -1,3 +1,6 @@
 
 *.o
 assembler
+*.ent
+*.ext
+*.ob

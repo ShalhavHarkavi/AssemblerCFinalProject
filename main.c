@@ -43,18 +43,18 @@ int assembler(char *fileName)
 {
 	FILE *input, *output, *entries, *externals;
 	label *head = NULL, *temp = NULL, *search = NULL;
-	char line[MAX_LINE_LENGTH], inputName[strlen(fileName) + 4], outputName[strlen(fileName) + 4], entriesName[strlen(fileName) + 5], externalsName[strlen(fileName) + 5];
-	strcpy(inputName, fileName);
-	strcat(inputName, ".as");
-	strcpy(outputName, fileName);
-	strcat(outputName, ".ob");
-	strcpy(entriesName, fileName);
-	strcat(entriesName, ".ent");
-	strcpy(externalsName, fileName);
-	strcat(externalsName, ".ext");
+	char line[MAX_LINE_LENGTH], inputName[MAX_FILE_NAME_LENGTH], outputName[MAX_FILE_NAME_LENGTH], entriesName[MAX_FILE_NAME_LENGTH], externalsName[MAX_FILE_NAME_LENGTH];
 	unsigned int lineCounter = 0;
 	lines *linesMapHead = (lines*)malloc(sizeof(lines));
 	lines *currentLine = linesMapHead;
+	strncpy(inputName, fileName, MAX_FILE_NAME_LENGTH - 3);
+	strcat(inputName, ".as");
+	strncpy(outputName, fileName, MAX_FILE_NAME_LENGTH - 3);
+	strcat(outputName, ".ob");
+	strncpy(entriesName, fileName, MAX_FILE_NAME_LENGTH - 4);
+	strcat(entriesName, ".ent");
+	strncpy(externalsName, fileName, MAX_FILE_NAME_LENGTH - 4);
+	strcat(externalsName, ".ext");
 	input = fopen(inputName, "r");
 	if (input == NULL)
 	{

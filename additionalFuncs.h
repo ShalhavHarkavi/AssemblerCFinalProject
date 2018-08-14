@@ -7,6 +7,7 @@
 #include <string.h>
 #include <ctype.h>
 #define MAX_NAME_LENGTH 32
+#define MAX_FILE_NAME_LENGTH 32
 #define MAX_LINE_LENGTH 82
 #define true 1
 #define false 0
