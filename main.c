@@ -41,9 +41,9 @@ void secondPass(FILE *input, label *head, lines *linesMapHead) {
 
 int assembler(char *fileName)
 {
-	char line[MAX_LINE_LENGTH], lineName[MAX_NAME_LENGTH];
 	FILE *input, *output, *entries, *externals;
-	label *head = NULL, *temp = NULL;
+	label *head = NULL, *temp = NULL, *search = NULL;
+	char line[MAX_LINE_LENGTH];
 	unsigned int lineCounter = 0;
 	lines *linesMapHead = (lines*)malloc(sizeof(lines));
 	lines *currentLine = linesMapHead;
@@ -61,16 +61,48 @@ int assembler(char *fileName)
 	initializeWordList();
 	while (fgets(line, MAX_LINE_LENGTH, input) != NULL)
 	{
+		char lineName[MAX_NAME_LENGTH];
 		currentLine -> lineNum = lineCounter;
 		currentLine -> filePos = ftell(input) - strlen(line) -1;
-		if (line[0] == ';')
+		if (skipBlanks(line)[0] == ';')
 			continue; /*So it skips comments. Need to check if the syntax is right (meaning if 'continue' is the right command).*/
+		else if (skipBlanks(line)[0] == '.')
+		{
+			char* skipBlanksLine = skipBlanks(line);
+			for (; *skipBlanksLine != ' ' && *skipBlanksLine != '\t' && *skipBlanksLine != '\0'; skipBlanksLine++);
+			if (*skipBlanksLine == '\0')
+			{
+				error(syntaxError);
+				return 0;
+			}
+			skipBlanksLine = skipBlanks(skipBlanksLine);
+			char* lastLetter = skipBlanksLine;
+			int charNum;
+			for (charNum = 0; *skipBlanksLine != ' ' && *skipBlanksLine != '\t' && *skipBlanksLine != '\0'; lastLetter++, charNum++);
+			strncpy(lineName, skipBlanksLine, charNum);
+			search = head;
+			while (search != NULL)
+			{
+				if (isEqual(search -> name, lineName) == true && getAddType(line) == entry)
+					break;
+				search = search -> next;
+			}
+			if (search == NULL)
+			{
+				search = temp;
+				strcpy(search -> name, lineName);
+			}
+			search -> id = noneData;
+			search -> addId = getAddType(line);
+			temp -> next = (label*)malloc(sizeof(label));
+			temp = temp -> next;
+		}
 		else if (isDataLabel(line) == true)
 		{
 			strcpy(lineName, getLabelName(line));
 			strcpy(temp -> name, lineName); /*Maybe get rid of the line befire that, and replace this line with strncpy with n being MAX_NAME_LENGTH?*/
 			temp -> id = getType(line);
-			temp -> addId = getAddType(line);
+			temp -> addId = noneAdd;
 			temp -> value = getValue(line, temp -> id);
 			temp -> string = getString(line, temp -> id);
 			temp -> next = (label*)malloc(sizeof(label));
@@ -138,7 +170,7 @@ int assembler(char *fileName)
 int main(int argc, char *argv[])
 {
 	int i;
-	for (i = 1; i <= (argc - 1); i++)
+	for (i = 1; i < argc; i++)
 		assembler(argv[i]);
 	return 0;
 }
