@@ -81,22 +81,25 @@ int assembler(char *fileName)
 			lastLetter = skipBlanksLine;
 			for (charNum = 0; *lastLetter != ' ' && *lastLetter != '\t' && *lastLetter != '\0'; lastLetter++, charNum++);
 			strncpy(lineName, skipBlanksLine, charNum);
-			search = head;
-			while (search != NULL)
+			if (isLegalName(lineName) == true)
 			{
-				if (isEqual(search -> name, lineName) == true && getAddType(line) == entry)
-					break;
-				search = search -> next;
+				search = head;
+				while (search != NULL)
+				{
+					if (isEqual(search -> name, lineName) == true && getAddType(line) == entry)
+						break;
+					search = search -> next;
+				}
+				if (search == NULL)
+				{
+					search = temp;
+					strcpy(search -> name, lineName);
+				}
+				search -> id = noneData;
+				search -> addId = getAddType(line);
+				temp -> next = (label*)malloc(sizeof(label));
+				temp = temp -> next;
 			}
-			if (search == NULL)
-			{
-				search = temp;
-				strcpy(search -> name, lineName);
-			}
-			search -> id = noneData;
-			search -> addId = getAddType(line);
-			temp -> next = (label*)malloc(sizeof(label));
-			temp = temp -> next;
 		}
 		else if (isDataLabel(line) == true)
 		{
