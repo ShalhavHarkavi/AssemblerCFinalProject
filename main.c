@@ -65,7 +65,7 @@ int assembler(char *fileName)
 		currentLine -> filePos = ftell(input) - strlen(line) -1;
 		if (line[0] == ';')
 			continue; /*So it skips comments. Need to check if the syntax is right (meaning if 'continue' is the right command).*/
-		else if (isLabel(line) == true)
+		else if (isDataLabel(line) == true)
 		{
 			strcpy(lineName, getLabelName(line));
 			strcpy(temp -> name, lineName); /*Maybe get rid of the line befire that, and replace this line with strncpy with n being MAX_NAME_LENGTH?*/
