@@ -120,7 +120,7 @@ int isDataLabel(char str[])
 	if (isLabel(str) == true)
 	{
 		int i;
-		for (i = 0; str[i] != '.' && str[i] != '\0' && str[i] != '\t' && str[i] != ' '; i++);
+		for (i = 0; str[i] != '.' && str[i] != '\0'; i++);
 		if (str[i] == '\0')
 			return false;
 		return true;
