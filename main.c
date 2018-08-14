@@ -169,7 +169,7 @@ int assembler(char *fileName)
 int main(int argc, char *argv[])
 {
 	int i;
-	for (i = 1; i <= (argc - 1); i++)
+	for (i = 1; i < argc; i++)
 		assembler(argv[i]);
 	return 0;
 }
