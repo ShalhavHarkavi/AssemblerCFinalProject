@@ -49,7 +49,7 @@ int assembler(char *fileName)
 	strcpy(outputName, fileName);
 	strcat(outputName, ".ob");
 	strcpy(entriesName, fileName);
-	strcat(entriestName, ".ent");
+	strcat(entriesName, ".ent");
 	strcpy(externalsName, fileName);
 	strcat(externalsName, ".ext");
 	unsigned int lineCounter = 0;
