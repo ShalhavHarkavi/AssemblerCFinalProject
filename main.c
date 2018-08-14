@@ -58,6 +58,7 @@ int assembler(char *fileName)
 	externals = fopen(strcat(fileName, ".ext"), "w"); /*At the end of the assembler function, if pointer is NULL -> delete file using remove() function.*/
 	head = (label*)malloc(sizeof(label));
 	temp = head;
+	initializeWordList();
 	while (fgets(line, MAX_LINE_LENGTH, input) != NULL)
 	{
 		currentLine -> lineNum = lineCounter;
@@ -137,7 +138,7 @@ int assembler(char *fileName)
 int main(int argc, char *argv[])
 {
 	int i;
-	for (i = 1; i < (argc - 1); i++)
+	for (i = 1; i <= (argc - 1); i++)
 		assembler(argv[i]);
 	return 0;
 }

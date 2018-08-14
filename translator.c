@@ -379,7 +379,10 @@ word makeAdressWord(ARE Are, registers *regDest, registers *regSource, unsigned 
   word wrd;
   wrd.AREaddress.are = Are;
   if (address == NULL){
+    if (regDest != NULL)
       wrd.registerAddress.destination = *regDest;
+    else
+      wrd.registerAddress.destination = 0;
     if (regSource != NULL)
       wrd.registerAddress.source = *regSource;
     else
