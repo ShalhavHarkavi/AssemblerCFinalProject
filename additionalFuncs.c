@@ -54,7 +54,7 @@ type getType(char str[])
 	char dataType[7];
 	for (i = 0; str[i] != '.'; i++);
 	i++;
-	for (j = i; str[j] != ' ' || str[j] != '\t'; j++);
+	for (j = i; str[j] != ' ' && str[j] != '\t'; j++);
 	strncpy(dataType, (str + i), (j - i));
 	if (isEqual(dataType, "string") == true)
 		return string;
@@ -69,7 +69,7 @@ addType getAddType(char str[])
 	char addType[7];
 	for (i = 0; str[i] != '.'; i++);
 	i++;
-	for (j = i; str[j] != ' ' || str[j] != '\t'; j++);
+	for (j = i; str[j] != ' ' && str[j] != '\t'; j++);
 	strncpy(addType, (str + i), (j - i));
 	if (isEqual(addType, "entry") == true)
 		return entry;
@@ -117,11 +117,15 @@ char *getString(char str[], type id)
 
 int isDataLabel(char str[])
 {
-	int i;
-	for (i = 0; str[i] != '.' || str[i] != '\0'; i++);
-	if (str[i] == '\0')
-		return false;
-	return true;
+	if (isLabel(str) == true)
+	{
+		int i;
+		for (i = 0; str[i] != '.' && str[i] != '\0' && str[i] != '\t' && str[i] != ' '; i++);
+		if (str[i] == '\0')
+			return false;
+		return true;
+	}
+	return false;
 }
 
 int isInstructionLabel(char str[])

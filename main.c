@@ -58,13 +58,14 @@ int assembler(char *fileName)
 	externals = fopen(strcat(fileName, ".ext"), "w"); /*At the end of the assembler function, if pointer is NULL -> delete file using remove() function.*/
 	head = (label*)malloc(sizeof(label));
 	temp = head;
+	initializeWordList();
 	while (fgets(line, MAX_LINE_LENGTH, input) != NULL)
 	{
 		currentLine -> lineNum = lineCounter;
 		currentLine -> filePos = ftell(input) - strlen(line) -1;
 		if (line[0] == ';')
 			continue; /*So it skips comments. Need to check if the syntax is right (meaning if 'continue' is the right command).*/
-		else if (isLabel(line) == true)
+		else if (isDataLabel(line) == true)
 		{
 			strcpy(lineName, getLabelName(line));
 			strcpy(temp -> name, lineName); /*Maybe get rid of the line befire that, and replace this line with strncpy with n being MAX_NAME_LENGTH?*/
@@ -137,7 +138,7 @@ int assembler(char *fileName)
 int main(int argc, char *argv[])
 {
 	int i;
-	for (i = 1; i < (argc - 1); i++)
+	for (i = 1; i <= (argc - 1); i++)
 		assembler(argv[i]);
 	return 0;
 }
