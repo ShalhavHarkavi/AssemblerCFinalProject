@@ -70,6 +70,7 @@ int assembler(char *fileName)
 		{
 			char* skipBlanksLine = skipBlanks(line);
 			char* lastLetter;
+			int charNum;
 			for (; *skipBlanksLine != ' ' && *skipBlanksLine != '\t' && *skipBlanksLine != '\0'; skipBlanksLine++);
 			if (*skipBlanksLine == '\0')
 			{
@@ -78,7 +79,6 @@ int assembler(char *fileName)
 			}
 			skipBlanksLine = skipBlanks(skipBlanksLine);
 			lastLetter = skipBlanksLine;
-			int charNum;
 			for (charNum = 0; *skipBlanksLine != ' ' && *skipBlanksLine != '\t' && *skipBlanksLine != '\0'; lastLetter++, charNum++);
 			strncpy(lineName, skipBlanksLine, charNum);
 			search = head;
