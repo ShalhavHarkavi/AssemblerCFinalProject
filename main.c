@@ -43,6 +43,7 @@ int assembler(char *fileName)
 {
 	FILE *input, *output, *entries, *externals;
 	label *head = NULL, *temp = NULL, *search = NULL;
+	char line[MAX_LINE_LENGTH];
 	unsigned int lineCounter = 0;
 	lines *linesMapHead = (lines*)malloc(sizeof(lines));
 	lines *currentLine = linesMapHead;
@@ -60,7 +61,7 @@ int assembler(char *fileName)
 	initializeWordList();
 	while (fgets(line, MAX_LINE_LENGTH, input) != NULL)
 	{
-		char line[MAX_LINE_LENGTH], lineName[MAX_NAME_LENGTH];
+		char lineName[MAX_NAME_LENGTH];
 		currentLine -> lineNum = lineCounter;
 		currentLine -> filePos = ftell(input) - strlen(line) -1;
 		if (skipBlanks(line)[0] == ';')
