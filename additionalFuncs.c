@@ -89,7 +89,7 @@ int *getValue(char str[], type id)
 	int *valueArr = (int*)malloc(sizeof(int));
 	if (id == noneData || id == string)
 		return NULL;
-	for (t = 0, z = 0; str[t] == '\0'; t = j, z++)
+	for (t = 0, z = 0; str[t] != '\0'; t = j, z++)
 	{
 		if (z > (sizeof(valueArr) / sizeof(int)))
 			realloc(valueArr, (sizeof(int) * z));
