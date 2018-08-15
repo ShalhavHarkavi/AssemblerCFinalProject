@@ -84,7 +84,7 @@ addType getAddType(char str[])
 
 int *getValue(char str[], type id)
 {
-	int i, j, t, z, numCount;
+	int i, j, t, z, numCount = 0;
 	int bigValueArr[41];
 	int *valueArr = NULL;
 	if (id == noneData || id == string)
@@ -101,8 +101,8 @@ int *getValue(char str[], type id)
 		}
 		strncpy(numString, (str + i), (j - i));
 		bigValueArr[z] = atoi(numString);
+		numCount++;
 	}
-	numCount = sizeof(bigValueArr) / sizeof(int);
 	valueArr = (int*)malloc(numCount * sizeof(int));
 	for (i = 0; i < numCount; i++)
 		valueArr[i] = bigValueArr[i];
