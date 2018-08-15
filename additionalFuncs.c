@@ -42,9 +42,15 @@ int isLabel(char str[])
 char *getLabelName(char str[])
 {
 	int i;
-	char *name = (char*)malloc(sizeof(char) * MAX_NAME_LENGTH);
-	for (i = 0; str[i] != ':'; i++);
-	strncpy(name, str, i);
+	char *name = NULL;
+	char *start = skipBlanks(str);
+	for (i = 0; start[i] != ':'; i++);
+	i++;
+	if (i > MAX_NAME_LENGTH)
+		return NULL; /*here put error*/
+	num (char*)malloc(sizeof(char) * i);
+	strncpy(name, start, i - 1);
+	name[i] = '\0';
 	return name;
 }
 
