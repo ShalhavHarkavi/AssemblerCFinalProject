@@ -6,32 +6,34 @@
 static void secondPass(FILE *input, label *head, lines *linesMapHead);
 
 void secondPass(FILE *input, label *head, lines *linesMapHead) {
-	unsigned char numOfNames;
-	numOfNames = hasDirect(linesMapHead -> instWord);
-	if (numOfNames) {
-		char line[MAX_LINE_LENGTH];
-		int i;
-		fseek(input, linesMapHead -> filePos, SEEK_SET);
-		fgets(line, MAX_LINE_LENGTH, input);
-		for (i = 0; i < numOfNames; i++) {
-			char Name[MAX_NAME_LENGTH];
-			label *nameLabel;
-			if (getName(line, Name)) {
-				nameLabel = head;
-				while (nameLabel) {
-					nameLabel = findLabel(Name, nameLabel);
-					if (nameLabel -> addId == entry)
-						continue;
-					else {
-						updateAddress(nameLabel, linesMapHead -> instWord, linesMapHead -> position);
-						break;
+	if (linesMapHead -> memType == ICline) {
+		unsigned char numOfNames;
+		numOfNames = hasDirect(linesMapHead -> instWord);
+		if (numOfNames) {
+			char line[MAX_LINE_LENGTH];
+			int i;
+			fseek(input, linesMapHead -> filePos, SEEK_SET);
+			fgets(line, MAX_LINE_LENGTH, input);
+			for (i = 0; i < numOfNames; i++) {
+				char Name[MAX_NAME_LENGTH];
+				label *nameLabel;
+				if (getName(line, Name)) {
+					nameLabel = head;
+					while (nameLabel) {
+						nameLabel = findLabel(Name, nameLabel);
+						if (nameLabel -> addId == entry)
+							continue;
+						else {
+							updateAddress(nameLabel, linesMapHead -> instWord, linesMapHead -> position);
+							break;
+						}
 					}
+					if (nameLabel == NULL)
+						error(12);
 				}
-				if (nameLabel == NULL)
-					error(12);
+				else
+					error(10);
 			}
-			else
-				error(10);
 		}
 	}
 	if (linesMapHead -> next != NULL)
@@ -44,9 +46,9 @@ int assembler(char *fileName)
 	FILE *input, *output, *entries, *externals;
 	label *head = NULL, *temp = NULL, *search = NULL;
 	char line[MAX_LINE_LENGTH], inputName[MAX_FILE_NAME_LENGTH], outputName[MAX_FILE_NAME_LENGTH], entriesName[MAX_FILE_NAME_LENGTH], externalsName[MAX_FILE_NAME_LENGTH];
-	unsigned int lineCounter = 0;
-	lines *linesMapHead = (lines*)malloc(sizeof(lines));
-	lines *currentLine = linesMapHead;
+	unsigned int lineCounter = 1;
+	lines *currentLine = NULL;
+	lines *linesMapHead = NULL;
 	strncpy(inputName, fileName, MAX_FILE_NAME_LENGTH - 3);
 	strcat(inputName, ".as");
 	strncpy(outputName, fileName, MAX_FILE_NAME_LENGTH - 3);
@@ -70,8 +72,12 @@ int assembler(char *fileName)
 	while (fgets(line, MAX_LINE_LENGTH, input) != NULL)
 	{
 		char lineName[MAX_NAME_LENGTH];
+		currentLine = addLine(currentLine, &linesMapHead);
 		currentLine -> lineNum = lineCounter;
 		currentLine -> filePos = ftell(input) - strlen(line) -1;
+		currentLine -> memType = nonMemLine;
+		currentLine -> instWord = NULL;
+		currentLine -> position = -1;
 		if (skipBlanks(line)[0] == ';')
 			continue; /*So it skips comments. Need to check if the syntax is right (meaning if 'continue' is the right command).*/
 		else if (skipBlanks(line)[0] == '.')
@@ -111,7 +117,7 @@ int assembler(char *fileName)
 		}
 		else if (isDataLabel(line) == true)
 		{
-			lines *newLine = (lines*)malloc(sizeof(lines));
+			currentLine -> memType = DCline;
 			strcpy(lineName, getLabelName(line));
 			strcpy(temp -> name, lineName); /*Maybe get rid of the line befire that, and replace this line with strncpy with n being MAX_NAME_LENGTH?*/
 			temp -> id = getType(line);
@@ -119,34 +125,22 @@ int assembler(char *fileName)
 			temp -> value = getValue(line, temp -> id);
 			temp -> string = getString(line, temp -> id);
 			temp -> next = (label*)malloc(sizeof(label));
-			currentLine -> memType = DCline;
 			Data(temp, currentLine); /*Creates a word/multiple words for the stored datas*/
-			currentLine -> next = newLine;
-			newLine -> next = NULL;
-			currentLine = newLine;
 			temp = temp -> next;
 		}
 		else if (isInstructionLabel(line) == true)
 		{
-			lines *newLine = (lines*)malloc(sizeof(lines));
 			currentLine -> memType = ICline;
 			strcpy(lineName, getLabelName(line));
 			strcpy(temp -> name, lineName); /*Maybe get rid of the line befire that, and replace this line with strncpy with n being MAX_NAME_LENGTH?*/
 			instruction(line+strlen(lineName)+1, temp, currentLine);
 			temp -> next = (label*)malloc(sizeof(label));
 			temp = temp -> next;
-			currentLine -> next = newLine;
-			newLine -> next = NULL;
-			currentLine =  newLine;
 		}
 		else
 		{
-			lines *newLine = (lines*)malloc(sizeof(lines));
 			currentLine -> memType = ICline;
 			instruction(line, NULL, currentLine);
-			currentLine -> next = newLine;
-			newLine -> next = NULL;
-			currentLine = newLine;
 		}
 		lineCounter++;
 	}

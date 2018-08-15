@@ -245,7 +245,7 @@ int isJmpWParams(char **str, word words[], opCode op) {
   }
   else
     return 0;
-  str = &working;
+  *str = working;
   return numOfWords;
 }
 
@@ -359,7 +359,7 @@ void instruction(char *str, label *labelInstruction, lines *currentLine) {
       working = skipBlanks(working);
       sourceAddr = immidiate;
       if ((numOfWords = isJmpWParams(&working, words, op))) {
-        if (*working++ != ')') 
+        if (*working++ != ')')
           error(33);
       }
       else if ((words[1] = isRegister(&working, dstReg)).AREdata.are != 3) {
@@ -374,7 +374,7 @@ void instruction(char *str, label *labelInstruction, lines *currentLine) {
         error(20);
     }
 
-    if (*skipBlanks(working) != '\0' && *skipBlanks(working) != '\n')
+    if (*skipBlanks(working) != '\0' && *skipBlanks(working) != '\n' && *skipBlanks(working) != '\r')
       error(21);
     if (labelInstruction != NULL)
       labelInstruction -> adress = IC;
@@ -452,7 +452,7 @@ word makeDataWords(ARE *Are, signed int num){
 }
 
 opCode whatOpCode(char **str){
-  char op[4];
+  char op[4] = "";
   opCode retOp = notAnOp;
   strncpy(op, *str, 3);
   if (!strcmp(op, "mov"))
@@ -495,8 +495,10 @@ opCode whatOpCode(char **str){
     else
       *str += 3;
   }
-  if (isblank((int)**str) || **str == '\n' || **str == '\r' || **str == '\0')
+  if (isblank((int)**str) || **str == '\n' || **str == '\r' || **str == '\0') {
+    *str = skipBlanks(*str);
     return retOp;
+  }
   else
     return notAnOp;
 }
@@ -514,8 +516,8 @@ word makeInstruction(ARE Are, Addressing dest, Addressing source, opCode opcode,
   wrd.instruction.destAddressing   = dest;
   wrd.instruction.sourceAddressing = source;
   wrd.instruction.op               = opcode;
-  wrd.instruction.param1           = param1;
-  wrd.instruction.param2           = param2;
+  wrd.instruction.param1           = param2;
+  wrd.instruction.param2           = param1;
   return wrd;
 }
 
@@ -533,7 +535,7 @@ void updateLine(lines *currentLine) {
 void updateLineList(lines *head){
   if (head -> memType == DCline)
     head -> position += IC + AddressBase;
-  else
+  else if (head -> memType == ICline)
     head -> position += AddressBase;
   if (head -> next != NULL)
     updateLineList(head -> next);
@@ -578,7 +580,7 @@ void updateAddress(label *nameLabel, void *instWrdAdd, unsigned int pos) {
       }
     }
   }
-  else if (nameLabel -> addId == noneAdd) 
+  else if (nameLabel -> addId == noneAdd)
     lblWRD -> Word = makeAdressWord(Relocatable, NULL, NULL, &pos);
 }
 
@@ -603,9 +605,9 @@ void makeOutputFile(FILE *output){
   for (counter = 0; counter < IC + DC; counter++) {
     wordList *temp = head;
     wrdCS = Word2CommaSlash(temp -> Word);
-    free(head);
     fprintf(output, "%4d    %s\n", AddressBase+counter, wrdCS);
     head = temp -> next;
+    free(temp);
     free(wrdCS);
   }
   if (head)
