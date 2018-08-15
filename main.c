@@ -103,7 +103,7 @@ int assembler(char *fileName)
 					search = temp;
 					strcpy(search -> name, lineName);
 				}
-				search -> id = noneData;
+				search -> id = getType(line);
 				search -> addId = getAddType(line);
 				temp -> next = (label*)malloc(sizeof(label));
 				temp = temp -> next;
