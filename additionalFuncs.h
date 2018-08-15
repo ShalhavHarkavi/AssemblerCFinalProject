@@ -21,7 +21,7 @@ typedef enum AdditionalLabelType{noneAdd, entry, external}addType;
 
 typedef struct Label
 {
-  char name[MAX_NAME_LENGTH];
+  char name[];
   int adress;
   type id;
   addType addId;
