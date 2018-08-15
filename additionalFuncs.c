@@ -51,14 +51,14 @@ char *getLabelName(char str[])
 type getType(char str[])
 {
 	int i, j, typeLength;
-	char dataType[7];
+	char bigDataType[7];
 	for (i = 0; str[i] != '.' && str[i] != '\0'; i++);
 	if (str[i] == '\0')
 	    return noneData;
 	i++;
 	for (j = i; str[j] != ' ' && str[j] != '\t'; j++);
 	typeLength = j - i;
-	strncpy(dataType, (str + i), typeLength);
+	strncpy(bigDataType, (str + i), typeLength);
 	char dataType[typeLength + 1];
 	strcpy(dataType, bigAddType);
 	dataType[typeLength] = '\0';
