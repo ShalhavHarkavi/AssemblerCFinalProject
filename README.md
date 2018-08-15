@@ -21,6 +21,7 @@ int *getValue(char str[], type id)
 			error(syntaxError);
 			return 0;
 		}
+		bigValueArr[z] = (char*)malloc(sizeof(char) * 75);
 		strncpy(bigValueArr[z], (str + i), (j - i));
 	}
 	bigValueArr[z] = '\0';
@@ -28,5 +29,7 @@ int *getValue(char str[], type id)
 	valueArr = (int*)malloc(sizeof(int) * numCount);
 	for (i = 0; i < numCount; i++)
 		valueArr[i] = atoi(bigValueArr[i]);
+	for (i = 0; i < 41; i++)
+		free(bigValueArr[i]);
 	return valueArr;
 }
