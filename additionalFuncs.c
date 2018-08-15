@@ -94,7 +94,7 @@ int *getValue(char str[], type id)
 		if (str[j] == ',' && str[j + 1] == ',')
 		{
 			error(syntaxError);
-			return 0; /*Placeholder return.*/
+			return 0;
 		}
 		valueChar = (char*)malloc(sizeof(char) * (j - i));
 		strncpy(valueChar, (str + i), (j - i));
