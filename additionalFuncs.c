@@ -94,7 +94,7 @@ int *getValue(char str[], type id)
 		if (z > (sizeof(valueArr) / sizeof(int)))
 			realloc(valueArr, (sizeof(int) * z));
 		for (i = t; !isdigit((int)str[i]); i++);
-		for (j = i; str[j] != ',' || str[j] != ' ' || str[j] != '\t'; j++);
+		for (j = i; str[j] != ',' && str[j] != ' ' && str[j] != '\t'; j++);
 		if (str[j] == ',' && str[j + 1] == ',')
 		{
 			error(syntaxError);
