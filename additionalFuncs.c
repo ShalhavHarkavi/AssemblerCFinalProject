@@ -60,7 +60,7 @@ type getType(char str[])
 	typeLength = j - i;
 	strncpy(bigDataType, (str + i), typeLength);
 	char dataType[typeLength + 1];
-	strcpy(dataType, bigAddType);
+	strcpy(dataType, bigDataType);
 	dataType[typeLength] = '\0';
 	if (isEqual(dataType, "string") == true)
 		return string;
