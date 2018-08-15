@@ -50,14 +50,18 @@ char *getLabelName(char str[])
 
 type getType(char str[])
 {
-	int i, j;
+	int i, j, typeLength;
 	char dataType[7];
 	for (i = 0; str[i] != '.' && str[i] != '\0'; i++);
 	if (str[i] == '\0')
 	    return noneData;
 	i++;
 	for (j = i; str[j] != ' ' && str[j] != '\t'; j++);
-	strncpy(dataType, (str + i), (j - i));
+	typeLength = j - i;
+	strncpy(dataType, (str + i), typeLength);
+	char dataType[typeLength + 1];
+	strcpy(dataType, bigAddType);
+	dataType[typeLength] = '\0';
 	if (isEqual(dataType, "string") == true)
 		return string;
 	if (isEqual(dataType, "data") == true)
@@ -67,14 +71,18 @@ type getType(char str[])
 
 addType getAddType(char str[])
 {
-	int i, j;
-	char addType[7];
+	int i, j, typeLength;
+	char bigAddType[7];
 	for (i = 0; str[i] != '.' && str[i] != '\0'; i++);
 	if (str[i] == '\0')
 	    return noneAdd;
 	i++;
 	for (j = i; str[j] != ' ' && str[j] != '\t'; j++);
-	strncpy(addType, (str + i), (j - i));
+	typeLength = j - i;
+	strncpy(bigAddType, (str + i), typeLength);
+	char addType[typeLength + 1];
+	strcpy(addType, bigAddType);
+	addType[typeLength] = '\0';
 	if (isEqual(addType, "entry") == true)
 		return entry;
 	if (isEqual(addType, "extern") == true)
