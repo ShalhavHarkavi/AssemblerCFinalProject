@@ -52,7 +52,9 @@ type getType(char str[])
 {
 	int i, j;
 	char dataType[7];
-	for (i = 0; str[i] != '.'; i++);
+	for (i = 0; str[i] != '.' && str[i] != '\0'; i++);
+	if (str[i] == '\0')
+	    return noneData;
 	i++;
 	for (j = i; str[j] != ' ' && str[j] != '\t'; j++);
 	strncpy(dataType, (str + i), (j - i));
@@ -67,7 +69,9 @@ addType getAddType(char str[])
 {
 	int i, j;
 	char addType[7];
-	for (i = 0; str[i] != '.'; i++);
+	for (i = 0; str[i] != '.' && str[i] != '\0'; i++);
+	if (str[i] == '\0')
+	    return noneAdd;
 	i++;
 	for (j = i; str[j] != ' ' && str[j] != '\t'; j++);
 	strncpy(addType, (str + i), (j - i));
