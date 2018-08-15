@@ -52,9 +52,7 @@ type getType(char str[])
 {
 	int i, j;
 	char dataType[7];
-	for (i = 0; str[i] != '.' && str[i] != '\0'; i++);
-	if (str[i] == '\0')
-	    return noneData;
+	for (i = 0; str[i] != '.'; i++);
 	i++;
 	for (j = i; str[j] != ' ' && str[j] != '\t'; j++);
 	strncpy(dataType, (str + i), (j - i));
@@ -69,9 +67,7 @@ addType getAddType(char str[])
 {
 	int i, j;
 	char addType[7];
-	for (i = 0; str[i] != '.' && str[i] != '\0'; i++);
-	if (str[i] == '\0')
-	    return noneAdd;
+	for (i = 0; str[i] != '.'; i++);
 	i++;
 	for (j = i; str[j] != ' ' && str[j] != '\t'; j++);
 	strncpy(addType, (str + i), (j - i));
@@ -89,16 +85,16 @@ int *getValue(char str[], type id)
 	int *valueArr = (int*)malloc(sizeof(int));
 	if (id == noneData || id == string)
 		return NULL;
-	for (t = 0, z = 0; str[t] != '\0'; t = j, z++)
+	for (t = 0, z = 0; str[t] == '\0'; t = j, z++)
 	{
 		if (z > (sizeof(valueArr) / sizeof(int)))
 			realloc(valueArr, (sizeof(int) * z));
 		for (i = t; !isdigit((int)str[i]); i++);
-		for (j = i; str[j] != ',' && str[j] != ' ' && str[j] != '\t'; j++);
+		for (j = i; str[j] != ',' || str[j] != ' ' || str[j] != '\t'; j++);
 		if (str[j] == ',' && str[j + 1] == ',')
 		{
 			error(syntaxError);
-			return 0;
+			return 0; /*Placeholder return.*/
 		}
 		valueChar = (char*)malloc(sizeof(char) * (j - i));
 		strncpy(valueChar, (str + i), (j - i));
@@ -221,4 +217,22 @@ void error(errorCode errorType)
 
 int isblank(char c) {
 	return (c == ' ' || c == '\t') ? 1 : 0;
+}
+
+lines *addLine(lines *where, lines **head) {
+	lines *newLine;
+	if (*head) {
+		newLine = (lines*)malloc(sizeof(lines));
+		if (where)
+			where -> next = newLine;
+		else/* if ((*head) -> next)*/ {
+			newLine -> next = (*head) -> next;
+			(*head) -> next = newLine;
+		}
+		return newLine;
+	}
+	else {
+		*head = (lines*)malloc(sizeof(lines));
+		return *head;
+	}
 }

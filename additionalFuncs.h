@@ -30,16 +30,18 @@ typedef struct Label
   struct Label *next;
 }label;
 
-typedef enum{ICline, DCline} ICDC;
+typedef enum{ICline, DCline, nonMemLine} ICDC;
 
 typedef struct LineMap {unsigned int lineNum;     /*source file line number    */
                         unsigned long int filePos;/*source file line position  */
                         void *instWord;           /*pinter to memory map       */
-                        unsigned int position;    /*address in memory map      */
+                        signed int position;      /*address in memory map      */
                         ICDC memType;             /*part of memory map (IC/DC) */
                         struct LineMap *next;
-                       }lines;
+                       } lines;
 
+/*pointer to a new link in the list starting *head at head after the where link*/
+lines *addLine(lines *where, lines **head);
 
 int isEqual(char str1[], char str2[]);
 
@@ -92,6 +94,6 @@ void updateAddress(label *nameLabel, void *instWrdAdd, unsigned int pos);
 void updateLabelAddress(label *head); /*update addresses for labels linked list*/
 
 /*update all entry labels with the address of the corresponding instruction label*/
-void updateEntries(label *head, label *current); 
+void updateEntries(label *head, label *current);
 
 int isblank(char c); /*1 if c is ' ' ot '\t'*/
