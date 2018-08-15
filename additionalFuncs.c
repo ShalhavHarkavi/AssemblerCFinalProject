@@ -98,7 +98,7 @@ int *getValue(char str[], type id)
 		if (str[j] == ',' && str[j + 1] == ',')
 		{
 			error(syntaxError);
-			return 0;
+			return 0; /*Placeholder return.*/
 		}
 		valueChar = (char*)malloc(sizeof(char) * (j - i));
 		strncpy(valueChar, (str + i), (j - i));
@@ -221,4 +221,22 @@ void error(errorCode errorType)
 
 int isblank(char c) {
 	return (c == ' ' || c == '\t') ? 1 : 0;
+}
+
+lines *addLine(lines *where, lines **head) {
+	lines *newLine;
+	if (*head) {
+		newLine = (lines*)malloc(sizeof(lines));
+		if (where)
+			where -> next = newLine;
+		else/* if ((*head) -> next)*/ {
+			newLine -> next = (*head) -> next;
+			(*head) -> next = newLine;
+		}
+		return newLine;
+	}
+	else {
+		*head = (lines*)malloc(sizeof(lines));
+		return *head;
+	}
 }
