@@ -84,31 +84,35 @@ addType getAddType(char str[])
 
 int *getValue(char str[], type id)
 {
-	int i, j, t, z;
-	char *valueChar;
-	int *valueArr = (int*)malloc(sizeof(int));
+	int i, j, t, z, numCount;
+	int bigValueArr[41];
+	int *valueArr = NULL;
 	if (id == noneData || id == string)
 		return NULL;
 	for (t = 0, z = 0; str[t] != '\0'; t = j, z++)
 	{
-		if (z > (sizeof(valueArr) / sizeof(int)))
-			realloc(valueArr, (sizeof(int) * z));
-		for (i = t; !isdigit((int)str[i]); i++);
-		for (j = i; str[j] != ',' && str[j] != ' ' && str[j] != '\t'; j++);
+		char numString[75];
+		for (i = t; !isdigit((int)str[i]) && str[i] != '-'; i++);
+		for (j = i; str[j] != ',' && str[j] != ' ' && str[j] != '\t' && str[j] != '\0'; j++);
 		if (str[j] == ',' && str[j + 1] == ',')
 		{
 			error(syntaxError);
 			return 0;
 		}
-		valueChar = (char*)malloc(sizeof(char) * (j - i));
-		strncpy(valueChar, (str + i), (j - i));
-		valueArr[z] = atoi(valueChar);
+		strncpy(numString, (str + i), (j - i));
+		bigValueArr[z] = atoi(numString);
 	}
+	numCount = sizeof(bigValueArr) / sizeof(int);
+	valueArr = (int*)malloc(numCount * sizeof(int));
+	for (i = 0; i < numCount; i++)
+		valueArr[i] = bigValueArr[i];
 	return valueArr;
 }
 
 char *getString(char str[], type id)
 {
+	if (id == noneData || id == data)
+		return NULL;
 	int i, j;
 	char *string;
 	for (i = 0; str[i] != '"'; i++);
