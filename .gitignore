@@ -4,3 +4,4 @@ assembler
 *.ent
 *.ext
 *.ob
+ps2.as
