@@ -30,16 +30,18 @@ typedef struct Label
   struct Label *next;
 }label;
 
-typedef enum{ICline, DCline} ICDC;
+typedef enum{ICline, DCline, nonMemLine} ICDC;
 
 typedef struct LineMap {unsigned int lineNum;     /*source file line number    */
                         unsigned long int filePos;/*source file line position  */
                         void *instWord;           /*pinter to memory map       */
-                        unsigned int position;    /*address in memory map      */
+                        signed int position;      /*address in memory map      */
                         ICDC memType;             /*part of memory map (IC/DC) */
                         struct LineMap *next;
-                       }lines;
+                       } lines;
 
+/*pointer to a new link in the list starting *head at head after the where link*/
+lines *addLine(lines *where, lines **head);
 
 int isEqual(char str1[], char str2[]);
 
@@ -81,7 +83,7 @@ void makeOutputFile(FILE *output);
 void updateLineList(lines *head);     /*add IC offset to all DC lines          */
 void clearLinesMap(lines *head);      /*clear lines memory mapping list        */
 unsigned char hasDirect(void *instWrdAdd);/*# names of labels from word at pos */
-int getName(char *line, char Name[]);/*get the next eligible name in line and advance ptr */
+int getName(char **line, char Name[]);/*get the next eligible name in line and advance ptr */
 label *findLabel(char *str, label *head);
 /*return the label with name = str or NULL if can't in the label list head*/
 
@@ -92,6 +94,6 @@ void updateAddress(label *nameLabel, void *instWrdAdd, unsigned int pos);
 void updateLabelAddress(label *head); /*update addresses for labels linked list*/
 
 /*update all entry labels with the address of the corresponding instruction label*/
-void updateEntries(label *head, label *current); 
+void updateEntries(label *head, label *current);
 
 int isblank(char c); /*1 if c is ' ' ot '\t'*/

@@ -163,33 +163,38 @@ void clearLinesMap(lines *head) {
 		head = temp -> next;
 	free(temp);
 }
-int getName(char *line, char Name[]) {
-	if (isLabel(line)) {
-		char *labelName = getLabelName(line);
-		line += strlen(labelName);
+int getName(char **line, char Name[]) {
+	if (isInstructionLabel(*line)) {
+		char *labelName = getLabelName(*line);
+		*line = skipBlanks(*line + strlen(labelName)+1) + 4;
 		free(labelName);
 	}
-	line = skipBlanks(skipBlanks(line) + 4); /*skip blanks and name of op*/
-	if (*line == '\n' || *line == '\0')
+	*line = skipBlanks(*line); /*skip blanks and name of op*/
+	if (**line == '\n' || **line == '\0')
 		return false;
-	else if (*line == '#')
-		while (*(line++) != ',')
-			if (*line == '\0')
+	if (**line == ',')
+		*line = skipBlanks(*line +1);
+	else if (**line == '#') {
+		while (*(*line++) != ',')
+			if (**line == '\0')
 				return false;
-	else if (*line == '(')
-		return getName(line + 1, Name);
+	}
+	else if (**line == '(') {
+		(*line)++;
+		return getName(line, Name);
+	}
 	else {
 		int i;
-		for (i=0; isalnum((int)*(line + i)); i++)
+		for (i=0; isalnum((int)*(*line + i)); i++)
 			;
-		if (i < MAX_NAME_LENGTH) {
-			strncpy(Name, line, i);
+		if (i && i < MAX_NAME_LENGTH) {
+			strncpy(Name, *line, i);
 			if (isLegalName(Name)) {
-				line++;
+				*line += i;
 				return true;
 			}
-			else
-				return false;
+			else 
+				*line += i;
 		}
 		else
 			return false;
@@ -241,4 +246,22 @@ void error(errorCode errorType)
 
 int isblank(char c) {
 	return (c == ' ' || c == '\t') ? 1 : 0;
+}
+
+lines *addLine(lines *where, lines **head) {
+	lines *newLine;
+	if (*head) {
+		newLine = (lines*)malloc(sizeof(lines));
+		if (where)
+			where -> next = newLine;
+		else/* if ((*head) -> next)*/ {
+			newLine -> next = (*head) -> next;
+			(*head) -> next = newLine;
+		}
+		return newLine;
+	}
+	else {
+		*head = (lines*)malloc(sizeof(lines));
+		return *head;
+	}
 }
