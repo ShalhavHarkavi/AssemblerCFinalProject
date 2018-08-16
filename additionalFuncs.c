@@ -232,9 +232,11 @@ void updateEntries(label *head, label *current) {
 void error(errorCode errorType)
 {
 	if (errorType == fopenError)
-		fprintf(stderr, "AN ERROR OCCURED WHILE TRYING TO OPEN THE INPUT FILE. /*Maybe specify which input file? Need to think about how to do it.*/");
+		fprintf(stderr, "AN ERROR OCCURED WHILE TRYING TO OPEN THE INPUT FILE.\n" /*Maybe specify which input file? Need to think about how to do it.*/);
 	if (errorType == syntaxError)
-		fprintf(stderr, "A SYNTAX ERROR HAS BEEN DETECTED /*Maybe specify line number? Need to think about how to do it.*/.");
+		fprintf(stderr, "A SYNTAX ERROR HAS BEEN DETECTED.\n" /*Maybe specify line number? Need to think about how to do it.*/);
+	if (errorType == nameError)
+		fprintf(stderr, "AN ILLEGAL NAME HAS BEEN DETECTED.\n");
 }
 
 int isblank(char c) {
