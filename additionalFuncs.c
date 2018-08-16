@@ -48,7 +48,7 @@ char *getLabelName(char str[])
 	i++;
 	if (i > MAX_NAME_LENGTH)
 		return NULL; /*here put error*/
-	num (char*)malloc(sizeof(char) * i);
+	name = (char*)malloc(sizeof(char) * i);
 	strncpy(name, start, i - 1);
 	name[i] = '\0';
 	return name;
