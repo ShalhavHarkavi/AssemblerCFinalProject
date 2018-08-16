@@ -105,17 +105,34 @@ void Data(label *labelData, lines *currentLine)
   if (labelData -> id == data) {
     length = sizeof(labelData -> value) / sizeof(int); /*Size of value array*/
     for (i = 0; i < length; i++) {
-      if (i == 0)
-        updateLine(currentLine);
-      insertDataWord(makeDataWords(NULL, (labelData -> value)[i]));
+      if (DC) {
+        insertDataWord(makeDataWords(NULL, (labelData -> value)[i]));
+        if (i == 0)
+          updateLine(currentLine);
+      }
+      else {
+        if (i == 0)
+          updateLine(currentLine);
+        insertDataWord(makeDataWords(NULL, (labelData -> value)[i]));
+      }
+      /*if (i == 0)
+          updateLine(currentLine);
+        insertDataWord(makeDataWords(NULL, (labelData -> value)[i]));*/
     }
   }
   else if (labelData -> id == string) {
     length = strlen(labelData -> string) + 1; /*Length of word, +1 for '\0'*/
     for (i = 0; i < length; i++) {
-      if (i == 0)
-        updateLine(currentLine);
-      insertDataWord(makeDataWords(NULL, (int) (labelData -> string)[i]));
+      if(DC) {
+        insertDataWord(makeDataWords(NULL, (int) (labelData -> string)[i]));
+        if (i == 0)
+          updateLine(currentLine);
+      }
+      else {
+        if (i == 0)
+          updateLine(currentLine);
+        insertDataWord(makeDataWords(NULL, (int) (labelData -> string)[i]));
+      }
     }
   }
 }
@@ -379,9 +396,16 @@ void instruction(char *str, label *labelInstruction, lines *currentLine) {
     if (labelInstruction != NULL)
       labelInstruction -> adress = IC;
     for (i = 0; i < numOfWords; i++) {
-      if (i == 0)
-        updateLine(currentLine);
-      insertinstructionWord(words[i]);
+      if (IC) {
+        insertinstructionWord(words[i]);
+        if (i == 0)
+          updateLine(currentLine);
+      }
+      else {
+        if (i == 0)
+          updateLine(currentLine);
+        insertinstructionWord(words[i]);
+      }      
     }
   }
 }
@@ -424,9 +448,9 @@ char *Word2CommaSlash(word wrd){
   int i;
   for (i = 13; i >= 0; i--){
     if (wrd.dword.DATA % 2)
-      *(comSlWord + i) = '1';
+      *(comSlWord + i) = '/';
     else
-      *(comSlWord + i) = '0';
+      *(comSlWord + i) = '.';
     wrd.dword.DATA /= 2;
   }
   *(comSlWord + 14) = '\0';
@@ -556,7 +580,7 @@ unsigned char hasDirect(void *instWrdAdd) {
 
 void updateAddress(label *nameLabel, void *instWrdAdd, unsigned int pos) {
   wordList *lblWRD = (wordList*)instWrdAdd;
-  while ((lblWRD -> Word).AREdata.are != 3)
+  while ((lblWRD -> Word).AREdata.are != Relocatable)
     lblWRD = lblWRD -> next;
   if (nameLabel -> addId == external) {
     if (nameLabel -> adress == -1) {
@@ -565,7 +589,7 @@ void updateAddress(label *nameLabel, void *instWrdAdd, unsigned int pos) {
     }
     else {
       label *nextNameLabel;
-      if ((nextNameLabel = findLabel(nameLabel -> name, nameLabel)))
+      if ((nextNameLabel = findLabel(nameLabel -> name, nameLabel -> next)))
         updateAddress(nextNameLabel, lblWRD, pos);
       else {
         label *newLabel = (label*)malloc(sizeof(label));
@@ -579,8 +603,10 @@ void updateAddress(label *nameLabel, void *instWrdAdd, unsigned int pos) {
       }
     }
   }
-  else if (nameLabel -> addId == noneAdd)
-    lblWRD -> Word = makeAdressWord(Relocatable, NULL, NULL, &pos);
+  else if (nameLabel -> addId == noneAdd) {
+    if (nameLabel -> adress >= 0)
+      lblWRD -> Word = makeAdressWord(Relocatable, NULL, NULL,(unsigned int*)&(nameLabel -> adress));
+  }
 }
 
 void updateLabelAddress(label *head) {
@@ -604,7 +630,7 @@ void makeOutputFile(FILE *output){
   for (counter = 0; counter < IC + DC; counter++) {
     wordList *temp = head;
     wrdCS = Word2CommaSlash(temp -> Word);
-    fprintf(output, "%4d    %s\n", AddressBase+counter, wrdCS);
+    fprintf(output, "%04d    %s\n", AddressBase+counter, wrdCS);
     head = temp -> next;
     free(temp);
     free(wrdCS);

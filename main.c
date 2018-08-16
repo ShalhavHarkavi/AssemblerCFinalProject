@@ -190,13 +190,6 @@ int assembler(char *fileName)
 int main(int argc, char *argv[])
 {
 	int i;
-	printf(" \\n : %d\n",isblank('\n'));
-	printf(" \\t : %d\n",isblank('\t'));
-	printf(" \\r : %d\n",isblank('\r'));
-	printf(" \\0 : %d\n",isblank('\0'));
-	printf("  \' \': %d\n",isblank(' '));
-	printf("  isprint(\' \'): %d\n",isprint(' '));
-	printf("%d name",isLegalName("entrY"));
 	for (i = 1; i < argc; i++)
 		assembler(argv[i]);
 	return 0;
