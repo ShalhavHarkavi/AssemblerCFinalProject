@@ -69,6 +69,11 @@ int assembler(char *fileName)
 	initializeWordList();
 	while (fgets(line, MAX_LINE_LENGTH, input) != NULL)
 	{
+		if (line[MAX_LINE_LENGTH - 2] != '\n')
+		{
+			error(lineLengthError);
+			return 0;
+		}
 		char lineName[MAX_NAME_LENGTH];
 		currentLine -> lineNum = lineCounter;
 		currentLine -> filePos = ftell(input) - strlen(line) -1;
@@ -129,6 +134,11 @@ int assembler(char *fileName)
 		{
 			lines *newLine = (lines*)malloc(sizeof(lines));
 			strcpy(lineName, getLabelName(line));
+			if (strlen(lineName) > MAX_NAME_LENGTH)
+			{
+				error(nameError);
+				return 0;
+			}
 			strcpy(temp -> name, lineName); /*Maybe get rid of the line befire that, and replace this line with strncpy with n being MAX_NAME_LENGTH?*/
 			temp -> id = getType(line);
 			temp -> addId = getAddType(line);
@@ -195,6 +205,11 @@ int assembler(char *fileName)
 
 int main(int argc, char *argv[])
 {
+	if (argc == 1)
+	{
+		error(fileNumError);
+		return 0;
+	}
 	int i;
 	for (i = 1; i < argc; i++)
 		assembler(argv[i]);
