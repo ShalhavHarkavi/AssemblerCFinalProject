@@ -13,7 +13,7 @@
 #define false 0
 #define AddressBase 100
 
-typedef enum ErrorCode{fopenError, syntaxError, nameError/*Add more error types here*/}errorCode;
+typedef enum ErrorCode{fopenError, syntaxError, nameError, lineLengthError, fileNumError/*Add more error types here*/}errorCode;
 
 typedef enum LabelType{noneData, data, string}type;
 
