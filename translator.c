@@ -504,10 +504,9 @@ opCode whatOpCode(char **str){
 }
 
 char *skipBlanks(char *str){
-  char *output = str;
-  for(;isblank((int) *output) && *output != '\0';output++)
+  for(;isblank(*str) && *str != '\0';str++)
     ;
-  return output;
+  return str;
 }
 
 word makeInstruction(ARE Are, Addressing dest, Addressing source, opCode opcode, Addressing param1, Addressing param2){

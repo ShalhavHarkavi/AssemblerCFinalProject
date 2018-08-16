@@ -11,6 +11,7 @@ void secondPass(FILE *input, label *head, lines *linesMapHead) {
 		numOfNames = hasDirect(linesMapHead -> instWord);
 		if (numOfNames) {
 			char *line = (char*)malloc(sizeof(char)*MAX_LINE_LENGTH);
+			char *lineP = line;
 			int i;
 			fseek(input, linesMapHead -> filePos, SEEK_SET);
 			fgets(line, MAX_LINE_LENGTH, input);
@@ -20,9 +21,10 @@ void secondPass(FILE *input, label *head, lines *linesMapHead) {
 				if (getName(&line, Name)) {
 					nameLabel = findLabel(Name, head);
 					while (nameLabel) {
-						nameLabel = findLabel(Name, nameLabel);
-						if (nameLabel -> addId == entry)
+						if (nameLabel -> addId == entry) {
+							nameLabel = findLabel(Name, nameLabel -> next);
 							continue;
+						}
 						else {
 							updateAddress(nameLabel, linesMapHead -> instWord, linesMapHead -> position);
 							break;
@@ -34,7 +36,7 @@ void secondPass(FILE *input, label *head, lines *linesMapHead) {
 				else
 					error(10);
 			}
-			free(line);
+			free(lineP);
 		}
 	}
 	if (linesMapHead -> next != NULL)
@@ -47,16 +49,16 @@ int assembler(char *fileName)
 	FILE *input, *output, *entries, *externals;
 	label *head = NULL, *temp = NULL;
 	char line[MAX_LINE_LENGTH], inputName[MAX_FILE_NAME_LENGTH], outputName[MAX_FILE_NAME_LENGTH], entriesName[MAX_FILE_NAME_LENGTH], externalsName[MAX_FILE_NAME_LENGTH];
-	unsigned int lineCounter = 1;
+	unsigned int lineCounter;
 	lines *currentLine = NULL;
 	lines *linesMapHead = NULL;
-	strncpy(inputName, fileName, MAX_FILE_NAME_LENGTH - 3);
+	strncpy(inputName, fileName, MAX_FILE_NAME_LENGTH - 4);
 	strcat(inputName, ".as");
-	strncpy(outputName, fileName, MAX_FILE_NAME_LENGTH - 3);
+	strncpy(outputName, fileName, MAX_FILE_NAME_LENGTH - 4);
 	strcat(outputName, ".ob");
-	strncpy(entriesName, fileName, MAX_FILE_NAME_LENGTH - 4);
+	strncpy(entriesName, fileName, MAX_FILE_NAME_LENGTH - 5);
 	strcat(entriesName, ".ent");
-	strncpy(externalsName, fileName, MAX_FILE_NAME_LENGTH - 4);
+	strncpy(externalsName, fileName, MAX_FILE_NAME_LENGTH - 5);
 	strcat(externalsName, ".ext");
 	input = fopen(inputName, "r");
 	if (input == NULL)
@@ -70,7 +72,7 @@ int assembler(char *fileName)
 	head = (label*)malloc(sizeof(label));
 	temp = head;
 	initializeWordList();
-	while (fgets(line, MAX_LINE_LENGTH, input) != NULL)
+	for (lineCounter = 1;fgets(line, MAX_LINE_LENGTH, input) != NULL; lineCounter++)
 	{
 		char lineName[MAX_NAME_LENGTH];
 		currentLine = addLine(currentLine, &linesMapHead);
@@ -79,11 +81,11 @@ int assembler(char *fileName)
 		currentLine -> memType = nonMemLine;
 		currentLine -> instWord = NULL;
 		currentLine -> position = -1;
-		if (skipBlanks(line)[0] == ';')
+		if (skipBlanks(line)[0] == ';' || *skipBlanks(line) == '\0')
 			continue; /*So it skips comments. Need to check if the syntax is right (meaning if 'continue' is the right command).*/
 		else if (skipBlanks(line)[0] == '.')
 		{
-
+			addType addid;
 			if (getType(line) != noneData)
 			{
 				temp -> id = getType(line);
@@ -95,28 +97,26 @@ int assembler(char *fileName)
 				free(temp);
 				temp = (label*)malloc(sizeof(label));
 			}
-			else if (getAddType(line) != noneAdd)
+			else if ((addid = getAddType(line)) != noneAdd)
 			{
-				char* skipBlanksLine = skipBlanks(line);
+				/*char* skipBlanksLine = skipBlanks(line);
 				char* lastLetter;
 				int charNum;
-				for (; *skipBlanksLine != ' ' && *skipBlanksLine != '\t' && *skipBlanksLine != '\0'; skipBlanksLine++);
 				if (*skipBlanksLine == '\0')
 				{
 					error(syntaxError);
 					return 0;
 				}
-				skipBlanksLine = skipBlanks(skipBlanksLine);
 				lastLetter = skipBlanksLine;
-				for (charNum = 0; *lastLetter != ' ' && *lastLetter != '\t' && *lastLetter != '\0'; lastLetter++, charNum++);
+				for (charNum = 0; isalnum(lastLetter); lastLetter++, charNum++);
 				strncpy(lineName, skipBlanksLine, charNum);
-				charNum++;
-				for (; charNum < MAX_NAME_LENGTH; charNum++)
-					lineName[charNum] = '\0';
-				if (isLegalName(lineName) == true)
+				lineName[charNum] = '\0';
+				if (isLegalName(lineName) == true)*/
+				char *linep = (char*)line;
+				if (getName(&linep, lineName))
 				{
 					strcpy(temp -> name, lineName);
-					temp -> addId = getAddType(line);
+					temp -> addId = addid;
 					temp -> next = (label*)malloc(sizeof(label));
 					temp = temp -> next;
 				}
@@ -159,19 +159,18 @@ int assembler(char *fileName)
 			currentLine -> memType = ICline;
 			instruction(line, NULL, currentLine);
 		}
-		lineCounter++;
 	}
 	updateLineList(linesMapHead);
 	updateLabelAddress(head);
-	/* secondPass(input, head, linesMapHead); */
+	secondPass(input, head, linesMapHead); 
 	fclose(input);
 	temp = head;
 	while (temp != NULL)
 	{
 		if (temp -> addId == external)
-			fprintf(externals, "%s\t%d", temp -> name, temp -> adress); /*NEED TO FIND A WAY TO MAKE COLUMNS FOR NAMES AND ADRESSES*/
+			fprintf(externals, "%s\t%d\n", temp -> name, temp -> adress); /*NEED TO FIND A WAY TO MAKE COLUMNS FOR NAMES AND ADRESSES*/
 		if (temp -> addId == entry)
-			fprintf(entries, "%s\t%d", temp -> name, temp -> adress); /*NEED TO FIND A WAY TO MAKE COLUMNS FOR NAMES AND ADRESSES*/
+			fprintf(entries, "%s\t%d\n", temp -> name, temp -> adress); /*NEED TO FIND A WAY TO MAKE COLUMNS FOR NAMES AND ADRESSES*/
 		temp = temp -> next;
 	}
 	if (entries == NULL)
@@ -191,6 +190,13 @@ int assembler(char *fileName)
 int main(int argc, char *argv[])
 {
 	int i;
+	printf(" \\n : %d\n",isblank('\n'));
+	printf(" \\t : %d\n",isblank('\t'));
+	printf(" \\r : %d\n",isblank('\r'));
+	printf(" \\0 : %d\n",isblank('\0'));
+	printf("  \' \': %d\n",isblank(' '));
+	printf("  isprint(\' \'): %d\n",isprint(' '));
+	printf("%d name",isLegalName("entrY"));
 	for (i = 1; i < argc; i++)
 		assembler(argv[i]);
 	return 0;

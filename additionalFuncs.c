@@ -34,6 +34,7 @@ int isLabel(char str[])
 	if (str[i] == '\0')
 		return false;
 	strncpy(name, str, i);
+	name[i] = '\0';
 	if (isLegalName(name) == false)
 		return false;
 	return true;
@@ -65,6 +66,7 @@ type getType(char str[])
 	for (j = i; str[j] != ' ' && str[j] != '\t'; j++);
 	typeLength = j - i;
 	strncpy(bigDataType, (str + i), typeLength);
+	bigDataType[typeLength] = '\0';
 	char dataType[typeLength + 1];
 	strcpy(dataType, bigDataType);
 	dataType[typeLength] = '\0';
@@ -86,6 +88,7 @@ addType getAddType(char str[])
 	for (j = i; str[j] != ' ' && str[j] != '\t'; j++);
 	typeLength = j - i;
 	strncpy(bigAddType, (str + i), typeLength);
+	bigAddType[typeLength] = '\0';
 	char addType[typeLength + 1];
 	strcpy(addType, bigAddType);
 	addType[typeLength] = '\0';
@@ -114,6 +117,7 @@ int *getValue(char str[], type id)
 			return 0;
 		}
 		strncpy(numString, (str + i), (j - i));
+		numString[j-i] = '\0';
 		bigValueArr[z] = atoi(numString);
 		numCount++;
 	}
@@ -134,6 +138,7 @@ char *getString(char str[], type id)
 	for (j = i; str[j] != '"'; j++);
 	string = (char*)malloc(sizeof(char) * (j - i));
 	strncpy(string, (str + i), (j - i));
+	string[j-i] = '\0';
 	return string;
 }
 
@@ -175,12 +180,16 @@ int getName(char **line, char Name[]) {
 	if (**line == ',')
 		*line = skipBlanks(*line +1);
 	else if (**line == '#') {
-		while (*(*line++) != ',')
+		while (*++*line != ',')
 			if (**line == '\0')
 				return false;
 	}
 	else if (**line == '(') {
-		(*line)++;
+		*++*line;
+		return getName(line, Name);
+	}
+	else if (**line == '.') {
+		*++*line;
 		return getName(line, Name);
 	}
 	else {
@@ -189,12 +198,10 @@ int getName(char **line, char Name[]) {
 			;
 		if (i && i < MAX_NAME_LENGTH) {
 			strncpy(Name, *line, i);
-			if (isLegalName(Name)) {
-				*line += i;
+			Name[i] = '\0';
+			*line += i;
+			if (isLegalName(Name))
 				return true;
-			}
-			else 
-				*line += i;
 		}
 		else
 			return false;
@@ -205,7 +212,9 @@ int getName(char **line, char Name[]) {
 /* not very efficient maybe if there's time investigate using a hash table or 
 a sorted structure for the labels */
 label *findLabel(char *str, label *head) {
-	if (!strcmp(head -> name, str))
+	if (!head)
+		return NULL;
+	else if (!strcmp(head -> name, str))
 		return head;
 	else if (head -> next == NULL)
 		return NULL;
@@ -242,10 +251,6 @@ void error(errorCode errorType)
 		fprintf(stderr, "A SYNTAX ERROR HAS BEEN DETECTED.\n" /*Maybe specify line number? Need to think about how to do it.*/);
 	if (errorType == nameError)
 		fprintf(stderr, "AN ILLEGAL NAME HAS BEEN DETECTED.\n");
-}
-
-int isblank(char c) {
-	return (c == ' ' || c == '\t') ? 1 : 0;
 }
 
 lines *addLine(lines *where, lines **head) {

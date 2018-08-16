@@ -12,6 +12,7 @@
 #define true 1
 #define false 0
 #define AddressBase 100
+#define isblank(c) ((!isprint(c) && c != '\0') || c == ' ')
 
 typedef enum ErrorCode{fopenError, syntaxError, nameError/*Add more error types here*/}errorCode;
 
@@ -95,5 +96,3 @@ void updateLabelAddress(label *head); /*update addresses for labels linked list*
 
 /*update all entry labels with the address of the corresponding instruction label*/
 void updateEntries(label *head, label *current);
-
-int isblank(char c); /*1 if c is ' ' ot '\t'*/
