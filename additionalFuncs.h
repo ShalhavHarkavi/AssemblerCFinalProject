@@ -14,7 +14,7 @@
 #define AddressBase 100
 #define isblank(c) ((!isprint(c) && c != '\0') || c == ' ')
 
-typedef enum ErrorCode{fopenError, syntaxError, nameError/*Add more error types here*/}errorCode;
+typedef enum ErrorCode{fopenError, syntaxError, nameError, lineLengthError, fileNumError/*Add more error types here*/}errorCode;
 
 typedef enum LabelType{noneData, data, string}type;
 

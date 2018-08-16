@@ -74,6 +74,11 @@ int assembler(char *fileName)
 	initializeWordList();
 	for (lineCounter = 1;fgets(line, MAX_LINE_LENGTH, input) != NULL; lineCounter++)
 	{
+		if (line[MAX_LINE_LENGTH - 2] != '\n')
+		{
+			error(lineLengthError);
+			return 0;
+		}
 		char lineName[MAX_NAME_LENGTH];
 		currentLine = addLine(currentLine, &linesMapHead);
 		currentLine -> lineNum = lineCounter;
@@ -136,6 +141,11 @@ int assembler(char *fileName)
 		{
 			currentLine -> memType = DCline;
 			strcpy(lineName, getLabelName(line));
+			if (isLegalName(lineName) == false)
+			{
+				error(nameError);
+				return 0;
+			}
 			strcpy(temp -> name, lineName); /*Maybe get rid of the line befire that, and replace this line with strncpy with n being MAX_NAME_LENGTH?*/
 			temp -> id = getType(line);
 			temp -> addId = getAddType(line);
@@ -189,6 +199,11 @@ int assembler(char *fileName)
 
 int main(int argc, char *argv[])
 {
+	if (argc == 1)
+	{
+		error(fileNumError);
+		return 0;
+	}
 	int i;
 	for (i = 1; i < argc; i++)
 		assembler(argv[i]);
