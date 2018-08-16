@@ -10,15 +10,15 @@ void secondPass(FILE *input, label *head, lines *linesMapHead) {
 		unsigned char numOfNames;
 		numOfNames = hasDirect(linesMapHead -> instWord);
 		if (numOfNames) {
-			char line[MAX_LINE_LENGTH];
+			char *line = (char*)malloc(sizeof(char)*MAX_LINE_LENGTH);
 			int i;
 			fseek(input, linesMapHead -> filePos, SEEK_SET);
 			fgets(line, MAX_LINE_LENGTH, input);
 			for (i = 0; i < numOfNames; i++) {
 				char Name[MAX_NAME_LENGTH];
 				label *nameLabel;
-				if (getName(line, Name)) {
-					nameLabel = head;
+				if (getName(&line, Name)) {
+					nameLabel = findLabel(Name, head);
 					while (nameLabel) {
 						nameLabel = findLabel(Name, nameLabel);
 						if (nameLabel -> addId == entry)
@@ -34,6 +34,7 @@ void secondPass(FILE *input, label *head, lines *linesMapHead) {
 				else
 					error(10);
 			}
+			free(line);
 		}
 	}
 	if (linesMapHead -> next != NULL)
@@ -74,7 +75,7 @@ int assembler(char *fileName)
 		char lineName[MAX_NAME_LENGTH];
 		currentLine = addLine(currentLine, &linesMapHead);
 		currentLine -> lineNum = lineCounter;
-		currentLine -> filePos = ftell(input) - strlen(line) -1;
+		currentLine -> filePos = ftell(input) - strlen(line) -0;
 		currentLine -> memType = nonMemLine;
 		currentLine -> instWord = NULL;
 		currentLine -> position = -1;

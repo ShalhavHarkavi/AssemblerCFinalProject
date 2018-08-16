@@ -105,17 +105,17 @@ void Data(label *labelData, lines *currentLine)
   if (labelData -> id == data) {
     length = sizeof(labelData -> value) / sizeof(int); /*Size of value array*/
     for (i = 0; i < length; i++) {
-      insertDataWord(makeDataWords(NULL, (labelData -> value)[i]));
       if (i == 0)
         updateLine(currentLine);
+      insertDataWord(makeDataWords(NULL, (labelData -> value)[i]));
     }
   }
   else if (labelData -> id == string) {
     length = strlen(labelData -> string) + 1; /*Length of word, +1 for '\0'*/
     for (i = 0; i < length; i++) {
-      insertDataWord(makeDataWords(NULL, (int) (labelData -> string)[i]));
       if (i == 0)
         updateLine(currentLine);
+      insertDataWord(makeDataWords(NULL, (int) (labelData -> string)[i]));
     }
   }
 }
@@ -379,9 +379,9 @@ void instruction(char *str, label *labelInstruction, lines *currentLine) {
     if (labelInstruction != NULL)
       labelInstruction -> adress = IC;
     for (i = 0; i < numOfWords; i++) {
-      insertinstructionWord(words[i]);
       if (i == 0)
         updateLine(currentLine);
+      insertinstructionWord(words[i]);
     }
   }
 }
