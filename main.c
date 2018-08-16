@@ -134,7 +134,7 @@ int assembler(char *fileName)
 		{
 			lines *newLine = (lines*)malloc(sizeof(lines));
 			strcpy(lineName, getLabelName(line));
-			if (strlen(lineName) > MAX_NAME_LENGTH)
+			if (isLegalName(lineName) == false)
 			{
 				error(nameError);
 				return 0;
