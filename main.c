@@ -74,11 +74,11 @@ int assembler(char *fileName)
 	initializeWordList();
 	for (lineCounter = 1;fgets(line, MAX_LINE_LENGTH, input) != NULL; lineCounter++)
 	{
-		/*if (line[MAX_LINE_LENGTH - 2] != '\n')
+		if (isLegalLineLength(line) == false)
 		{
 			error(lineLengthError);
 			return 0;
-		}*/
+		}
 		char lineName[MAX_NAME_LENGTH];
 		currentLine = addLine(currentLine, &linesMapHead);
 		currentLine -> lineNum = lineCounter;
