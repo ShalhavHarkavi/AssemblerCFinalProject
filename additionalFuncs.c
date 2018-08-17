@@ -274,3 +274,11 @@ lines *addLine(lines *where, lines **head) {
 		return *head;
 	}
 }
+
+void destroyLabelList(label* head)
+{
+    if (head == NULL)
+        return;
+    destroyLabelList(head -> next);
+    free(head);
+}
