@@ -98,3 +98,5 @@ void updateLabelAddress(label *head); /*update addresses for labels linked list*
 void updateEntries(label *head, label *current);
 
 void destroyLabelList(label* head);
+
+int isLegalLineLength(char str[]);
