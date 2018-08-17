@@ -141,7 +141,7 @@ int assembler(char *fileName) /*The main assembling function*/
 		{
 			currentLine -> memType = DCline; /**/
 			strcpy(lineName, getLabelName(line)); /*Copying the label name from the line*/
-			if (isLegalName(lineName) == false) /*Checking if the name is legal according to the laws of the project. If not, calls an illegal name error*/
+			if (isLegalName(lineName) == false) /*Checking if the name is legal according to the guidelines of the project. If not, calls an illegal name error*/
 			{
 				error(nameError);
 				return 0;
@@ -159,7 +159,7 @@ int assembler(char *fileName) /*The main assembling function*/
 		{
 			currentLine -> memType = ICline; /**/
 			strcpy(lineName, getLabelName(line)); /*Copying the label name from the line*/
-			if (isLegalName(lineName) == false) /*Checking if the name is legal according to the laws of the project. If not, calls an illegal name error*/
+			if (isLegalName(lineName) == false) /*Checking if the name is legal according to the guidelines of the project. If not, calls an illegal name error*/
 			{
 				error(nameError);
 				return 0;
