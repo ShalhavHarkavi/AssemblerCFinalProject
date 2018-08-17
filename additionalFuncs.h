@@ -96,3 +96,5 @@ void updateLabelAddress(label *head); /*update addresses for labels linked list*
 
 /*update all entry labels with the address of the corresponding instruction label*/
 void updateEntries(label *head, label *current);
+
+void destroyLabelList(label* head);
