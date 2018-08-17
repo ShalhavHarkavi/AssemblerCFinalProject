@@ -194,6 +194,7 @@ int assembler(char *fileName)
 		remove(strcat(fileName, ".ext"));
 	}
 	makeOutputFile(output);
+	destroyLabelList(head);
 	return 0;
 }
 
