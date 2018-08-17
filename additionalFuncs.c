@@ -282,3 +282,12 @@ void destroyLabelList(label* head)
     destroyLabelList(head -> next);
     free(head);
 }
+
+int isLegalLineLength(char str[])
+{
+	int i;
+	for (i = 0; str[i] != '\0'; i++);
+	if (str[i - 1] != '\n')
+		return false;
+	return true;
+}
