@@ -40,7 +40,7 @@ int isLabel(char str[]) /*Returns true if str (a line from the input file) inclu
 	return true;
 }
 
-char *getLabelName(char str[]) /*Returns a pointer to the name of the label in str (a line from the input file)*/
+char *getLabelName(char str[], lines *line) /*Returns a pointer to the name of the label in str (a line from the input file)*/
 {
 	int i;
 	char *name = NULL; /*Label name pointer that will be returned from function*/
@@ -49,7 +49,7 @@ char *getLabelName(char str[]) /*Returns a pointer to the name of the label in s
 	i++; /*Advances 1 for '\0'*/
 	if (i > MAX_NAME_LENGTH) /*If the length of the name (including '\0') is greater than the maximum legal length of a name (defined by the project guidelines, includeing '\0'), call the error function for a name error and return a NULL pointer*/
 	{
-		error(nameError);
+		error(nameError, line -> lineNum, NULL);
 		return NULL;
 	}
 	name = (char*)malloc(sizeof(char) * i); /*Allocates memory for the label name so it can be returned from the function, in the size of the name plus '\0'*/
@@ -118,7 +118,7 @@ addType getAddType(char str[]) /*Returns the type (entry, external, none) used i
 	return noneAdd; /*Returns the only left option that isn't entry or external, noneAdd*/
 }
 
-int *getValue(char str[], type id) /*Returns a pointer to an array that stores the numbers in a data type label defined in str (str is aline from the file, returns NULL if label is not data type)*/
+int *getValue(char str[], type id, lines *line) /*Returns a pointer to an array that stores the numbers in a data type label defined in str (str is aline from the file, returns NULL if label is not data type)*/
 {
 	int i, j, t, z, numCount = 0;
 	int bigValueArr[MAX_NUMS_IN_DATA_TYPE]; /*Array that can store the maximum amount of numbers in a line that is defined by .data without a label*/
@@ -132,7 +132,7 @@ int *getValue(char str[], type id) /*Returns a pointer to an array that stores t
 		for (j = i; str[j] != ',' && str[j] != ' ' && str[j] != '\t' && str[j] != '\0'; j++); /*Runs through the rest of the line until the number ends*/
 		if (str[j] == ',' && str[j + 1] == ',') /*Checks if there are two commas with no numbers between them. If so, calls a syntax error*/
 		{
-			error(syntaxError);
+			error(syntaxError, line -> lineNum, NULL);
 			return 0;
 		}
 		strncpy(numString, (str + i), (j - i)); /*copies the number from the line to the number string*/
@@ -192,7 +192,7 @@ void clearLinesMap(lines *head) /**/
 int getName(char **line, char Name[]) /**/
 {
 	if (isInstructionLabel(*line)) {
-		char *labelName = getLabelName(*line);
+		char *labelName = getLabelName(*line, NULL);
 		*line = skipBlanks(*line + strlen(labelName)+1) + 4;
 		free(labelName);
 	}
@@ -258,7 +258,7 @@ void updateEntries(label *head, label *current) {
 			}
 		}
 		if (nameLabel == NULL)
-			error(12);
+			error(EntryError, 0, current -> name);
 	}
 	if (current -> next != NULL)
 		updateEntries(head, current -> next);

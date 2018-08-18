@@ -16,7 +16,9 @@
 #define isblank(c) ((!isprint(c) && c != '\0') || c == ' ')
 
 typedef enum ErrorCode{fopenError, syntaxError, nameError, lineLengthError, fileNumError, 
-                       JmpNotLabel, param1Err, param2Err, expectComma}errorCode;
+                       JmpNotLabel, param1Err, param2Err, expectComma, illegalOpErr,
+                       illegalDest, illegalSource, expectParen, expectEOL, EntryError, 
+                       labelNotFound}errorCode;
 
 typedef enum LabelType{noneData, data, string}type;
 
@@ -54,17 +56,17 @@ int isLegalName(char str[]);
 
 int isLabel(char str[]);
 
-char *getLabelName(char str[]);
+char *getLabelName(char str[], lines* line);
 
 type getType(char str[]);
 
 addType getAddType(char str[]);
 
-int *getValue(char str[], type id);
+int *getValue(char str[], type id, lines *line);
 
 char *getString(char str[], type id);
 
-void error(errorCode errorType, char *location);
+void error(errorCode errorType, unsigned int location, char *nameERR);
 
 /*public function for non-ARE data words creation*/
 void Data(label* labelData, lines *currentLine);

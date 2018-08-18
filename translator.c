@@ -68,7 +68,7 @@ static word isDirect(char **str);
 /*binary data words with or without ARE prefix*/
 static word makeDataWords(ARE *are, int);
 /*binary address word either register or label*/
-static int isJmpWParams(char **str, word words[], opCode op); /*create words for jump with parameters */
+static int isJmpWParams(char **str, word words[], opCode op, unsigned int lineNumber); /*create words for jump with parameters */
 /*instruction (first) word*/
 static word makeInstruction(ARE are, Addressing dest, Addressing source, opCode opcode, Addressing param1, Addressing param2);
 static word makeAdressWord(ARE are, unsigned char *regDest, unsigned char *regSource, unsigned int *address);
@@ -208,12 +208,12 @@ word isDirect(char **str) {
   return wrd;
 }
 
-int isJmpWParams(char **str, word words[], opCode op) {
+int isJmpWParams(char **str, word words[], opCode op, unsigned int lineNumber) {
   int numOfWords = 0;
   char *working = *str;
   Addressing param1;
   if ((words[1] = isDirect(&working)).AREdata.are == 3) {
-    error(JmpNotLabel);
+    error(JmpNotLabel, lineNumber, NULL);
     return 0;
   }
   else
@@ -226,11 +226,11 @@ int isJmpWParams(char **str, word words[], opCode op) {
     else if ((words[2] = isDirect(&working)).AREdata.are != 3)
       param1 = direct;
     else {
-      error(param1Err);
+      error(param1Err, lineNumber, NULL);
       return 0;
     }
     if (*(working++) != ',') {
-      error(expectComma);
+      error(expectComma, lineNumber, NULL);
       return 0;
     }
     if ((words[3] = isRegister(&working, dstReg)).AREdata.are != 3) {
@@ -249,7 +249,7 @@ int isJmpWParams(char **str, word words[], opCode op) {
       numOfWords++;
     }
     else {
-      error(18);
+      error(param2Err, lineNumber, NULL);
       return 0;
     }
   }
@@ -263,7 +263,7 @@ void instruction(char *str, label *labelInstruction, lines *currentLine) {
   char *working = skipBlanks(str);
   opCode op=whatOpCode(&working);
   if (op < 0)
-    error(0);
+    error(illegalOpErr, currentLine -> lineNum, NULL);
   else {
     word words[4];
     int i;
@@ -288,11 +288,11 @@ void instruction(char *str, label *labelInstruction, lines *currentLine) {
         numOfWords = 2;
       }
       else{
-        error(25);
+        error(illegalDest, currentLine -> lineNum, NULL);
       }
       working = skipBlanks(working);
       if (*working != ',')
-        error(0);
+        error(expectComma, currentLine -> lineNum, NULL);
       else
         working = skipBlanks(working + 1);
       if ((words[2] = isRegister(&working, dstReg)).AREdata.are != 3) {
@@ -311,17 +311,17 @@ void instruction(char *str, label *labelInstruction, lines *currentLine) {
         numOfWords++;
       }
       else
-        error(0);
+        error(illegalSource, currentLine -> lineNum, NULL);
     }
     else if (op == lea) {
       working = skipBlanks(working);
       if ((words[1] = isDirect(&working)).AREdata.are != 3)
         numOfWords = 2;
       else
-        error(1);
+        error(illegalDest, currentLine -> lineNum, NULL);
       working = skipBlanks(working);
       if (*working != ',')
-        error(0);
+        error(expectComma, currentLine -> lineNum, NULL);
       else
         working = skipBlanks(working + 1);
       if ((words[2] = isRegister(&working, dstReg)).AREdata.are != 3) {
@@ -333,7 +333,7 @@ void instruction(char *str, label *labelInstruction, lines *currentLine) {
         numOfWords++;
       }
       else
-        error(0);
+        error(illegalSource, currentLine -> lineNum, NULL);
     }
     else if (op == not || op == clr || op == inc || op == dec || op == dec) { /*third group no source addressing, direct or register destination addressing*/
       working = skipBlanks(working);
@@ -346,7 +346,7 @@ void instruction(char *str, label *labelInstruction, lines *currentLine) {
         numOfWords = 2;
       }
       else
-        error(1);
+        error(illegalDest, currentLine -> lineNum, NULL);
     }
     else if (op == prn) {
       working = skipBlanks(working);
@@ -363,14 +363,14 @@ void instruction(char *str, label *labelInstruction, lines *currentLine) {
         numOfWords = 2;
       }
       else
-        error(1);
+        error(illegalDest, currentLine -> lineNum, NULL);
     }
     else if (op == jmp || op == bne || op == jsr) {
       working = skipBlanks(working);
       sourceAddr = immidiate;
-      if ((numOfWords = isJmpWParams(&working, words, op))) {
+      if ((numOfWords = isJmpWParams(&working, words, op, currentLine -> lineNum))) {
         if (*working++ != ')')
-          error(33);
+          error(expectParen, currentLine -> lineNum, NULL);
       }
       else if ((words[1] = isRegister(&working, dstReg)).AREdata.are != 3) {
         words[0] = makeInstruction(Absolute, directReg, immidiate, op, immidiate, immidiate);
@@ -381,11 +381,11 @@ void instruction(char *str, label *labelInstruction, lines *currentLine) {
         numOfWords = 2;
       }
       else
-        error(20);
+        error(illegalDest, currentLine -> lineNum, NULL);
     }
 
-    if (*skipBlanks(working) != '\0' && *skipBlanks(working) != '\n' && *skipBlanks(working) != '\r')
-      error(21);
+    if (*skipBlanks(working) != '\0')
+      error(expectEOL, currentLine -> lineNum, NULL);
     if (labelInstruction != NULL)
       labelInstruction -> adress = IC;
     for (i = 0; i < numOfWords; i++) {

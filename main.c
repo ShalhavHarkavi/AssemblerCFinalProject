@@ -33,10 +33,8 @@ void secondPass(FILE *input, label *head, lines *linesMapHead) {
 						}
 					}
 					if (nameLabel == NULL)
-						error(12);
+						error(labelNotFound, linesMapHead -> lineNum, nameLabel -> name);
 				}
-				else
-					error(10);
 			}
 			free(lineP);
 		}
@@ -65,7 +63,7 @@ int assembler(char *fileName)
 	input = fopen(inputName, "r"); /*Opening the input file using its string in read mode*/
 	if (input == NULL) /*Checking if the input file cannot open. If not, it prints an error*/
 	{
-		error(fopenError);
+		error(fopenError, 0, fileName);
 		return 0;
 	}
 	output = fopen(outputName, "w"); /*Opening the output file using its string in writing mode so the contents of it are rewritten every time the assembler is activated on the input file*/
@@ -79,7 +77,7 @@ int assembler(char *fileName)
 		char lineName[MAX_NAME_LENGTH]; /*Creating a string to store the name of the label that might be in the line*/
 		if (isLegalLineLength(line) == false) /*Checking if the length of the current line from the file is too long. If it is, it calls for an error*/
 		{
-			error(lineLengthError);
+			error(lineLengthError, lineCounter, NULL);
 			return 0;
 		}
 		currentLine = addLine(currentLine, &linesMapHead); /**/
@@ -97,7 +95,7 @@ int assembler(char *fileName)
 			{
 				temp -> id = getType(line); /*Getting the type of data and putting it in the temporary label*/
 				temp -> addId = noneAdd; /*Setting the additional id of the temporary label to none, because it cannot be both data and entry/extern if not a label*/
-				temp -> value = getValue(line, temp -> id); /*Setting the numeric .data value of the temporary label (NULL if .string)*/
+				temp -> value = getValue(line, temp -> id, currentLine); /*Setting the numeric .data value of the temporary label (NULL if .string)*/
 				temp -> string = getString(line, temp -> id); /*Setting the .string value of the temporary label (NULL if .data)*/
 				Data(temp, currentLine); /*Creating data lines for the output file of the value stored in the temporary label*/
 				temp = NULL; /*Setting the temporary label to NULL to reset it*/
@@ -116,29 +114,29 @@ int assembler(char *fileName)
 				}
 				else
 				{
-					error(nameError);
+					error(nameError, lineCounter, NULL);
 					return 0;
 				}
 			}
 			else /*Else, the only left option is a syntax error, so it calls a syntax error using the function error.*/
 			{
-				error(syntaxError);
+				error(syntaxError, lineCounter, NULL);
 				return 0;
 			}
 		}
 		else if (isDataLabel(line) == true) /*Else, checking if the line is a declaration of a data label (a label that is declared using .data or .string). If it is:*/
 		{
 			currentLine -> memType = DCline; /**/
-			strcpy(lineName, getLabelName(line)); /*Copying the label name from the line*/
+			strcpy(lineName, getLabelName(line, currentLine)); /*Copying the label name from the line*/
 			if (isLegalName(lineName) == false) /*Checking if the name is legal according to the guidelines of the project. If not, calls an illegal name error*/
 			{
-				error(nameError);
+				error(nameError, lineCounter, NULL);
 				return 0;
 			}
 			strcpy(temp -> name, lineName); /*Copying the label name to the label structure*/
 			temp -> id = getType(line); /*Setting the type of the label from the line (data, string, none)*/
 			temp -> addId = getAddType(line); /*Setting the additional type of the label from the line (entry, extern, none)*/
-			temp -> value = getValue(line, temp -> id); /*Setting the numeric .data value of the label (NULL if .string)*/
+			temp -> value = getValue(line, temp -> id, currentLine); /*Setting the numeric .data value of the label (NULL if .string)*/
 			temp -> string = getString(line, temp -> id); /*Setting the .string value of the label (NULL if .data)*/
 			temp -> next = (label*)malloc(sizeof(label)); /*Allocating memory for the next label in the list*/
 			Data(temp, currentLine); /*Creates a word/multiple words for the stored datas*/
@@ -147,10 +145,10 @@ int assembler(char *fileName)
 		else if (isInstructionLabel(line) == true) /*Else, checking if the line is a declaration of an instruction label (a label that is declared using one of the 16 instructions). If it is:*/
 		{
 			currentLine -> memType = ICline; /**/
-			strcpy(lineName, getLabelName(line)); /*Copying the label name from the line*/
+			strcpy(lineName, getLabelName(line, currentLine)); /*Copying the label name from the line*/
 			if (isLegalName(lineName) == false) /*Checking if the name is legal according to the guidelines of the project. If not, calls an illegal name error*/
 			{
-				error(nameError);
+				error(nameError, lineCounter, NULL);
 				return 0;
 			}
 			strcpy(temp -> name, lineName); /*Copying the label name to the label structure*/
@@ -197,7 +195,7 @@ int main(int argc, char *argv[])
 	int i;
 	if (argc == 1) /*Checking if the number of arguments entered into the command line is 1 (only ./assembler). If so, it calls a file number error*/
 	{
-		error(fileNumError);
+		error(fileNumError, 0, NULL);
 		return 0;
 	}
 	for (i = 1; i < argc; i++) /*Starts from the command line argument in position 1 (the one after ./assembler), and calls the assembler function on it*/
