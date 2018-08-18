@@ -201,11 +201,11 @@ int getName(char **line, char Name[]) {
 				return false;
 	}
 	else if (**line == '(') {
-		*++*line;
+		++*line;
 		return getName(line, Name);
 	}
 	else if (**line == '.') {
-		*++*line;
+		++*line;
 		return getName(line, Name);
 	}
 	else {
