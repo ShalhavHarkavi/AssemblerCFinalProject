@@ -118,7 +118,7 @@ addType getAddType(char str[]) /*Returns the type (entry, external, none) used i
 	return noneAdd; /*Returns the only left option that isn't entry or external, noneAdd*/
 }
 
-int *getValue(char str[], type id) /*Returns a pointer to an array that stores the numberes stores in a data type label defined in str (str is aline from the file, returns NULL if label is not data type)*/
+int *getValue(char str[], type id) /*Returns a pointer to an array that stores the numbers in a data type label defined in str (str is aline from the file, returns NULL if label is not data type)*/
 {
 	int i, j, t, z, numCount = 0;
 	int bigValueArr[MAX_NUMS_IN_DATA_TYPE]; /*Array that can store the maximum amount of numbers in a line that is defined by .data without a label*/
