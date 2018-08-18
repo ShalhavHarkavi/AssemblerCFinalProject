@@ -77,7 +77,11 @@ int assembler(char *fileName)
 	{
 		char lineName[MAX_NAME_LENGTH]; /*Creating a string to store the name of the label that might be in the line*/
 		if (isLegalLineLength(line) == false) /*Checking if the length of the current line from the file is too long. If it is, it calls for an error*/
-			error(lineLengthError, lineCounter, NULL);
+		{
+			char c;
+			while ((c = fgetc(input)) != '\n' && c != EOF); /*Procceeds through the too-long-line so it gets to the next*/
+			error(lineLengthError, lineCounter, NULL); /*Calls for an error*/
+		}
 		currentLine = addLine(currentLine, &linesMapHead); /**/
 		currentLine -> lineNum = lineCounter; /**/
 		currentLine -> filePos = ftell(input) - strlen(line) -0; /**/
