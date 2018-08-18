@@ -117,7 +117,6 @@ addType getAddType(char str[]) /*Returns the type (entry, external, none) used i
 	free(addType); /*Frees the pointer's memory*/
 	return noneAdd; /*Returns the only left option that isn't entry or external, noneAdd*/
 }
-}
 
 int *getValue(char str[], type id) /*Returns a pointer to an array that stores the numberes stores in a data type label defined in str (str is aline from the file, returns NULL if label is not data type)*/
 {
