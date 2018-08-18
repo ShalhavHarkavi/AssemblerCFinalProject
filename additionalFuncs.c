@@ -275,6 +275,14 @@ lines *addLine(lines *where, lines **head) {
 	}
 }
 
+void destroyLabelList(label* head) /*A void function that frees the memory of the label linked list*/
+{
+    if (head == NULL) /*Stops if current label is NULL (end of linked list)*/
+        return;
+    destroyLabelList(head -> next); /*Calls the function on the necxt label*/
+    free(head); /*Frees the memory of the current label*/
+}
+
 int isLegalLineLength(char str[]) /*Returns true if str (a line from the file) is in the legal length*/
 {
 	int i;
