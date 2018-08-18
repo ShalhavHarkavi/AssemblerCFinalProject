@@ -121,9 +121,10 @@ int *getValue(char str[], type id)
 		bigValueArr[z] = atoi(numString);
 		numCount++;
 	}
-	valueArr = (int*)malloc(numCount * sizeof(int));
+	valueArr = (int*)malloc((numCount + 1) * sizeof(int));
+	valueArr[0] = numCount;
 	for (i = 0; i < numCount; i++)
-		valueArr[i] = bigValueArr[i];
+		valueArr[i+1] = bigValueArr[i];
 	return valueArr;
 }
 
