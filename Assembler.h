@@ -21,6 +21,8 @@ typedef enum LabelType{noneData, data, string}type;
 
 typedef enum AdditionalLabelType{noneAdd, entry, external}addType;
 
+typedef enum {Normal, Warnning, Error} errorCondition;
+
 typedef struct Label
 {
   char name[MAX_NAME_LENGTH];
@@ -101,3 +103,5 @@ void updateEntries(label *head, label *current);
 void destroyLabelList(label* head);
 
 int isLegalLineLength(char str[]);
+
+errorCondition getErrCond(void);

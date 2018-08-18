@@ -2,7 +2,9 @@
  *By Matan Liber and Shalhav Harkavi*
  ************************************/
 
-#include "additionalFuncs.h"
+#include "Assembler.h"
+
+static int assembler(char *fileName); /*The main assembling function*/
 static void secondPass(FILE *input, label *head, lines *linesMapHead);
 
 void secondPass(FILE *input, label *head, lines *linesMapHead) {
@@ -44,7 +46,7 @@ void secondPass(FILE *input, label *head, lines *linesMapHead) {
 	updateEntries(head, head);
 }
 
-int assembler(char *fileName) /*The main assembling function*/
+int assembler(char *fileName) 
 {
 	FILE *input, *output, *entries, *externals; /*File pointers for the input, output, entries and externals files*/
 	label *head = NULL, *temp = NULL; /*Pointers for the linked lists of the labels*/
@@ -104,19 +106,6 @@ int assembler(char *fileName) /*The main assembling function*/
 			}
 			else if ((addid = getAddType(line)) != noneAdd) /*Else, checking if the additional type used in the line is entry or extern. If it is, it creates a label that stores the name and additional type used in the line and moves temp one step forward in the label list*/
 			{
-				/*char* skipBlanksLine = skipBlanks(line);
-				char* lastLetter;
-				int charNum;
-				if (*skipBlanksLine == '\0')
-				{
-					error(syntaxError);
-					return 0;
-				}
-				lastLetter = skipBlanksLine;
-				for (charNum = 0; isalnum(lastLetter); lastLetter++, charNum++);
-				strncpy(lineName, skipBlanksLine, charNum);
-				lineName[charNum] = '\0';
-				if (isLegalName(lineName) == true)*/
 				char *linep = (char*)line;
 				if (getName(&linep, lineName))
 				{
@@ -205,12 +194,12 @@ int assembler(char *fileName) /*The main assembling function*/
 
 int main(int argc, char *argv[])
 {
+	int i;
 	if (argc == 1) /*Checking if the number of arguments entered into the command line is 1 (only ./assembler). If so, it calls a file number error*/
 	{
 		error(fileNumError);
 		return 0;
 	}
-	int i;
 	for (i = 1; i < argc; i++) /*Starts from the command line argument in position 1 (the one after ./assembler), and calls the assembler function on it*/
 		assembler(argv[i]);
 	return 0;

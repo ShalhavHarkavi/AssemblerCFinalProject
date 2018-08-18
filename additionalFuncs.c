@@ -2,7 +2,7 @@
  *By Matan Liber and Shalhav Harkavi*
  ************************************/
 
-#include "additionalFuncs.h"
+#include "Assembler.h"
 
 int isEqual(char str1[], char str2[]) /*Returns true if str1 and str2 are the same*/
 {
@@ -62,6 +62,7 @@ type getType(char str[]) /*Returns the type (data, string, none) used in str (a 
 {
 	int i, j, typeLength;
 	char bigDataType[MAX_TYPE_NAME_LENGTH];
+	char *dataType;
 	for (i = 0; str[i] != '.' && str[i] != '\0'; i++);
 	if (str[i] == '\0')
 	    return noneData;
@@ -70,13 +71,18 @@ type getType(char str[]) /*Returns the type (data, string, none) used in str (a 
 	typeLength = j - i;
 	strncpy(bigDataType, (str + i), typeLength);
 	bigDataType[typeLength] = '\0';
-	char dataType[typeLength + 1];
+	dataType = (char*)malloc(sizeof(char)*(typeLength + 1));
 	strcpy(dataType, bigDataType);
 	dataType[typeLength] = '\0';
-	if (isEqual(dataType, "string") == true)
+	if (isEqual(dataType, "string") == true) {
+		free(dataType);
 		return string;
-	if (isEqual(dataType, "data") == true)
+	}
+	if (isEqual(dataType, "data") == true){
+		free(dataType);
 		return data;
+	}
+	free(dataType);
 	return noneData;
 }
 
@@ -246,28 +252,13 @@ void updateEntries(label *head, label *current) {
 		updateEntries(head, current -> next);
 }
 
-
-void error(errorCode errorType)
-{
-	if (errorType == fopenError)
-		fprintf(stderr, "AN ERROR OCCURED WHILE TRYING TO OPEN THE INPUT FILE.\n" /*Maybe specify which input file? Need to think about how to do it.*/);
-	if (errorType == syntaxError)
-		fprintf(stderr, "A SYNTAX ERROR HAS BEEN DETECTED.\n" /*Maybe specify line number? Need to think about how to do it.*/);
-	if (errorType == nameError)
-		fprintf(stderr, "AN ILLEGAL NAME HAS BEEN DETECTED.\n");
-	if (errorType == lineLengthError)
-		fprintf(stderr, "A LINE THAT EXCEEDS THE MAXIMUM LINE LENGTH OF 80 CHARACTERS HAS BEEN DETECTED.\n");
-	if (errorType == fileNumError)
-		fprintf(stderr, "NO FILES HAVE BEEN ENTERED.\n");
-}
-
 lines *addLine(lines *where, lines **head) {
 	lines *newLine;
 	if (*head) {
 		newLine = (lines*)malloc(sizeof(lines));
 		if (where)
 			where -> next = newLine;
-		else/* if ((*head) -> next)*/ {
+		else {
 			newLine -> next = (*head) -> next;
 			(*head) -> next = newLine;
 		}

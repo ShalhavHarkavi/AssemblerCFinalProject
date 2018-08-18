@@ -2,7 +2,7 @@
  *By Matan Liber and Shalhav Harkavi*
  ************************************/
 
-#include "additionalFuncs.h"
+#include "Assembler.h"
 
 typedef enum {notAnOp = -1, mov, cmp, add, sub, not, clr, lea,
               inc, dec, jmp, bne, red, prn, jsr, rts, stop} opCode;
@@ -73,7 +73,6 @@ static int isJmpWParams(char **str, word words[], opCode op); /*create words for
 static word makeInstruction(ARE are, Addressing dest, Addressing source, opCode opcode, Addressing param1, Addressing param2);
 static word makeAdressWord(ARE are, unsigned char *regDest, unsigned char *regSource, unsigned int *address);
 static bitData TwosComplement(unsigned int data, char bits);
-static void updateLine(lines *currentLine);  /*update the memory position of line*/
 
 void initializeWordList(void){
   wordList *instList = (wordList*)malloc(sizeof(wordList));
@@ -531,17 +530,6 @@ word makeInstruction(ARE Are, Addressing dest, Addressing source, opCode opcode,
   return wrd;
 }
 
-void updateLine(lines *currentLine) {
-  if (currentLine -> memType == ICline) {
-    currentLine -> instWord = currentInst;
-    currentLine -> position = IC;
-  }
-  else if (currentLine -> memType == DCline) {
-    currentLine -> instWord = currentData;
-    currentLine -> position = DC;
-  }
-}
-
 void updateLineList(lines *head){
   if (head -> memType == DCline)
     head -> position += IC + AddressBase;
@@ -575,8 +563,10 @@ void updateAddress(label *nameLabel, void *instWrdAdd, unsigned int pos) {
       lblWRD = lblWRD -> next;
       offset++;
     }
-    if ((lblWRD -> Word).AREdata.DATA != 0)
-      return updateAddress(nameLabel, lblWRD -> next, pos + offset+1);
+    if ((lblWRD -> Word).AREdata.DATA != 0) {
+      updateAddress(nameLabel, lblWRD -> next, pos + offset+1);
+      return;
+    }
     if (nameLabel -> addId == external) {
       if (nameLabel -> adress == -1) {
         nameLabel -> adress = pos + offset;
@@ -584,8 +574,10 @@ void updateAddress(label *nameLabel, void *instWrdAdd, unsigned int pos) {
       }
       else {
         label *nextNameLabel;
-        if ((nextNameLabel = findLabel(nameLabel -> name, nameLabel -> next)))
-          return updateAddress(nextNameLabel, lblWRD, pos + offset);
+        if ((nextNameLabel = findLabel(nameLabel -> name, nameLabel -> next))) {
+          updateAddress(nextNameLabel, lblWRD, pos + offset);
+          return;
+        }
         else {
           label *newLabel = (label*)malloc(sizeof(label));
           strncpy(newLabel -> name, nameLabel -> name, MAX_NAME_LENGTH);
