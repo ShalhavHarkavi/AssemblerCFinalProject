@@ -1,5 +1,5 @@
 assembler: translator.o additionalFuncs.o errors.o main.o
-	gcc -o assembler main.o additionalFuncs.o translator.o
+	gcc -o assembler main.o additionalFuncs.o translator.o errors.o
 
 main.o: main.c Assembler.h
 	gcc -c -ansi -Wall -pedantic main.c 
@@ -17,7 +17,7 @@ clean:
 	rm -f *.o assembler
 
 debug: translatord.o additionalFuncsd.o errorsd.o maind.o
-	gcc -o assembler translatord.o maind.o additionalFuncsd.o
+	gcc -o assembler translatord.o maind.o additionalFuncsd.o errorsd.o
 
 maind.o: main.c Assembler.h
 	gcc -c -ansi -Wall -pedantic main.c -o maind.o -ggdb
