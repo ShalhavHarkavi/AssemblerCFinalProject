@@ -182,13 +182,6 @@ int isInstructionLabel(char str[]) /*Returns true if str (a line from the file) 
 	return false;
 }
 
-void clearLinesMap(lines *head) /**/
-{
-	lines *temp = head;
-	if (temp -> next != NULL)
-		head = temp -> next;
-	free(temp);
-}
 int getName(char **line, char Name[]) /**/
 {
 	if (isInstructionLabel(*line)) {
@@ -280,14 +273,6 @@ lines *addLine(lines *where, lines **head) {
 		*head = (lines*)malloc(sizeof(lines));
 		return *head;
 	}
-}
-
-void destroyLabelList(label* head) /*A void function that frees the memory of the label linked list*/
-{
-    if (head == NULL) /*Stops if current label is NULL (end of linked list)*/
-        return;
-    destroyLabelList(head -> next); /*Calls the function on the necxt label*/
-    free(head); /*Frees the memory of the current label*/
 }
 
 int isLegalLineLength(char str[]) /*Returns true if str (a line from the file) is in the legal length*/

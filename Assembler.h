@@ -108,3 +108,4 @@ void destroyLabelList(label* head);
 int isLegalLineLength(char str[]);
 
 errorCondition getErrCond(void);
+void resetErrCond(void);

@@ -166,27 +166,33 @@ int assembler(char *fileName)
 	updateLabelAddress(head); /**/
 	secondPass(input, head, linesMapHead); /*Calling a function that passes over the file for a second time so it can get adresses and merge entry labels with their corresponding defined labels*/
 	fclose(input); /*Closing the input file*/
-	temp = head; /*Setting the temporary label pointer to the head of the label list*/
-	while (temp != NULL) /*While the temporary pointer isn't NULL (meaning - running from the head of the list to its end):*/
-	{
-		if (temp -> addId == external) /*Checking if the current label is an external label. If so, prints the name and adress into the externals file*/
-			fprintf(externals, "%s\t%d\n", temp -> name, temp -> adress);
-		if (temp -> addId == entry) /*Checking if the current label is an entry label. If so, prints the name and adress into the entries file*/
-			fprintf(entries, "%s\t%d\n", temp -> name, temp -> adress);
-		temp = temp -> next; /*Setting the label pointer from the current label to the next one in the list*/
+	if (getErrCond != Error) {
+		if (getErrCond == Warnning)
+			printf("there were warnnings but the object file is still created.\n");
+		temp = head; /*Setting the temporary label pointer to the head of the label list*/
+		while (temp != NULL) /*While the temporary pointer isn't NULL (meaning - running from the head of the list to its end):*/
+		{
+			if (temp -> addId == external) /*Checking if the current label is an external label. If so, prints the name and adress into the externals file*/
+				fprintf(externals, "%s\t%d\n", temp -> name, temp -> adress);
+			if (temp -> addId == entry) /*Checking if the current label is an entry label. If so, prints the name and adress into the entries file*/
+				fprintf(entries, "%s\t%d\n", temp -> name, temp -> adress);
+			temp = temp -> next; /*Setting the label pointer from the current label to the next one in the list*/
+		}
+		if (entries == NULL) /*Checking if the entries file pointers is NULL (file is empty). If it is, the file is closed and removed*/
+		{
+			fclose(entries);
+			remove(entriesName);
+		}
+		if (externals == NULL) /*Checking if the externals file pointers is NULL (file is empty). If it is, the file is closed and removed*/
+		{
+			fclose(externals);
+			remove(externalsName);
+		}
+		makeOutputFile(output); /**/
 	}
-	if (entries == NULL) /*Checking if the entries file pointers is NULL (file is empty). If it is, the file is closed and removed*/
-	{
-		fclose(entries);
-		remove(entriesName);
-	}
-	if (externals == NULL) /*Checking if the externals file pointers is NULL (file is empty). If it is, the file is closed and removed*/
-	{
-		fclose(externals);
-		remove(externalsName);
-	}
-	makeOutputFile(output); /**/
 	destroyLabelList(head); /*Destroying the label linked list to free space*/
+	clearWordList();
+	clearLinesMap(linesMapHead);
 	return 0;
 }
 
