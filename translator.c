@@ -628,9 +628,9 @@ void makeOutputFile(FILE *output){
     wrdCS = Word2CommaSlash(temp -> Word);
     fprintf(output, "%04d    %s\n", AddressBase+counter, wrdCS);
     head = temp -> next;
-    /*free(temp);*/
-    /*free(wrdCS);*/
+    free(temp);
+    free(wrdCS);
   }
-  /*if (head)
-    free(head);*/
+  if (head)
+    free(head);
 }
