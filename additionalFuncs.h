@@ -9,6 +9,7 @@
 #define MAX_NAME_LENGTH 32
 #define MAX_FILE_NAME_LENGTH 32
 #define MAX_LINE_LENGTH 82
+#define MAX_TYPE_NAME_LENGTH 7
 #define true 1
 #define false 0
 #define AddressBase 100
