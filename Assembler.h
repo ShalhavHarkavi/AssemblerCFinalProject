@@ -10,6 +10,8 @@
 #define MAX_FILE_NAME_LENGTH 32
 #define MAX_LINE_LENGTH 82
 #define MAX_TYPE_NAME_LENGTH 7
+#define MAX_NUMS_IN_DATA_TYPE 37 /*Max line length is 80 characters, minus 5 characters for ".data" and minus 1 for the space between ".data" and the numbers is 74, divided by 2 to get the maximum amount of numbers (single digit numbers with a single comma without spaces in between them) is 37*/
+#define MAX_DIGITS_IN_NUMBER 75 /*Max line length is 80 characters, minus 5 characters for ".data" and minus 1 for the space between ".data" and the numbers is 74, plus 1 for '\0' is 75*/
 #define true 1
 #define false 0
 #define AddressBase 100
