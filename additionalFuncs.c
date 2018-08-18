@@ -277,7 +277,7 @@ lines *addLine(lines *where, lines **head) {
 
 int isLegalLineLength(char str[]) /*Returns true if str (a line from the file) is in the legal length*/
 {
-	if (str[MAX_LINE_LENGTH - 1] == '\0' && str[MAX_LINE_LENGTH - 1] != '\n') /*Checks if the last character is '\0' (meaning that there are 80+ characters read by fgets), but the character before isn't '\n' (fgets reads newline). if not, that means that the line is longer than allowed, and returns false. Else, returns true*/
+	if (strchr(str, '\n') == NULL) /*Checks if there is no occurence of '\n' in the line str (strchr returns NULL if there is no occurence of the character). If so, the line is too long (fgets is supposed to read the newline in addition to the rest of the line), and returns false. Ele, returns true*/
 		return false;
 	return true;
 }
