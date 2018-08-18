@@ -76,12 +76,12 @@ int assembler(char *fileName)
 	initializeWordList(); /**/
 	for (lineCounter = 1;fgets(line, MAX_LINE_LENGTH, input) != NULL; lineCounter++) /*Running through the input file until EOF is reached (fgets == NULL), while simultaneously increasing the line counter's value*/
 	{
+		char lineName[MAX_NAME_LENGTH]; /*Creating a string to store the name of the label that might be in the line*/
 		if (isLegalLineLength(line) == false) /*Checking if the length of the current line from the file is too long. If it is, it calls for an error*/
 		{
 			error(lineLengthError);
 			return 0;
 		}
-		char lineName[MAX_NAME_LENGTH]; /*Creating a string to store the name of the label that might be in the line*/
 		currentLine = addLine(currentLine, &linesMapHead); /**/
 		currentLine -> lineNum = lineCounter; /**/
 		currentLine -> filePos = ftell(input) - strlen(line) -0; /**/

@@ -90,6 +90,7 @@ addType getAddType(char str[])
 {
 	int i, j, typeLength;
 	char bigAddType[7];
+	char *addType;
 	for (i = 0; str[i] != '.' && str[i] != '\0'; i++);
 	if (str[i] == '\0')
 	    return noneAdd;
@@ -98,13 +99,18 @@ addType getAddType(char str[])
 	typeLength = j - i;
 	strncpy(bigAddType, (str + i), typeLength);
 	bigAddType[typeLength] = '\0';
-	char addType[typeLength + 1];
+	addType = (char*)malloc((typeLength + 1)*sizeof(char));
 	strcpy(addType, bigAddType);
 	addType[typeLength] = '\0';
-	if (isEqual(addType, "entry") == true)
+	if (isEqual(addType, "entry") == true) {
+		free(addType);
 		return entry;
-	if (isEqual(addType, "extern") == true)
+	}
+	if (isEqual(addType, "extern") == true) {
+		free(addType);
 		return external;
+	}
+	free(addType);
 	return noneAdd;
 }
 
@@ -139,10 +145,10 @@ int *getValue(char str[], type id)
 
 char *getString(char str[], type id)
 {
-	if (id == noneData || id == data)
-		return NULL;
 	int i, j;
 	char *string;
+	if (id == noneData || id == data)
+		return NULL;
 	for (i = 0; str[i] != '"'; i++);
 	i++;
 	for (j = i; str[j] != '"'; j++);
