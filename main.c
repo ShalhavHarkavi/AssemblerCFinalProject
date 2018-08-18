@@ -166,8 +166,8 @@ int assembler(char *fileName)
 	updateLabelAddress(head); /**/
 	secondPass(input, head, linesMapHead); /*Calling a function that passes over the file for a second time so it can get adresses and merge entry labels with their corresponding defined labels*/
 	fclose(input); /*Closing the input file*/
-	if (getErrCond != Error) {
-		if (getErrCond == Warnning)
+	if (getErrCond() != Error) {
+		if (getErrCond() == Warnning)
 			printf("there were warnnings but the object file is still created.\n");
 		temp = head; /*Setting the temporary label pointer to the head of the label list*/
 		while (temp != NULL) /*While the temporary pointer isn't NULL (meaning - running from the head of the list to its end):*/
