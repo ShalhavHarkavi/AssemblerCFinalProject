@@ -15,7 +15,8 @@
 #define AddressBase 100
 #define isblank(c) ((!isprint(c) && c != '\0') || c == ' ')
 
-typedef enum ErrorCode{fopenError, syntaxError, nameError, lineLengthError, fileNumError/*Add more error types here*/}errorCode;
+typedef enum ErrorCode{fopenError, syntaxError, nameError, lineLengthError, fileNumError, 
+                       JmpNotLabel}errorCode;
 
 typedef enum LabelType{noneData, data, string}type;
 
@@ -63,7 +64,7 @@ int *getValue(char str[], type id);
 
 char *getString(char str[], type id);
 
-void error(errorCode errorType);
+void error(errorCode errorType, char *location);
 
 /*public function for non-ARE data words creation*/
 void Data(label* labelData, lines *currentLine);

@@ -10,8 +10,13 @@ static errorCondition errorCond ; /*state variable for error condition */
 errorCondition getErrCond(void);
 
 
-void error(errorCode errorType)
+void error(errorCode errorType, lines line)
 {
+	int lineNumber;
+	if (line)
+		lineNumber = line -> lineNum;
+	else
+		lineNumber = 0;
 	if (errorType == fopenError)
 		fprintf(stderr, "AN ERROR OCCURED WHILE TRYING TO OPEN THE INPUT FILE.\n" /*Maybe specify which input file? Need to think about how to do it.*/);
 	if (errorType == syntaxError)
@@ -22,4 +27,6 @@ void error(errorCode errorType)
 		fprintf(stderr, "A LINE THAT EXCEEDS THE MAXIMUM LINE LENGTH OF 80 CHARACTERS HAS BEEN DETECTED.\n");
 	if (errorType == fileNumError)
 		fprintf(stderr, "NO FILES HAVE BEEN ENTERED.\n");
+	if (errorType == JmpNotLabel)
+		fprintf(stderr, "Not a valid destination for jmp, bne, jsr with parameters\n");
 }

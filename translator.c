@@ -51,10 +51,10 @@ typedef union {unsigned int twelveBit:12;
 * the number of required offset calculation.                                   */
 static unsigned int IC; /* Instruction Counter */
 static unsigned int DC; /* Data Counter */
-static wordList *instructionHead; /*pointer to the first instruction*/
-static wordList *currentInst;     /*pointer to the last inserted instruction*/
-static wordList *dataHead;        /*pointer to the first piece of data*/
-static wordList *currentData;     /*pointer to the last inserted data word*/
+static wordList *instructionHead = NULL; /*pointer to the first instruction*/
+static wordList *currentInst = NULL;     /*pointer to the last inserted instruction*/
+static wordList *dataHead = NULL;        /*pointer to the first piece of data*/
+static wordList *currentData = NULL;     /*pointer to the last inserted data word*/
 static void insertDataWord(word wrd, lines *currentLine); /* insert a data word to the end of the data list*/
 static void insertinstructionWord(word wrd, lines *currentLine); /* insert a data word to the end of the data list*/
 
@@ -95,6 +95,7 @@ void clearWordList(void){
     head = temp;
   }
   free(head);
+  instructionHead = dataHead = currentData = currentInst = NULL;
 }
 
 void Data(label *labelData, lines *currentLine)
@@ -620,9 +621,6 @@ void makeOutputFile(FILE *output){
     wrdCS = Word2CommaSlash(temp -> Word);
     fprintf(output, "%04d    %s\n", AddressBase+counter, wrdCS);
     head = temp -> next;
-    free(temp);
     free(wrdCS);
   }
-  if (head)
-    free(head);
 }
