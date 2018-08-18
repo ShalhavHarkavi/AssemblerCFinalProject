@@ -4,61 +4,64 @@
 
 #include "additionalFuncs.h"
 
-int isEqual(char str1[], char str2[])
+int isEqual(char str1[], char str2[]) /*Returns true if str1 and str2 are the same*/
 {
 	int count1, count2, i;
-	for (count1 = 0; str1[count1] != '\0'; count1++);
-	for (count2 = 0; str2[count2] != '\0'; count2++);
-	if (count1 != count2)
+	for (count1 = 0; str1[count1] != '\0'; count1++); /*Sets the value of count1 to the length of str1*/
+	for (count2 = 0; str2[count2] != '\0'; count2++); /*Sets the value of count2 to the length of str2*/
+	if (count1 != count2) /*If the length of str1 isn't equal to the length of str2, then the function returns false*/
 		return false;
-	for (i = 0; i < count1; i++)
+	for (i = 0; i < count1; i++) /*Runs through str1 and str2, and returns false if at any point the character at position i of str1 isn't equal to the character in the same position in str2*/
 	{
 		if (str1[i] != str2[i])
 			return false;
 	}
-	return true;
+	return true; /*Returns true if the strings are equal*/
 }
 
-int isLegalName(char str[])
+int isLegalName(char str[]) /*Returns true if str is a legal name according to the guidelines of the project*/
 {
 	if (isEqual(str, "r0") == true || isEqual(str, "r1") == true || isEqual(str, "r2") == true || isEqual(str, "r3") == true || isEqual(str, "r4") == true || isEqual(str, "r5") == true || isEqual(str, "r6") == true || isEqual(str, "r7") == true || isEqual(str, "mov") == true || isEqual(str, "cmp") == true || isEqual(str, "add") == true || isEqual(str, "sub") == true || isEqual(str, "not") == true || isEqual(str, "clr") == true || isEqual(str, "lea") == true || isEqual(str, "inc") == true || isEqual(str, "dec") == true || isEqual(str, "jmp") == true || isEqual(str, "bne") == true || isEqual(str, "red") == true || isEqual(str, "prn") == true || isEqual(str, "jsr") == true || isEqual(str, "rts") == true || isEqual(str, "stop") == true || isEqual(str, "data") == true || isEqual(str, "string") == true || isEqual(str, "entry") == true || isEqual(str, "extern") == true || isalpha((int)str[0]) == false || strlen(str) > MAX_NAME_LENGTH)
-		return false;
+		return false; /*Returns false if str is equal to any illegal name or doesn't follow the other guidelines of the project. Else, returns true*/
 	return true;
 }
 
-int isLabel(char str[])
+int isLabel(char str[]) /*Returns true if str (a line from the input file) include a label (excludeing extern and entry definitions)*/
 {
 	int i;
 	char name[MAX_NAME_LENGTH];
-	for (i = 0; str[i] != ':' && str[i] != '\0'; i++);
-	if (str[i] == '\0')
+	for (i = 0; str[i] != ':' && str[i] != '\0'; i++); /*Runs through the line until encounters either a colon ar '\0' are encountered*/
+	if (str[i] == '\0') /*If '\0' is encountered, that means that there is no colon, so the function returns false, because a label-defining line is structured like: LABEL_NAME: .data/.string/inctruction...*/
 		return false;
-	strncpy(name, str, i);
-	name[i] = '\0';
-	if (isLegalName(name) == false)
+	strncpy(name, skipBlanks(str), i); /*Copies the name of the label from the first character after blank spaces and tabs to a string*/
+	name[i] = '\0'; /*Sets the character after the name in the string to '\0'*/
+	if (isLegalName(name) == false) /*Checks if the label name is legal. If not, returns falase. Else, returns true*/
 		return false;
 	return true;
 }
 
-char *getLabelName(char str[])
+char *getLabelName(char str[]) /*Returns a pointer to the name of the label in str (a line from the input file)*/
 {
 	int i;
 	char *name = NULL;
-	char *start = skipBlanks(str);
-	for (i = 0; start[i] != ':'; i++);
+	char *start = skipBlanks(str); /*Points to the first character in the line that isn't a blank space or a tab*/
+	for (i = 0; start[i] != ':'; i++); /*Runs through the line until a colon*/
 	i++;
-	if (i > MAX_NAME_LENGTH)
-		return NULL; /*here put error*/
-	name = (char*)malloc(sizeof(char) * i);
-	strncpy(name, start, i - 1);
-	name[i] = '\0';
-	return name;
+	if (i > MAX_NAME_LENGTH) /*If the length of the name (including '\0') is greater than the maximum legal length of a name (defined by the project guidelines, includeing '\0'), call the error function for a name error and return a NULL pointer*/
+	{
+		error(nameError);
+		return NULL;
+	}
+	name = (char*)malloc(sizeof(char) * i); /*Allocates memory for the label name so it can be returned from the function, in the size of the name plus '\0'*/
+	strncpy(name, start, i - 1); /*Copies the name from the string to the pointer*/
+	name[i] = '\0'; /*Adds '\0' to the pointer*/
+	return name; /*Returns the label name pointer*/
 }
 
-type getType(char str[])
+type getType(char str[]) /*Returns the type (data, string, none) used in str (a line from the input file)*/
 {
 	int i, j, typeLength;
-	char bigDataType[7];
+	char bigDataType[MAX_TYPE_NAME_LENGTH];
 	for (i = 0; str[i] != '.' && str[i] != '\0'; i++);
 	if (str[i] == '\0')
 	    return noneData;
