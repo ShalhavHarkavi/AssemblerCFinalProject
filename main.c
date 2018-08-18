@@ -148,9 +148,11 @@ int assembler(char *fileName)
 			instruction(line, NULL, currentLine); /*Creating instruction lines for the output file and storing them*/
 		}
 	}
-	updateLineList(linesMapHead); /**/
-	updateLabelAddress(head); /**/
-	secondPass(input, head, linesMapHead); /*Calling a function that passes over the file for a second time so it can get adresses and merge entry labels with their corresponding defined labels*/
+	if (getErrCond() != Error) {
+		updateLineList(linesMapHead); /**/
+		updateLabelAddress(head); /**/
+		secondPass(input, head, linesMapHead); /*Calling a function that passes over the file for a second time so it can get adresses and merge entry labels with their corresponding defined labels*/
+	}
 	fclose(input); /*Closing the input file*/
 	if (getErrCond() != Error) {
 		if (getErrCond() == Warnning)

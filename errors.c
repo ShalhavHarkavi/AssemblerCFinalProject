@@ -31,7 +31,7 @@ void error(errorCode errorType, unsigned int location, char* nameERR)
 		errorCond = Error;
 	}
 	else if (errorType == lineLengthError) {
-		fprintf(stderr, "A LINE THAT EXCEEDS THE MAXIMUM LINE LENGTH OF 80 CHARACTERS HAS BEEN DETECTED.\n");
+		fprintf(stderr, "LINE #%d EXCEEDS THE MAXIMUM LINE LENGTH OF 80 CHARACTERS.\n", location);
 		errorCond = Error;
 	}
 	else if (errorType == fileNumError) {
