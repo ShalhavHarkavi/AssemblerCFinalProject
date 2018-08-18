@@ -6,10 +6,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#define MAX_NAME_LENGTH 32
-#define MAX_FILE_NAME_LENGTH 32
-#define MAX_LINE_LENGTH 82
-#define MAX_TYPE_NAME_LENGTH 7
+#define MAX_NAME_LENGTH 32 /*Maxmimum label name length according to the project guidelines +1 for '\0'*/
+#define MAX_FILE_NAME_LENGTH 32 /*Maxmimum file name length according to the project guidelines +1 for '\0'*/
+#define MAX_LINE_LENGTH 82 /*Maxmimum line length +1 for '\n' +1 for '\0'*/
+#define MAX_TYPE_NAME_LENGTH 7 /*Length of the longest type name (string or extern, 6 characters) +1 for '\0'*/
 #define MAX_NUMS_IN_DATA_TYPE 37 /*Max line length is 80 characters, minus 5 characters for ".data" and minus 1 for the space between ".data" and the numbers is 74, divided by 2 to get the maximum amount of numbers (single digit numbers with a single comma without spaces in between them) is 37*/
 #define MAX_DIGITS_IN_NUMBER 75 /*Max line length is 80 characters, minus 5 characters for ".data" and minus 1 for the space between ".data" and the numbers is 74, plus 1 for '\0' is 75*/
 #define true 1
@@ -22,21 +22,21 @@ typedef enum ErrorCode{fopenError, syntaxError, nameError, lineLengthError, file
                        illegalDest, illegalSource, expectParen, expectEOL, EntryError, 
                        labelNotFound}errorCode;
 
-typedef enum LabelType{noneData, data, string}type;
+typedef enum LabelType{noneData, data, string}type; /*Codes for the regular label types (data, string or none)*/
 
-typedef enum AdditionalLabelType{noneAdd, entry, external}addType;
+typedef enum AdditionalLabelType{noneAdd, entry, external}addType; /*Codes for the additional label types (entry, external or none)*/
 
 typedef enum {Normal, Warnning, Error} errorCondition;
 
-typedef struct Label
+typedef struct Label /*Label linked list structure*/
 {
-  char name[MAX_NAME_LENGTH];
-  int adress;
-  type id;
-  addType addId;
-  signed int *value;
-  char *string;
-  struct Label *next;
+    char name[MAX_NAME_LENGTH]; /*Label's name*/
+    int adress; /*Label's adress*/
+    type id; /*Label's type*/
+    addType addId; /*Label's additional type*/
+    signed int *value; /*Label's numeric value*/
+    char *string; /*Label's string value*/
+    struct Label *next; /*Label's pinter to next label in list*/
 }label;
 
 typedef enum{ICline, DCline, nonMemLine} ICDC;
@@ -52,21 +52,21 @@ typedef struct LineMap {unsigned int lineNum;     /*source file line number    *
 /*pointer to a new link in the list starting *head at head after the where link*/
 lines *addLine(lines *where, lines **head);
 
-int isEqual(char str1[], char str2[]);
+int isEqual(char str1[], char str2[]); /*Returns true if str1 and str2 are the same*/
 
-int isLegalName(char str[]);
+int isLegalName(char str[]); /*Returns true if str is a legal name according to the guidelines of the project*/
 
-int isLabel(char str[]);
+int isLabel(char str[]); /*Returns true if str (a line from the input file) includes a label (excludeing extern and entry definitions)*/
 
-char *getLabelName(char str[], lines* line);
+char *getLabelName(char str[], lines* line); /*Returns a pointer to the name of the label in str (a line from the input file)*/
 
-type getType(char str[]);
+type getType(char str[]); /*Returns the type (data, string, none) used in str (a line from the input file)*/
 
-addType getAddType(char str[]);
+addType getAddType(char str[]); /*Returns the additional type (entry, external, none) used in str (a line from the input file)*/
 
-int *getValue(char str[], type id, lines *line);
+int *getValue(char str[], type id, lines *line); /*Returns a pointer to an array that stores the numbers in a data type label defined in str (str is aline from the file, returns NULL if label is not data type)*/
 
-char *getString(char str[], type id);
+char *getString(char str[], type id); /*Returns a pointer to the string defined in str (str is a line from the file, returns NULL if not defined as .string)*/
 
 void error(errorCode errorType, unsigned int location, char *nameERR);
 
@@ -76,10 +76,9 @@ void Data(label* labelData, lines *currentLine);
 /*public function for instruction words creation*/
 void instruction(char *str, label* labelInstruction, lines *currentLine);
 
-int isDataLabel(char str[]);
+int isDataLabel(char str[]); /*Returns true if str (a line from the file) is defining a data label (.data or .string)*/
 
-int isInstructionLabel(char str[]);
-
+int isInstructionLabel(char str[]); /*Returns true if str (a line from the file) is defining an instruction label (a label that is defined using one of the 16 instructions)*/
 
 void initializeWordList(void); /*initializes a static wordList in the file     *
                                 *translator.c and updates the 2 head pointers  *
@@ -105,9 +104,9 @@ void updateLabelAddress(label *head); /*update addresses for labels linked list*
 /*update all entry labels with the address of the corresponding instruction label*/
 void updateEntries(label *head, label *current);
 
-void destroyLabelList(label* head);
+void destroyLabelList(label* head); /*A void function that frees the memory of the label linked list*/
 
-int isLegalLineLength(char str[]);
+int isLegalLineLength(char str[]); /*Returns true if str (a line from the file) is in the legal length*/
 
 errorCondition getErrCond(void);
 void resetErrCond(void);

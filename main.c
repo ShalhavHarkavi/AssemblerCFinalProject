@@ -77,10 +77,7 @@ int assembler(char *fileName)
 	{
 		char lineName[MAX_NAME_LENGTH]; /*Creating a string to store the name of the label that might be in the line*/
 		if (isLegalLineLength(line) == false) /*Checking if the length of the current line from the file is too long. If it is, it calls for an error*/
-		{
 			error(lineLengthError, lineCounter, NULL);
-			return 0;
-		}
 		currentLine = addLine(currentLine, &linesMapHead); /**/
 		currentLine -> lineNum = lineCounter; /**/
 		currentLine -> filePos = ftell(input) - strlen(line) -0; /**/
@@ -114,26 +111,17 @@ int assembler(char *fileName)
 					temp = temp -> next;
 				}
 				else
-				{
 					error(nameError, lineCounter, NULL);
-					return 0;
-				}
 			}
 			else /*Else, the only left option is a syntax error, so it calls a syntax error using the function error.*/
-			{
 				error(syntaxError, lineCounter, NULL);
-				return 0;
-			}
 		}
 		else if (isDataLabel(line) == true) /*Else, checking if the line is a declaration of a data label (a label that is declared using .data or .string). If it is:*/
 		{
 			currentLine -> memType = DCline; /**/
 			strcpy(lineName, getLabelName(line, currentLine)); /*Copying the label name from the line*/
 			if (isLegalName(lineName) == false) /*Checking if the name is legal according to the guidelines of the project. If not, calls an illegal name error*/
-			{
 				error(nameError, lineCounter, NULL);
-				return 0;
-			}
 			strcpy(temp -> name, lineName); /*Copying the label name to the label structure*/
 			temp -> id = getType(line); /*Setting the type of the label from the line (data, string, none)*/
 			temp -> addId = getAddType(line); /*Setting the additional type of the label from the line (entry, extern, none)*/
@@ -148,10 +136,7 @@ int assembler(char *fileName)
 			currentLine -> memType = ICline; /**/
 			strcpy(lineName, getLabelName(line, currentLine)); /*Copying the label name from the line*/
 			if (isLegalName(lineName) == false) /*Checking if the name is legal according to the guidelines of the project. If not, calls an illegal name error*/
-			{
 				error(nameError, lineCounter, NULL);
-				return 0;
-			}
 			strcpy(temp -> name, lineName); /*Copying the label name to the label structure*/
 			instruction(line+strlen(lineName)+1, temp, currentLine); /*Creating instruction lines for the output file and storing them*/
 			temp -> next = (label*)malloc(sizeof(label)); /*Allocating memory for the next label in the list*/
