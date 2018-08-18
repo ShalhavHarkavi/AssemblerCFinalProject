@@ -26,7 +26,7 @@ int isLegalName(char str[]) /*Returns true if str is a legal name according to t
 	return true;
 }
 
-int isLabel(char str[]) /*Returns true if str (a line from the input file) include a label (excludeing extern and entry definitions)*/
+int isLabel(char str[]) /*Returns true if str (a line from the input file) includes a label (excludeing extern and entry definitions)*/
 {
 	int i;
 	char name[MAX_NAME_LENGTH];
