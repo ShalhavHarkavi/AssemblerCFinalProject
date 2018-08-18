@@ -1,4 +1,4 @@
-assembler: translator.o main.o additionalFuncs.o errors.o
+assembler: translator.o additionalFuncs.o errors.o main.o
 	gcc -o assembler main.o additionalFuncs.o translator.o
 
 main.o: main.c Assembler.h
@@ -16,7 +16,7 @@ errors.o: errors.c Assembler.h
 clean: 
 	rm -f *.o assembler
 
-debug: translatord.o maind.o additionalFuncsd.o errorsd.o
+debug: translatord.o additionalFuncsd.o errorsd.o maind.o
 	gcc -o assembler translatord.o maind.o additionalFuncsd.o
 
 maind.o: main.c Assembler.h

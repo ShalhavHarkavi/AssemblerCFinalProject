@@ -72,6 +72,7 @@ int assembler(char *fileName)
 	head = (label*)malloc(sizeof(label)); /*Allocating memory to the head of the label list*/
 	temp = head; /*Setting the value of the temp label pointer to the head of the list, so it can continue through the list without losing the value of head*/
 	initializeWordList(); /**/
+	resetErrCond();
 	for (lineCounter = 1;fgets(line, MAX_LINE_LENGTH, input) != NULL; lineCounter++) /*Running through the input file until EOF is reached (fgets == NULL), while simultaneously increasing the line counter's value*/
 	{
 		char lineName[MAX_NAME_LENGTH]; /*Creating a string to store the name of the label that might be in the line*/
