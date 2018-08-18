@@ -16,7 +16,7 @@
 #define isblank(c) ((!isprint(c) && c != '\0') || c == ' ')
 
 typedef enum ErrorCode{fopenError, syntaxError, nameError, lineLengthError, fileNumError, 
-                       JmpNotLabel}errorCode;
+                       JmpNotLabel, param1Err, param2Err, expectComma}errorCode;
 
 typedef enum LabelType{noneData, data, string}type;
 

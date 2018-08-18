@@ -213,7 +213,7 @@ int isJmpWParams(char **str, word words[], opCode op) {
   char *working = *str;
   Addressing param1;
   if ((words[1] = isDirect(&working)).AREdata.are == 3) {
-    error(15);
+    error(JmpNotLabel);
     return 0;
   }
   else
@@ -226,11 +226,11 @@ int isJmpWParams(char **str, word words[], opCode op) {
     else if ((words[2] = isDirect(&working)).AREdata.are != 3)
       param1 = direct;
     else {
-      error(16);
+      error(param1Err);
       return 0;
     }
     if (*(working++) != ',') {
-      error(17);
+      error(expectComma);
       return 0;
     }
     if ((words[3] = isRegister(&working, dstReg)).AREdata.are != 3) {
