@@ -99,14 +99,12 @@ int assembler(char *fileName)
 			addType addid;
 			if (getType(line) != noneData) /*Checking if the type used in the line is string or data. If it is, it creates a temporary label with no name, copies the data in the line to it, creates data lines for the output file and stores them and then resets the temporary label*/
 			{
+				currentLine -> memType = DCline;
 				temp -> id = getType(line); /*Getting the type of data and putting it in the temporary label*/
 				temp -> addId = noneAdd; /*Setting the additional id of the temporary label to none, because it cannot be both data and entry/extern if not a label*/
 				temp -> value = getValue(line, temp -> id, currentLine); /*Setting the numeric .data value of the temporary label (NULL if .string)*/
 				temp -> string = getString(line, temp -> id); /*Setting the .string value of the temporary label (NULL if .data)*/
 				Data(temp, currentLine); /*Creating data lines for the output file of the value stored in the temporary label*/
-				temp = NULL; /*Setting the temporary label to NULL to reset it*/
-				free(temp); /*Freeing the allocated space used for the temporary label*/
-				temp = (label*)malloc(sizeof(label)); /*Reallocating space for the next label*/
 			}
 			else if ((addid = getAddType(line)) != noneAdd) /*Else, checking if the additional type used in the line is entry or extern. If it is, it creates a label that stores the name and additional type used in the line and moves temp one step forward in the label list*/
 			{
