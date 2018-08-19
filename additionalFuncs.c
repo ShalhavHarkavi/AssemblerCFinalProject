@@ -38,8 +38,6 @@ int isLabel(char str[]) /*Returns true if str (a line from the input file) inclu
 		return false;
 	strncpy(name, skipBlanks(str), i); /*Copies the name of the label from the first character after blank spaces and tabs to a string*/
 	name[i] = '\0'; /*Sets the character after the name in the string to '\0'*/
-	if (isLegalName(name) == false) /*Checks if the label name is legal. If not, returns falase. Else, returns true*/
-		return false;
 	return true;
 }
 
