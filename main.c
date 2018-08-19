@@ -77,11 +77,12 @@ int assembler(char *fileName)
 	{
 		char lineName[MAX_NAME_LENGTH]; /*Creating a string to store the name of the label that might be in the line*/
 		/*Checking if the length of the current line from the file is too long. If it is, it calls for an error*/
-		if (isLegalLineLength(line) == false && skipBlanks(line)[0] != ';')
+		if (isLegalLineLength(line) == false)
 		{
 			char c;
 			while ((c = fgetc(input)) != '\n' && c != EOF); /*Procceeds through the too-long-line so it gets to the next*/
-			error(lineLengthError, lineCounter, NULL); /*Calls for an error*/
+			if (skipBlanks(line)[0] != ';') /*If the first character in the line after blanks and tabs isn't a semicolon (the line isn't a comment):*/
+				error(lineLengthError, lineCounter, NULL); /*Calls for an error*/
 		}
 		/*------------add a line to the lines metadata list------------------------*/
 		currentLine = addLine(currentLine, &linesMapHead); 
