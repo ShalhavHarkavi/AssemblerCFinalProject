@@ -77,14 +77,14 @@ static bitData TwosComplement(unsigned int data, char bits);
 void initializeWordList(void){
   wordList *instList = (wordList*)malloc(sizeof(wordList));
   wordList *dataList = (wordList*)malloc(sizeof(wordList));
-  instList -> next = dataList;
-  dataList -> next = NULL;
-  IC   = 0;
-  DC   = 0;
-  instructionHead  = instList;
-  dataHead         = dataList;
-  currentInst      = instructionHead;
-  currentData      = dataHead;
+  instList -> next = dataList;        /*the first data word is directly after the last instruction word*/
+  dataList -> next = NULL;            /*the last data word terminates the list*/
+  IC               = 0;               /*Instruction Counter*/
+  DC               = 0;               /*Data Counter*/
+  instructionHead  = instList;        /*save the head of the list for future access*/
+  dataHead         = dataList;        /*save the head of the data portion for direct access*/
+  currentInst      = instructionHead; /*pointer to next available instruction slot*/
+  currentData      = dataHead;        /*pointer to next available data slot*/
 }
 
 void clearWordList(void){
@@ -99,6 +99,7 @@ void clearWordList(void){
 }
 
 void Data(label *labelData, lines *currentLine)
+/*insert data into the memory map's linked list of words (right after the last instruction word*/
 {
     int i, length;
     labelData -> adress = DC;
@@ -109,7 +110,7 @@ void Data(label *labelData, lines *currentLine)
         length = (labelData -> value)[0]; /*Size of value array*/
         for (i = 1; i <= length; i++)
         {
-            if (i == 0)
+            if (i == 0) /*the first word of the data is the one to which the label points */
                 insertDataWord(makeDataWords(NULL, (labelData -> value)[i]), currentLine);
             else 
                 insertDataWord(makeDataWords(NULL, (labelData -> value)[i]), NULL);
@@ -122,7 +123,7 @@ void Data(label *labelData, lines *currentLine)
         length = strlen(labelData -> string) + 1; /*Length of word, +1 for '\0'*/
         for (i = 0; i < length; i++)
         {
-            if (i == 0) 
+            if (i == 0) /*the first word of the string is the one to which the label points */
                 insertDataWord(makeDataWords(NULL, (int) (labelData -> string)[i]), currentLine);
             else
                 insertDataWord(makeDataWords(NULL, (int) (labelData -> string)[i]), NULL); 
@@ -131,6 +132,8 @@ void Data(label *labelData, lines *currentLine)
 }
 
 void insertDataWord(word wrd, lines *currentLine){
+/*Insert a word into the data portion of the list of words that is append it to the end and *
+ *the last word point to it. The new word now terminates the list.                          */
   if (DC != 0) {
     wordList *nextWordInList = (wordList*)malloc(sizeof(wordList));
     nextWordInList -> next = NULL;
@@ -146,6 +149,9 @@ void insertDataWord(word wrd, lines *currentLine){
 }
 
 void insertinstructionWord(word wrd, lines *currentLine){
+/*Insert a word into the instruction portion of the list of words that is insert it between *
+ *the last  instruction word and the first data word, the last instruction word should point*
+ *to it and it should point to the dataHead. The new word now terminates the list.          */
   if (IC != 0) {
     wordList *nextWordInList = (wordList*)malloc(sizeof(wordList));
     nextWordInList -> next = dataHead;
@@ -161,6 +167,7 @@ void insertinstructionWord(word wrd, lines *currentLine){
 }
 
 word isImmidiate(char **str) {
+/*check if str has the format of immidiate addressing */
   word wrd;
   if (**str == '#'){
     int i;
@@ -180,6 +187,7 @@ word isImmidiate(char **str) {
 }
 
 word isRegister(char **str, regPos pos) {
+/*check if str has the format of register addressing */
   word wrd;
   if (**str == 'r' && *(*str+1) >= '1' && *(*str+1) <= '8') {
     unsigned char reg = atoi((*str+1));
@@ -199,6 +207,7 @@ word isRegister(char **str, regPos pos) {
 }
 
 word isDirect(char **str) {
+/*check if str has the format of direst (label) addressing */
   word wrd;
   int i;
   char *labelName;
@@ -217,6 +226,8 @@ word isDirect(char **str) {
 }
 
 int isJmpWParams(char **str, word words[], opCode op, unsigned int lineNumber) {
+/*check if str has the format of jump with parameters (label) addressing and if so create   *
+ *the rest of the words needed and return the number of created words.                      */
   int numOfWords = 0;
   char *working = *str;
   Addressing param1;
@@ -243,9 +254,9 @@ int isJmpWParams(char **str, word words[], opCode op, unsigned int lineNumber) {
     }
     if ((words[3] = isRegister(&working, dstReg)).AREdata.are != 3) {
       words[0] = makeInstruction(Absolute, jmpWparam, immidiate, op, param1, directReg);
-      if (param1 == directReg)
+      if (param1 == directReg) /*if both parameters are registers unite them*/
         words[2].AREdata.DATA |= words[3].AREdata.DATA;
-      else
+      else /*else increase the number of words*/
         numOfWords++;
     }
     else if ((words[3] = isDirect(&working)).AREdata.are != 3) {
@@ -268,6 +279,9 @@ int isJmpWParams(char **str, word words[], opCode op, unsigned int lineNumber) {
 }
 
 void instruction(char *str, label *labelInstruction, lines *currentLine) {
+/*check if str has the format of an instruction and if so create the necessary words and    *
+ *insert them into the memory map, also update the address (both internal and pointer) to   *
+ *the first word as the currentLine structure for the second pass.                          */
   char *working = skipBlanks(str);
   opCode op=whatOpCode(&working);
   if (op < 0)
@@ -397,7 +411,7 @@ void instruction(char *str, label *labelInstruction, lines *currentLine) {
     if (labelInstruction != NULL)
       labelInstruction -> adress = IC;
     for (i = 0; i < numOfWords; i++) {
-      if (i == 0)
+      if (i == 0) /*only the first word should update currentLine*/
         insertinstructionWord(words[i], currentLine);
       else
         insertinstructionWord(words[i], NULL);
@@ -406,6 +420,7 @@ void instruction(char *str, label *labelInstruction, lines *currentLine) {
 }
 
 word makeAdressWord(ARE Are, unsigned char *regDest, unsigned char *regSource, unsigned int *address){
+/*create the binary address words for either register addressing or regular label addressing*/
   word wrd;
   wrd.AREdata.are = Are;
   if (address == NULL){
@@ -424,6 +439,7 @@ word makeAdressWord(ARE Are, unsigned char *regDest, unsigned char *regSource, u
 }
 
 bitData TwosComplement (unsigned int data, char bits) {
+/*negate with 2bit complement method*/
   bitData myNum;
   switch(bits){
     case 12:
@@ -439,6 +455,7 @@ bitData TwosComplement (unsigned int data, char bits) {
 }
 
 char *Word2CommaSlash(word wrd){
+/*create the "special" binary format for the output file*/
   char *comSlWord = (char*)malloc(15*sizeof(char));
   int i;
   for (i = 13; i >= 0; i--){
@@ -453,6 +470,9 @@ char *Word2CommaSlash(word wrd){
 }
 
 word makeDataWords(ARE *Are, signed int num){
+/*create the binary data words, either for the direct addressing or for the data portion of *
+ *the memory map (the ARE pointer is what distinguishes them) the answer can be either a    *
+ *14 bit word that is only data or a 2bit ARE followed by a 12 bit data                     */
   word newWord;
   if (Are==NULL) {
     if (num < 0)
@@ -471,6 +491,7 @@ word makeDataWords(ARE *Are, signed int num){
 }
 
 opCode whatOpCode(char **str){
+/*identify the opCode for the instruction*/
   char op[4] = "";
   opCode retOp = notAnOp;
   strncpy(op, *str, 3);
@@ -529,6 +550,7 @@ char *skipBlanks(char *str){
 }
 
 word makeInstruction(ARE Are, Addressing dest, Addressing source, opCode opcode, Addressing param1, Addressing param2){
+/*make instruction word from the individual parts that compose it into a 14bit binary word  */
   word wrd;
   wrd.instruction.are              = Are;
   wrd.instruction.destAddressing   = dest;
@@ -540,6 +562,10 @@ word makeInstruction(ARE Are, Addressing dest, Addressing source, opCode opcode,
 }
 
 void updateLineList(lines *head){
+/*after finnishig the first pass of the assembly file update the addresses which are still *
+ *relative to the start of each portion and turn them into absolute values, add the base to*
+ *the instruction portion and the base + number of instruction words to toe words in the   *
+ *data portion of the memory map                                                           */
   if (head -> memType == DCline)
     head -> position += IC + AddressBase;
   else if (head -> memType == ICline)
@@ -549,6 +575,8 @@ void updateLineList(lines *head){
 }
 
 unsigned char hasDirect(void *instWrdAdd) {
+/*return the number of direct (label and also external) addressings in the current         *
+ *instruction word (0-3)                                                                   */
   instructionWord WRD = (((wordList*)instWrdAdd) -> Word).instruction;
   unsigned char numOfNames = 0;
   if (WRD.destAddressing == direct || WRD.destAddressing == jmpWparam)
@@ -563,6 +591,7 @@ unsigned char hasDirect(void *instWrdAdd) {
 }
 
 void updateAddress(label *nameLabel, void *instWrdAdd, unsigned int pos) {
+/*update the address for the reference of the label in nameLabel in the current instruction*/
   if (nameLabel && instWrdAdd) {
     wordList *lblWRD = (wordList*)instWrdAdd;
     unsigned char offset = 0;
@@ -607,6 +636,7 @@ void updateAddress(label *nameLabel, void *instWrdAdd, unsigned int pos) {
 }
 
 void updateLabelAddress(label *head) {
+/*update the absolute address of the labels in the label structure*/
   if (head -> addId == noneAdd){
     if (head -> id == noneData)
       head -> adress += AddressBase;
@@ -620,6 +650,7 @@ void updateLabelAddress(label *head) {
 }
 
 void makeOutputFile(FILE *output){
+/*create the output file with the correct format in to the specified file stream*/
   wordList *head = instructionHead;
   unsigned int counter;
   char *wrdCS;
