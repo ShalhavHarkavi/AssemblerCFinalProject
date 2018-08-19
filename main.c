@@ -5,9 +5,18 @@
 #include "Assembler.h"
 
 static int assembler(char *fileName); /*The main assembling function*/
+
+/*The second pass adds the addresses of the labels used in the file and        *
+  identifies the extternals and entries.                                       */
 static void secondPass(FILE *input, label *head, lines *linesMapHead);
 
 void secondPass(FILE *input, label *head, lines *linesMapHead) {
+/*the functions runs through the lines of the input file (or more precisely    *
+  the instruction words created for lines containning instructions) and looks  *
+  for those lines where labels are used as parameters either as direct or as   *
+  jumps. When one is found the corresponding label is searched for in the label*
+  list created in the first pass and it's adress is inserted with the correct  *
+  ARE bit to the next available place in the memory map.                       */
 	if (linesMapHead -> memType == ICline) {
 		unsigned char numOfNames;
 		numOfNames = hasDirect(linesMapHead -> instWord);
@@ -62,23 +71,26 @@ int assembler(char *fileName)
 	}
 	head = (label*)malloc(sizeof(label)); /*Allocating memory to the head of the label list*/
 	temp = head; /*Setting the value of the temp label pointer to the head of the list, so it can continue through the list without losing the value of head*/
-	initializeWordList(); /**/
-	resetErrCond();
+	initializeWordList(); /*initialize the translator for new file processing*/
+	resetErrCond(); /*reset the error mechanism for new file processing*/
 	for (lineCounter = 1;fgets(line, MAX_LINE_LENGTH, input) != NULL; lineCounter++) /*Running through the input file until EOF is reached (fgets == NULL), while simultaneously increasing the line counter's value*/
 	{
 		char lineName[MAX_NAME_LENGTH]; /*Creating a string to store the name of the label that might be in the line*/
-		if (isLegalLineLength(line) == false && skipBlanks(line)[0] != ';') /*Checking if the length of the current line from the file is too long. If it is, it calls for an error*/
+		/*Checking if the length of the current line from the file is too long. If it is, it calls for an error*/
+		if (isLegalLineLength(line) == false && skipBlanks(line)[0] != ';')
 		{
 			char c;
 			while ((c = fgetc(input)) != '\n' && c != EOF); /*Procceeds through the too-long-line so it gets to the next*/
 			error(lineLengthError, lineCounter, NULL); /*Calls for an error*/
 		}
-		currentLine = addLine(currentLine, &linesMapHead); /**/
-		currentLine -> lineNum = lineCounter; /**/
-		currentLine -> filePos = ftell(input) - strlen(line) -0; /**/
-		currentLine -> memType = nonMemLine; /**/
-		currentLine -> instWord = NULL; /**/
-		currentLine -> position = -1; /**/
+		/*------------add a line to the lines metadata list------------------------*/
+		currentLine = addLine(currentLine, &linesMapHead); 
+		currentLine -> lineNum = lineCounter; 
+		currentLine -> filePos = ftell(input) - strlen(line); 
+		currentLine -> memType = nonMemLine; 
+		currentLine -> instWord = NULL; 
+		currentLine -> position = -1; 
+		/*-------------------------------------------------------------------------*/
 		if (skipBlanks(line)[0] == ';' || *skipBlanks(line) == '\0') /*Checking if the first character after blank spaces and tabs is a semicolon. If it is, it skips the line, because a line starting with a semicolon is a comment, and must be ignored by the assembler*/
 			continue;
 		else if (skipBlanks(line)[0] == '.') /*Checking if the first character after blank spaces and tabs is a dot. If it is, it means that the line either declares data without a label, an entry that is entry or external, or has a syntax error*/
@@ -113,7 +125,7 @@ int assembler(char *fileName)
 		}
 		else if (isDataLabel(line) == true) /*Else, checking if the line is a declaration of a data label (a label that is declared using .data or .string). If it is:*/
 		{
-			currentLine -> memType = DCline; /**/
+			currentLine -> memType = DCline; /*this line goes into the data portion of the memory*/
 			strcpy(lineName, getLabelName(line, currentLine)); /*Copying the label name from the line*/
 			if (isLegalName(lineName) == false) /*Checking if the name is legal according to the guidelines of the project. If not, calls an illegal name error*/
 				error(nameError, lineCounter, NULL);
@@ -123,12 +135,12 @@ int assembler(char *fileName)
 			temp -> value = getValue(line, temp -> id, currentLine); /*Setting the numeric .data value of the label (NULL if .string)*/
 			temp -> string = getString(line, temp -> id); /*Setting the .string value of the label (NULL if .data)*/
 			temp -> next = (label*)malloc(sizeof(label)); /*Allocating memory for the next label in the list*/
-			Data(temp, currentLine); /*Creates a word/multiple words for the stored datas*/
+			Data(temp, currentLine); /*Creates a word/multiple words for the stored data*/
 			temp = temp -> next; /*Sets the label pointer from the current one to the next one in the list*/
 		}
 		else if (isInstructionLabel(line) == true) /*Else, checking if the line is a declaration of an instruction label (a label that is declared using one of the 16 instructions). If it is:*/
 		{
-			currentLine -> memType = ICline; /**/
+			currentLine -> memType = ICline; /*this line goes into the instruction portion of the memory*/
 			strcpy(lineName, getLabelName(line, currentLine)); /*Copying the label name from the line*/
 			if (isLegalName(lineName) == false) /*Checking if the name is legal according to the guidelines of the project. If not, calls an illegal name error*/
 				error(nameError, lineCounter, NULL);
