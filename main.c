@@ -76,7 +76,7 @@ int assembler(char *fileName)
 	for (lineCounter = 1;fgets(line, MAX_LINE_LENGTH, input) != NULL; lineCounter++) /*Running through the input file until EOF is reached (fgets == NULL), while simultaneously increasing the line counter's value*/
 	{
 		char lineName[MAX_NAME_LENGTH]; /*Creating a string to store the name of the label that might be in the line*/
-		if (isLegalLineLength(line) == false) /*Checking if the length of the current line from the file is too long. If it is, it calls for an error*/
+		if (isLegalLineLength(line) == false && skipBlanks(line)[0] != ';') /*Checking if the length of the current line from the file is too long (except for comments). If it is, it calls for an error*/
 		{
 			char c;
 			while ((c = fgetc(input)) != '\n' && c != EOF); /*Procceeds through the too-long-line so it gets to the next*/
