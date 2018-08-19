@@ -100,26 +100,34 @@ void clearWordList(void){
 
 void Data(label *labelData, lines *currentLine)
 {
-  int i, length;
-  labelData -> adress = DC;
-  if (labelData -> id == data) {
-    length = (labelData -> value)[0]; /*Size of value array*/
-    for (i = 1; i <= length; i++) {
-      if (i == 0)  
-        insertDataWord(makeDataWords(NULL, (labelData -> value)[i]), currentLine);
-      else 
-        insertDataWord(makeDataWords(NULL, (labelData -> value)[i]), NULL);
+    int i, length;
+    labelData -> adress = DC;
+    if (labelData -> id == data)
+    {
+        if (labelData -> value == NULL)
+            return;
+        length = (labelData -> value)[0]; /*Size of value array*/
+        for (i = 1; i <= length; i++)
+        {
+            if (i == 0)
+                insertDataWord(makeDataWords(NULL, (labelData -> value)[i]), currentLine);
+            else 
+                insertDataWord(makeDataWords(NULL, (labelData -> value)[i]), NULL);
+        }
     }
-  }
-  else if (labelData -> id == string) {
-    length = strlen(labelData -> string) + 1; /*Length of word, +1 for '\0'*/
-    for (i = 0; i < length; i++) {
-      if (i == 0) 
-        insertDataWord(makeDataWords(NULL, (int) (labelData -> string)[i]), currentLine);
-      else
-        insertDataWord(makeDataWords(NULL, (int) (labelData -> string)[i]), NULL); 
+    else if (labelData -> id == string)
+    {
+        if (labelData -> string == NULL)
+            return;
+        length = strlen(labelData -> string) + 1; /*Length of word, +1 for '\0'*/
+        for (i = 0; i < length; i++)
+        {
+            if (i == 0) 
+                insertDataWord(makeDataWords(NULL, (int) (labelData -> string)[i]), currentLine);
+            else
+                insertDataWord(makeDataWords(NULL, (int) (labelData -> string)[i]), NULL); 
+        }
     }
-  }
 }
 
 void insertDataWord(word wrd, lines *currentLine){
