@@ -236,7 +236,7 @@ int isJmpWParams(char **str, word words[], opCode op, unsigned int lineNumber) {
   Addressing param1;
   if ((words[1] = isDirect(&working)).AREdata.are == 3) {
     error(JmpNotLabel, lineNumber, NULL);
-    return 0;
+    return -1;
   }
   else
     numOfWords = 3;
@@ -249,11 +249,11 @@ int isJmpWParams(char **str, word words[], opCode op, unsigned int lineNumber) {
       param1 = direct;
     else {
       error(param1Err, lineNumber, NULL);
-      return 0;
+      return -1;
     }
     if (*(working++) != ',') {
       error(expectComma, lineNumber, NULL);
-      return 0;
+      return -1;
     }
     if ((words[3] = isRegister(&working, dstReg)).AREdata.are != 3) {
       words[0] = makeInstruction(Absolute, jmpWparam, immidiate, op, param1, directReg);
@@ -272,7 +272,7 @@ int isJmpWParams(char **str, word words[], opCode op, unsigned int lineNumber) {
     }
     else {
       error(param2Err, lineNumber, NULL);
-      return 0;
+      return -1;
     }
   }
   else
@@ -287,12 +287,14 @@ void instruction(char *str, label *labelInstruction, lines *currentLine) {
  *the first word as the currentLine structure for the second pass.                          */
   char *working = skipBlanks(str);
   opCode op=whatOpCode(&working);
-  if (op < 0)
+  if (op < 0) {
     error(illegalOpErr, currentLine -> lineNum, NULL);
+    return;
+  }
   else {
     word words[4];
     int i;
-    unsigned char numOfWords = 0;
+    int numOfWords = 0;
     Addressing sourceAddr;
     if (op>=rts) { /* first group no operands */
       words[0] = makeInstruction(Absolute, immidiate, immidiate, op, immidiate, immidiate);
@@ -314,10 +316,13 @@ void instruction(char *str, label *labelInstruction, lines *currentLine) {
       }
       else{
         error(illegalDest, currentLine -> lineNum, NULL);
+        return;
       }
       working = skipBlanks(working);
-      if (*working != ',')
+      if (*working != ',') {
         error(expectComma, currentLine -> lineNum, NULL);
+        return;
+      }
       else
         working = skipBlanks(working + 1);
       if ((words[2] = isRegister(&working, dstReg)).AREdata.are != 3) {
@@ -335,18 +340,24 @@ void instruction(char *str, label *labelInstruction, lines *currentLine) {
         words[0] = makeInstruction(Absolute, immidiate, sourceAddr, op, immidiate, immidiate);
         numOfWords++;
       }
-      else
+      else {
         error(illegalSource, currentLine -> lineNum, NULL);
+        return;
+      }
     }
     else if (op == lea) {
       working = skipBlanks(working);
       if ((words[1] = isDirect(&working)).AREdata.are != 3)
         numOfWords = 2;
-      else
+      else {
         error(illegalDest, currentLine -> lineNum, NULL);
+        return;
+      }
       working = skipBlanks(working);
-      if (*working != ',')
+      if (*working != ',') {
         error(expectComma, currentLine -> lineNum, NULL);
+        return;
+      }
       else
         working = skipBlanks(working + 1);
       if ((words[2] = isRegister(&working, dstReg)).AREdata.are != 3) {
@@ -357,8 +368,10 @@ void instruction(char *str, label *labelInstruction, lines *currentLine) {
         words[0] = makeInstruction(Absolute, direct, direct, op, immidiate, immidiate);
         numOfWords++;
       }
-      else
+      else {
         error(illegalSource, currentLine -> lineNum, NULL);
+        return;
+      }
     }
     else if (op == not || op == clr || op == inc || op == dec || op == red) { /*third group no source addressing, direct or register destination addressing*/
       working = skipBlanks(working);
@@ -370,8 +383,10 @@ void instruction(char *str, label *labelInstruction, lines *currentLine) {
         words[0] = makeInstruction(Absolute, direct, immidiate, op, immidiate, immidiate);
         numOfWords = 2;
       }
-      else
+      else {
         error(illegalDest, currentLine -> lineNum, NULL);
+        return;
+      }
     }
     else if (op == prn) {
       working = skipBlanks(working);
@@ -387,16 +402,22 @@ void instruction(char *str, label *labelInstruction, lines *currentLine) {
         words[0] = makeInstruction(Absolute, direct, immidiate, op, immidiate, immidiate);
         numOfWords = 2;
       }
-      else
+      else {
         error(illegalDest, currentLine -> lineNum, NULL);
+        return;
+      }
     }
     else if (op == jmp || op == bne || op == jsr) {
       working = skipBlanks(working);
       sourceAddr = immidiate;
-      if ((numOfWords = isJmpWParams(&working, words, op, currentLine -> lineNum))) {
-        if (*working++ != ')')
+      if ((numOfWords = isJmpWParams(&working, words, op, currentLine -> lineNum)) > 0) {
+        if (*working++ != ')') {
           error(expectParen, currentLine -> lineNum, NULL);
+          return;
+        }
       }
+      else if (numOfWords < 0)
+        return;
       else if ((words[1] = isRegister(&working, dstReg)).AREdata.are != 3) {
         words[0] = makeInstruction(Absolute, directReg, immidiate, op, immidiate, immidiate);
         numOfWords = 2;
@@ -405,19 +426,24 @@ void instruction(char *str, label *labelInstruction, lines *currentLine) {
         words[0] = makeInstruction(Absolute, direct, immidiate, op, immidiate, immidiate);
         numOfWords = 2;
       }
-      else
+      else {
         error(illegalDest, currentLine -> lineNum, NULL);
+        return;
+      }
     }
-
-    if (*skipBlanks(working) != '\0')
-      error(expectEOL, currentLine -> lineNum, NULL);
-    if (labelInstruction != NULL)
-      labelInstruction -> adress = IC;
-    for (i = 0; i < numOfWords; i++) {
-      if (i == 0) /*only the first word should update currentLine*/
-        insertinstructionWord(words[i], currentLine);
-      else
-        insertinstructionWord(words[i], NULL);
+    if (numOfWords > 0) {
+      if (*skipBlanks(working) != '\0') {
+        error(expectEOL, currentLine -> lineNum, NULL);
+        return;
+      }
+      if (labelInstruction != NULL)
+        labelInstruction -> adress = IC;
+      for (i = 0; i < numOfWords; i++) {
+        if (i == 0) /*only the first word should update currentLine*/
+          insertinstructionWord(words[i], currentLine);
+        else
+          insertinstructionWord(words[i], NULL);
+      }
     }
   }
 }

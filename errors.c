@@ -48,11 +48,11 @@ void error(errorCode errorType, unsigned int location, char* nameERR)
     errorCond = Error;
   }
   else if (errorType == param1Err) {
-    fprintf(stderr, "ERROR: PARAMETER 1 IS NOT A LEGAL WORD IN LINE #%d\n.", location);
+    fprintf(stderr, "ERROR: PARAMETER 1 IS NOT A LEGAL WORD IN LINE #%d\n", location);
     errorCond = Error;
   }
   else if (errorType == param2Err) {
-    fprintf(stderr, "ERROR: PARAMETER 2 IS NOT A LEGAL WORD IN LINE #%d\n.", location);
+    fprintf(stderr, "ERROR: PARAMETER 2 IS NOT A LEGAL WORD IN LINE #%d\n", location);
     errorCond = Error;
   }
   else if (errorType == expectComma) {
@@ -73,7 +73,8 @@ void error(errorCode errorType, unsigned int location, char* nameERR)
   }
   else if (errorType == expectEOL) {
     fprintf(stderr, "WARNING: THERE SHOULDN'T BE ANYTHING AFTER THE COMMAND IN LINE #%d\n", location);
-    errorCond = Warnning;
+    if (errorCond < Warnning)
+      errorCond = Warnning;
   }
   else if (errorType == EntryError) {
     fprintf(stderr, "ERROR: AN ENTRY WAS DECLARED BUT NEVER DEFINED: '%s'\n", nameERR);
@@ -84,8 +85,9 @@ void error(errorCode errorType, unsigned int location, char* nameERR)
     errorCond = Error;
   }
   else if (errorType == externalErr) {
-    fprintf(stderr, "WARNING: %s WAS DEFINED AS AN EXTERNAL BUT NEVER USED.\n", nameERR);
-    errorCond = Warnning;
+    fprintf(stderr, "WARNING: %s WAS DEFINED AS AN EXTERNAL BUT NEVER USED\n", nameERR);
+    if (errorCond < Warnning)
+      errorCond = Warnning;
   }
 }
 
