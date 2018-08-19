@@ -137,7 +137,7 @@ int *getValue(char str[], type id, lines *line) /*Returns a pointer to an array 
 			error(syntaxError, line -> lineNum, NULL);
 			return NULL;
 		}
-		if (isdigit((c = skipBlanks(str + j))) || c == '-') /*Checks if the next character after blanks and tabs is another number or negative sign. If so, that means that there is no comma between two numbers, and the function calls for an error and returns a NULL pointer*/
+		if (isdigit((c = *skipBlanks(str + j))) || c == '-') /*Checks if the next character after blanks and tabs is another number or negative sign. If so, that means that there is no comma between two numbers, and the function calls for an error and returns a NULL pointer*/
 		{
 			error(expectComma, line -> lineNum, NULL);
 			return NULL;
