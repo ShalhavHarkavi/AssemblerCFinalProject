@@ -46,29 +46,20 @@ void secondPass(FILE *input, label *head, lines *linesMapHead) {
 
 int assembler(char *fileName) 
 {
-	FILE *input, *output, *entries, *externals; /*File pointers for the input, output, entries and externals files*/
+	FILE *input; /*File pointer for the input*/
 	label *head = NULL, *temp = NULL; /*Pointers for the linked lists of the labels*/
-	char line[MAX_LINE_LENGTH], inputName[MAX_FILE_NAME_LENGTH], outputName[MAX_FILE_NAME_LENGTH], entriesName[MAX_FILE_NAME_LENGTH], externalsName[MAX_FILE_NAME_LENGTH]; /*String to store the next line in the file and the names of the input and output files plus their extension*/
+	char line[MAX_LINE_LENGTH], inputName[MAX_FILE_NAME_LENGTH]; /*String to store the next line in the file and the names of the files plus their extension*/
 	unsigned int lineCounter; /*A variable that saves the number of the current line in the input file.*/
-	lines *currentLine = NULL; /**/
-	lines *linesMapHead = NULL; /**/
+	lines *currentLine = NULL; /*pointer to the current line info in the lines DS*/
+	lines *linesMapHead = NULL; /*head of the lines list*/
 	strncpy(inputName, fileName, MAX_FILE_NAME_LENGTH - 4); /*Copying the input file's name to its corresponding string*/
 	strcat(inputName, ".as"); /*Adding the input file's extension to its corresponding string*/
-	strncpy(outputName, fileName, MAX_FILE_NAME_LENGTH - 4); /*Copying the output file's name to its corresponding string*/
-	strcat(outputName, ".ob"); /*Adding the output file's extension to its corresponding string*/
-	strncpy(entriesName, fileName, MAX_FILE_NAME_LENGTH - 5); /*Copying the entries file's name to its corresponding string*/
-	strcat(entriesName, ".ent"); /*Adding the entries file's extension to its corresponding string*/
-	strncpy(externalsName, fileName, MAX_FILE_NAME_LENGTH - 5); /*Copying the externals file's name to its corresponding string*/
-	strcat(externalsName, ".ext"); /*Adding the externals file's extension to its corresponding string*/
 	input = fopen(inputName, "r"); /*Opening the input file using its string in read mode*/
 	if (input == NULL) /*Checking if the input file cannot open. If not, it prints an error*/
 	{
 		error(fopenError, 0, fileName);
 		return 0;
 	}
-	output = fopen(outputName, "w"); /*Opening the output file using its string in writing mode so the contents of it are rewritten every time the assembler is activated on the input file*/
-	entries = fopen(entriesName, "w"); /*Opening the entries file using its string in writing mode so the contents of it are rewritten every time the assembler is activated on the input file*/
-	externals = fopen(externalsName, "w"); /*Opening the externals file using its string in writing mode so the contents of it are rewritten every time the assembler is activated on the input file*/
 	head = (label*)malloc(sizeof(label)); /*Allocating memory to the head of the label list*/
 	temp = head; /*Setting the value of the temp label pointer to the head of the list, so it can continue through the list without losing the value of head*/
 	initializeWordList(); /**/
@@ -76,7 +67,7 @@ int assembler(char *fileName)
 	for (lineCounter = 1;fgets(line, MAX_LINE_LENGTH, input) != NULL; lineCounter++) /*Running through the input file until EOF is reached (fgets == NULL), while simultaneously increasing the line counter's value*/
 	{
 		char lineName[MAX_NAME_LENGTH]; /*Creating a string to store the name of the label that might be in the line*/
-		if (isLegalLineLength(line) == false && skipBlanks(line)[0] != ';') /*Checking if the length of the current line from the file is too long (except for comments). If it is, it calls for an error*/
+		if (isLegalLineLength(line) == false) /*Checking if the length of the current line from the file is too long. If it is, it calls for an error*/
 		{
 			char c;
 			while ((c = fgetc(input)) != '\n' && c != EOF); /*Procceeds through the too-long-line so it gets to the next*/
@@ -153,12 +144,20 @@ int assembler(char *fileName)
 		}
 	}
 	if (getErrCond() != Error) {
-		updateLineList(linesMapHead); /**/
-		updateLabelAddress(head); /**/
+		FILE *output, *entries, *externals; /*output, entries and externals files*/
+		char outputName[MAX_FILE_NAME_LENGTH], entriesName[MAX_FILE_NAME_LENGTH], externalsName[MAX_FILE_NAME_LENGTH]; /*names of the input and output files plus their extension*/
+		updateLineList(linesMapHead); /*update addresses for the words created to the memorymap*/
+		updateLabelAddress(head); /*update addresses for the words created to the memorymap*/
 		secondPass(input, head, linesMapHead); /*Calling a function that passes over the file for a second time so it can get adresses and merge entry labels with their corresponding defined labels*/
-	}
-	fclose(input); /*Closing the input file*/
-	if (getErrCond() != Error) {
+		strncpy(outputName, fileName, MAX_FILE_NAME_LENGTH - 4); /*Copying the output file's name to its corresponding string*/
+		strcat(outputName, ".ob"); /*Adding the output file's extension to its corresponding string*/
+		strncpy(entriesName, fileName, MAX_FILE_NAME_LENGTH - 5); /*Copying the entries file's name to its corresponding string*/
+		strcat(entriesName, ".ent"); /*Adding the entries file's extension to its corresponding string*/
+		strncpy(externalsName, fileName, MAX_FILE_NAME_LENGTH - 5); /*Copying the externals file's name to its corresponding string*/
+		strcat(externalsName, ".ext"); /*Adding the externals file's extension to its corresponding string*/
+		output = fopen(outputName, "w"); /*Opening the output file using its string in writing mode so the contents of it are rewritten every time the assembler is activated on the input file*/
+		entries = fopen(entriesName, "w"); /*Opening the entries file using its string in writing mode so the contents of it are rewritten every time the assembler is activated on the input file*/
+		externals = fopen(externalsName, "w"); /*Opening the externals file using its string in writing mode so the contents of it are rewritten every time the assembler is activated on the input file*/
 		if (getErrCond() == Warnning)
 			printf("there were warnnings but the object file is still created.\n");
 		temp = head; /*Setting the temporary label pointer to the head of the label list*/
@@ -182,6 +181,7 @@ int assembler(char *fileName)
 		}
 		makeOutputFile(output); /**/
 	}
+	fclose(input); /*Closing the input file*/
 	destroyLabelList(head); /*Destroying the label linked list to free space*/
 	clearWordList();
 	clearLinesMap(linesMapHead);
