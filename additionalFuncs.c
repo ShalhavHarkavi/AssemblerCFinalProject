@@ -133,7 +133,7 @@ int *getValue(char str[], type id, lines *line) /*Returns a pointer to an array 
 		if (str[j] == ',' && str[j + 1] == ',') /*Checks if there are two commas with no numbers between them. If so, calls a syntax error*/
 		{
 			error(syntaxError, line -> lineNum, NULL);
-			return 0;
+			return NULL;
 		}
 		strncpy(numString, (str + i), (j - i)); /*copies the number from the line to the number string*/
 		numString[j-i] = '\0'; /*Adds '\0' to the end of the number string*/
