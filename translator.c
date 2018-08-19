@@ -115,7 +115,7 @@ void Data(label *labelData, lines *currentLine)
         {
             if (i == 0) /*the first word of the data is the one to which the label points */
                 insertDataWord(makeDataWords(NULL, (labelData -> value)[i]), currentLine);
-            else 
+            else
                 insertDataWord(makeDataWords(NULL, (labelData -> value)[i]), NULL);
         }
     }
@@ -129,7 +129,7 @@ void Data(label *labelData, lines *currentLine)
             if (i == 0) /*the first word of the string is the one to which the label points */
                 insertDataWord(makeDataWords(NULL, (int) (labelData -> string)[i]), currentLine);
             else
-                insertDataWord(makeDataWords(NULL, (int) (labelData -> string)[i]), NULL); 
+                insertDataWord(makeDataWords(NULL, (int) (labelData -> string)[i]), NULL);
         }
     }
 }
@@ -654,9 +654,13 @@ void updateLabelAddress(label *head) {
 
 void makeOutputFile(FILE *output){
 /*create the output file with the correct format in to the specified file stream*/
-  wordList *head = instructionHead;
+  wordList *head;
   unsigned int counter;
   char *wrdCS;
+  if (IC == 0)
+    head = dataHead;
+  else
+    head = instructionHead;
   fprintf(output, "   %d      %d\n",IC, DC);
   for (counter = 0; counter < IC + DC; counter++) {
     wordList *temp = head;

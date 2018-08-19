@@ -23,7 +23,7 @@
 typedef enum ErrorCode{fopenError, syntaxError, nameError, lineLengthError, fileNumError,
                        JmpNotLabel, param1Err, param2Err, expectComma, illegalOpErr,
                        illegalDest, illegalSource, expectParen, expectEOL, EntryError,
-                       labelNotFound}errorCode;
+                       labelNotFound, externalErr}errorCode;
 
 typedef enum LabelType{noneData, data, string}type; /*Codes for the regular label types (data, string or none)*/
 

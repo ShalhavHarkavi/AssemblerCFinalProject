@@ -83,6 +83,10 @@ void error(errorCode errorType, unsigned int location, char* nameERR)
     fprintf(stderr, "A LABEL '%s' WAS USED BUT NEVER DEFINED IN LINE #%d\n", nameERR, location);
     errorCond = Error;
   }
+  else if (errorType == externalErr) {
+    fprintf(stderr, "%s WAS DEFINED AS AN EXTERNAL BUT NEVER USED.\n", nameERR);
+    errorCond = Warnning;
+  }
 }
 
 void destroyLabelList(label* head) /*A void function that frees the memory of the label linked list*/

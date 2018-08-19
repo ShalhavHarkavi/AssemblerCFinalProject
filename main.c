@@ -172,13 +172,15 @@ int assembler(char *fileName)
 		output = fopen(outputName, "w"); /*Opening the output file using its string in writing mode so the contents of it are rewritten every time the assembler is activated on the input file*/
 		entries = fopen(entriesName, "w"); /*Opening the entries file using its string in writing mode so the contents of it are rewritten every time the assembler is activated on the input file*/
 		externals = fopen(externalsName, "w"); /*Opening the externals file using its string in writing mode so the contents of it are rewritten every time the assembler is activated on the input file*/
-		if (getErrCond() == Warnning)
-			printf("there were warnnings but the object file is still created.\n");
 		temp = head; /*Setting the temporary label pointer to the head of the label list*/
 		while (temp != NULL) /*While the temporary pointer isn't NULL (meaning - running from the head of the list to its end):*/
 		{
-			if (temp -> addId == external) /*Checking if the current label is an external label. If so, prints the name and adress into the externals file*/
-				fprintf(externals, "%s\t%d\n", temp -> name, temp -> adress);
+			if (temp -> addId == external) {/*Checking if the current label is an external label. If so, prints the name and adress into the externals file*/
+				if (temp -> adress < 0)
+					error(externalErr, 0, temp -> name);
+				else
+					fprintf(externals, "%s\t%d\n", temp -> name, temp -> adress);
+			}
 			if (temp -> addId == entry) /*Checking if the current label is an entry label. If so, prints the name and adress into the entries file*/
 				fprintf(entries, "%s\t%d\n", temp -> name, temp -> adress);
 			temp = temp -> next; /*Setting the label pointer from the current label to the next one in the list*/
@@ -193,7 +195,9 @@ int assembler(char *fileName)
 			fclose(externals);
 			remove(externalsName);
 		}
-		makeOutputFile(output); /**/
+		makeOutputFile(output); 
+		if (getErrCond() == Warnning)
+			printf("there were warnings but the object file was still created.\n");
 	}
 	fclose(input); /*Closing the input file*/
 	destroyLabelList(head); /*Destroying the label linked list to free space*/
