@@ -360,7 +360,7 @@ void instruction(char *str, label *labelInstruction, lines *currentLine) {
       else
         error(illegalSource, currentLine -> lineNum, NULL);
     }
-    else if (op == not || op == clr || op == inc || op == dec || op == dec) { /*third group no source addressing, direct or register destination addressing*/
+    else if (op == not || op == clr || op == inc || op == dec || op == red) { /*third group no source addressing, direct or register destination addressing*/
       working = skipBlanks(working);
       if ((words[1] = isRegister(&working, dstReg)).AREdata.are != 3) {
         words[0] = makeInstruction(Absolute, directReg, immidiate, op, immidiate, immidiate);
