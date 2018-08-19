@@ -17,9 +17,9 @@
 #define AddressBase 100
 #define isblank(c) ((!isprint(c) && c != '\0') || c == ' ')
 
-typedef enum ErrorCode{fopenError, syntaxError, nameError, lineLengthError, fileNumError, 
+typedef enum ErrorCode{fopenError, syntaxError, nameError, lineLengthError, fileNumError,
                        JmpNotLabel, param1Err, param2Err, expectComma, illegalOpErr,
-                       illegalDest, illegalSource, expectParen, expectEOL, EntryError, 
+                       illegalDest, illegalSource, expectParen, expectEOL, EntryError,
                        labelNotFound}errorCode;
 
 typedef enum LabelType{noneData, data, string}type; /*Codes for the regular label types (data, string or none)*/
@@ -101,12 +101,16 @@ char *skipBlanks(char *str);/*return pointer to first non-blank beginnig of str*
 void updateAddress(label *nameLabel, void *instWrdAdd, unsigned int pos);
 void updateLabelAddress(label *head); /*update addresses for labels linked list*/
 
-/*update all entry labels with the address of the corresponding instruction label*/
+/*update entry labels with the address of the corresponding instruction label*/
 void updateEntries(label *head, label *current);
 
-void destroyLabelList(label* head); /*A void function that frees the memory of the label linked list*/
+/*A void function that frees the memory of the label linked list*/
+void destroyLabelList(label* head);
 
-int isLegalLineLength(char str[]); /*Returns true if str (a line from the file) is in the legal length*/
+/*Returns true if str (a line from the file) is in the legal length*/
+int isLegalLineLength(char str[]);
 
+/* return the error condition for the current line*/
 errorCondition getErrCond(void);
+/* reset the error condition to normal before starting to process a new file.*/
 void resetErrCond(void);
