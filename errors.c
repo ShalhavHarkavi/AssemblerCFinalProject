@@ -1,6 +1,11 @@
-/************************************
- *By Matan Liber and Shalhav Harkavi*
- ************************************/
+/**************************************
+ *********** AUG 19 2018 **************
+ * By Matan Liber and Shalhav Harkavi *
+ * Submitted to Shadi Jazmawi         *
+ * Wednesday's group at Allience      *
+ **************************************/
+
+
 /*This module is responsible for error handeling and cleanup.                 */
 
 #include "Assembler.h"
