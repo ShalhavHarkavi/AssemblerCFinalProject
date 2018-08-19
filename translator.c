@@ -523,7 +523,7 @@ opCode whatOpCode(char **str){
 }
 
 char *skipBlanks(char *str){
-  for(;isblank(*str) && *str != '\0';str++)
+  for(;isblank((int)*str) && *str != '\0';str++)
     ;
   return str;
 }
