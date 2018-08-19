@@ -68,7 +68,7 @@ void error(errorCode errorType, unsigned int location, char* nameERR)
     errorCond = Error;
   }
   else if (errorType == expectParen) {
-    fprintf(stderr, "\tERROR: EXPECTED ')' IN LINE #%d\n", location);
+    fprintf(stderr, "\tERROR: EXPECTED PARENTHESIS IN LINE #%d\n", location);
     errorCond = Error;
   }
   else if (errorType == expectEOL) {

@@ -122,6 +122,7 @@ addType getAddType(char str[]) /*Returns the type (entry, external, none) used i
 int *getValue(char str[], type id, lines *line) /*Returns a pointer to an array that stores the numbers in a data type label defined in str (str is aline from the file, returns NULL if label is not data type)*/
 {
 	int i, j, t, z, numCount = 0;
+	char c;
 	int bigValueArr[MAX_NUMS_IN_DATA_TYPE]; /*Array that can store the maximum amount of numbers in a line that is defined by .data without a label*/
 	int *valueArr = NULL; /*Pointer to actual array that will be returned and will have memory allocated later in the size that is actually the number of numbers in the line*/
 	if (id == noneData || id == string) /*If the type in the line isn't data, returns a NULL pointer*/
@@ -134,6 +135,11 @@ int *getValue(char str[], type id, lines *line) /*Returns a pointer to an array 
 		if (str[j] == ',' && str[j + 1] == ',') /*Checks if there are two commas with no numbers between them. If so, calls a syntax error*/
 		{
 			error(syntaxError, line -> lineNum, NULL);
+			return NULL;
+		}
+		if (isdigit((c = skipBlanks(str + j))) || c == '-') /*Checks if the next character after blanks and tabs is another number or negative sign. If so, that means that there is no comma between two numbers, and the function calls for an error and returns a NULL pointer*/
+		{
+			error(expectComma, line -> lineNum, NULL);
 			return NULL;
 		}
 		strncpy(numString, (str + i), (j - i)); /*copies the number from the line to the number string*/

@@ -12,7 +12,7 @@ LineTooLong: .string "mzaNHI7zlDIwsXsVcBJEh7VFgUXoeBv9ISSAgr6bwI5tQTaZB8kdJKpgWk
 ;Illegal Destination for jmp/bne/jsr Error (line 13):
 jsr IllegalJSRLabel
 
-;Illegal Parameter 1 Error (line 16):
+;Illegal Parameter 1 Error (line 17):
 j: .data 25
 jmp j(jmp,#3)
 
@@ -23,10 +23,10 @@ bne j(#-25,r8)
 Left: .data 5 -9
 
 ;Illegal Destination Error (line 26):
-sub 3,r8
+sub r3,#5
 
 ;Illegal Source Error (line 29):
-add r3,8
+add r8,#19
 
 ;Expected Parenthesis Error (line 33):
 jmpLabel: .data 5, 6, 7
@@ -35,11 +35,5 @@ jmp jmpLabel(#-6,r4
 ;Expected End-of-Line Error (line 36):
 rts a
 
-;Entry Error (line 39):
-.entry UnusedEntry
-
-;Undefined Used Labels (line 42):
+;Undefined Used Labels (line 39):
 add UndefinesLabel, #5
-
-;External Error (line 45):
-.extern UnusedExtern
