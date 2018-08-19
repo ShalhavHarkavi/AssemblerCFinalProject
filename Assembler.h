@@ -117,3 +117,6 @@ int isLegalLineLength(char str[]);
 errorCondition getErrCond(void);
 /* reset the error condition to normal before starting to process a new file.*/
 void resetErrCond(void);
+
+/*create an empty label and return it's pointer*/
+label *createLabel(void);

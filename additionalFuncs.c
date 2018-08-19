@@ -272,6 +272,8 @@ lines *addLine(lines *where, lines **head) {
 	}
 	else {
 		*head = (lines*)malloc(sizeof(lines));
+		(*head) -> next = NULL;
+		(*head) -> instWord = NULL;
 		return *head;
 	}
 }
@@ -284,4 +286,16 @@ int isLegalLineLength(char str[]) /*Returns true if str (a line from the file) i
 	if (i == MAX_LINE_LENGTH && strchr(str, '\n') == NULL) /*Checks if the line is of maximum length and that there is no occurence of '\n' in the line (strchr returns NULL if there is no occurence of the character). If so, the line is too long (fgets is supposed to read the newline in addition to the rest of the line), and returns false. Ele, returns true*/
 		return false;
 	return true;
+}
+
+label *createLabel(void) {
+	label *temp = (label*)malloc(sizeof(label));
+	(temp -> name)[0] = '\0';
+	temp -> id = 0;
+	temp -> addId = 0;
+	temp -> value = NULL;
+	temp -> string = NULL;
+	temp -> adress = -1;
+	temp -> next = NULL;
+	return temp;
 }

@@ -45,7 +45,7 @@ void secondPass(FILE *input, label *head, lines *linesMapHead) {
 						}
 					}
 					if (nameLabel == NULL)
-						error(labelNotFound, linesMapHead -> lineNum, nameLabel -> name);
+						error(labelNotFound, linesMapHead -> lineNum, Name);
 				}
 			}
 			free(lineP);
@@ -72,7 +72,7 @@ int assembler(char *fileName)
 		error(fopenError, 0, fileName);
 		return 0;
 	}
-	head = (label*)malloc(sizeof(label)); /*Allocating memory to the head of the label list*/
+	head = createLabel(); /*Allocating memory to the head of the label list*/
 	temp = head; /*Setting the value of the temp label pointer to the head of the list, so it can continue through the list without losing the value of head*/
 	initializeWordList(); /*initialize the translator for new file processing*/
 	resetErrCond(); /*reset the error mechanism for new file processing*/
@@ -107,7 +107,12 @@ int assembler(char *fileName)
 				temp -> addId = noneAdd; /*Setting the additional id of the temporary label to none, because it cannot be both data and entry/extern if not a label*/
 				temp -> value = getValue(line, temp -> id, currentLine); /*Setting the numeric .data value of the temporary label (NULL if .string)*/
 				temp -> string = getString(line, temp -> id); /*Setting the .string value of the temporary label (NULL if .data)*/
-				Data(temp, currentLine); /*Creating data lines for the output file of the value stored in the temporary label*/
+				if (temp -> string || temp -> value)
+					Data(temp, currentLine); /*Creating data lines for the output file of the value stored in the temporary label*/
+				temp -> id = 0;
+				temp -> addId = 0;
+				temp -> value = NULL;
+				temp -> string = NULL;
 			}
 			else if ((addid = getAddType(line)) != noneAdd) /*Else, checking if the additional type used in the line is entry or extern. If it is, it creates a label that stores the name and additional type used in the line and moves temp one step forward in the label list*/
 			{
@@ -116,7 +121,7 @@ int assembler(char *fileName)
 				{
 					strcpy(temp -> name, lineName);
 					temp -> addId = addid;
-					temp -> next = (label*)malloc(sizeof(label));
+					temp -> next = createLabel();
 					temp = temp -> next;
 				}
 				else
@@ -136,9 +141,18 @@ int assembler(char *fileName)
 			temp -> addId = getAddType(line); /*Setting the additional type of the label from the line (entry, extern, none)*/
 			temp -> value = getValue(line, temp -> id, currentLine); /*Setting the numeric .data value of the label (NULL if .string)*/
 			temp -> string = getString(line, temp -> id); /*Setting the .string value of the label (NULL if .data)*/
-			temp -> next = (label*)malloc(sizeof(label)); /*Allocating memory for the next label in the list*/
-			Data(temp, currentLine); /*Creates a word/multiple words for the stored data*/
-			temp = temp -> next; /*Sets the label pointer from the current one to the next one in the list*/
+			temp -> next = createLabel(); /*Allocating memory for the next label in the list*/
+			if (temp -> string || temp -> value) {
+				Data(temp, currentLine); /*Creates a word/multiple words for the stored data*/
+				temp = temp -> next; /*Sets the label pointer from the current one to the next one in the list*/
+			}
+			else {
+				(temp -> name)[0] = '\0';
+				temp -> id = 0;
+				temp -> addId = 0;
+				temp -> value = NULL;
+				temp -> string = NULL;
+			}
 		}
 		else if (isInstructionLabel(line) == true) /*Else, checking if the line is a declaration of an instruction label (a label that is declared using one of the 16 instructions). If it is:*/
 		{
@@ -148,7 +162,7 @@ int assembler(char *fileName)
 				error(nameError, lineCounter, NULL);
 			strcpy(temp -> name, lineName); /*Copying the label name to the label structure*/
 			instruction(line+strlen(lineName)+1, temp, currentLine); /*Creating instruction lines for the output file and storing them*/
-			temp -> next = (label*)malloc(sizeof(label)); /*Allocating memory for the next label in the list*/
+			temp -> next = createLabel(); /*Allocating memory for the next label in the list*/
 			temp = temp -> next; /*Sets the label pointer from the current one to the next one in the list*/
 		}
 		else /*Else, the only optin left is a pure instruction line:*/
@@ -215,6 +229,9 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 	for (i = 1; i < argc; i++) /*Starts from the command line argument in position 1 (the one after ./assembler), and calls the assembler function on it*/
+	{
+		printf("NOW PROCESSING FILE : %s.AS\n",argv[i]);
 		assembler(argv[i]);
+	}
 	return 0;
 }

@@ -94,6 +94,7 @@ void clearWordList(void){
   wordList *head = instructionHead;
   while (head -> next != NULL){
     wordList *temp = head -> next;
+    head -> next = NULL;
     free(head);
     head = temp;
   }
@@ -315,7 +316,7 @@ void instruction(char *str, label *labelInstruction, lines *currentLine) {
         numOfWords = 2;
       }
       else{
-        error(illegalDest, currentLine -> lineNum, NULL);
+        error(illegalSource, currentLine -> lineNum, NULL);
         return;
       }
       working = skipBlanks(working);
@@ -341,7 +342,7 @@ void instruction(char *str, label *labelInstruction, lines *currentLine) {
         numOfWords++;
       }
       else {
-        error(illegalSource, currentLine -> lineNum, NULL);
+        error(illegalDest, currentLine -> lineNum, NULL);
         return;
       }
     }
@@ -350,7 +351,7 @@ void instruction(char *str, label *labelInstruction, lines *currentLine) {
       if ((words[1] = isDirect(&working)).AREdata.are != 3)
         numOfWords = 2;
       else {
-        error(illegalDest, currentLine -> lineNum, NULL);
+        error(illegalSource, currentLine -> lineNum, NULL);
         return;
       }
       working = skipBlanks(working);
@@ -369,7 +370,7 @@ void instruction(char *str, label *labelInstruction, lines *currentLine) {
         numOfWords++;
       }
       else {
-        error(illegalSource, currentLine -> lineNum, NULL);
+        error(illegalDest, currentLine -> lineNum, NULL);
         return;
       }
     }
