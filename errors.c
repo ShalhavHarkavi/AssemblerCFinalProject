@@ -66,12 +66,12 @@ void error(errorCode errorType, unsigned int location, char* nameERR)
     fprintf(stderr, "EXPECTED ')' IN LINE #%d\n", location);
     errorCond = Error;
   }
-  else if (errorType == expectParen) {
+  else if (errorType == expectEOL) {
     fprintf(stderr, "THERE SHOULDN'T BE ANYTHING AFTER THE COMMAND IN LINE #%d\n", location);
     errorCond = Warnning;
   }
   else if (errorType == EntryError) {
-    fprintf(stderr, "AN ENTRY WAS DECLARED BUT NEVER DEINED: '%s'\n", nameERR);
+    fprintf(stderr, "AN ENTRY WAS DECLARED BUT NEVER DEFINED: '%s'\n", nameERR);
     errorCond = Error;
   }
   else if (errorType == labelNotFound) {
