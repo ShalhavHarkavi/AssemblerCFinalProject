@@ -1,3 +1,10 @@
+#**************************************\
+ *********** AUG 19 2018 **************\
+ * By Matan Liber and Shalhav Harkavi *\
+ * Submitted to Shadi Jazmawi         *\
+ * Wednesday's group at Allience      *\
+ **************************************
+
 assembler: translator.o additionalFuncs.o errors.o main.o
 	gcc -o assembler main.o additionalFuncs.o translator.o errors.o
 
